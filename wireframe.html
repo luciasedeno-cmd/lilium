@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WIREFRAME · Lilium · Escape Room ESADA</title>
+<meta name="description" content="Reserva tu turno en Lilium, el escape room de la fiesta de ESADA.">
+<style>
+/* =========================================================
+   WIREFRAME · sin estética: escala de grises, fuente del sistema,
+   cajas con borde. Mismas clases que la versión final.
+   ========================================================= */
+:root{--nav-h:64px;--b:#999;--b2:#666;--bg:#fff;--g1:#f2f2f2;--g2:#e0e0e0;--t:#111;--t2:#555}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--t);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+img{max-width:100%;display:block}
+h1,h2,h3{font-weight:700;line-height:1.2;margin:0 0 .5em}
+h1{font-size:1.7rem} h2{font-size:1.4rem} h3{font-size:1.1rem}
+p{margin:0 0 1em}
+a{color:var(--t)}
+button{font:inherit;color:inherit;cursor:pointer}
+[tabindex="-1"]:focus{outline:none}
+:focus-visible{outline:2px dashed #000;outline-offset:2px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+.skip{position:absolute;left:8px;top:-60px;background:#000;color:#fff;padding:8px;z-index:200}.skip:focus{top:8px}
+.wf-ph{display:flex;align-items:center;justify-content:center;border:1.5px dashed var(--b2);background:repeating-linear-gradient(45deg,#fafafa 0 8px,#f0f0f0 8px 16px);color:var(--t2);font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;text-align:center}
+.wf-note{font-size:.7rem;color:var(--t2);text-transform:uppercase;letter-spacing:.06em}
+
+/* Botones */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:0 18px;border:1.5px solid var(--t);background:#fff;font-weight:600;text-decoration:none;color:var(--t);border-radius:4px}
+.btn[disabled],.btn[aria-disabled="true"]{opacity:.4;cursor:not-allowed}
+.btn-primary,.btn-dark,.btn-rust{background:#333;color:#fff;border-color:#333}
+.btn-ghost,.btn-light{background:#fff}
+.btn-danger{background:#fff;border-style:dashed}
+.btn-sm{min-height:34px;padding:0 12px;font-size:.85rem}
+.btn-block{width:100%}
+.link-btn{background:none;border:0;padding:0;text-decoration:underline;font-weight:600}
+.icon-btn{width:40px;height:40px;border:1.5px solid var(--b);background:#fff;display:inline-grid;place-items:center;border-radius:4px;flex:none;color:var(--t)}
+.icon{width:16px;height:16px;flex:none}
+
+/* Chips */
+.chip{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border:1px solid var(--b2);background:var(--g1);font-size:.75rem;font-weight:600;border-radius:3px;white-space:nowrap}
+.chip-completo{text-decoration:line-through}
+.chip-lider{background:#333;color:#fff;border-color:#333}
+
+/* Avatares */
+.stack{display:flex;align-items:center}
+.av{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:.65rem;font-weight:700;background:var(--g2);border:1.5px solid #fff;outline:1px solid var(--b);margin-left:-6px;flex:none;color:var(--t)}
+.stack .av:first-child{margin-left:0}
+.av.lg{width:40px;height:40px;font-size:.8rem}
+.av.empty{background:#fff;outline-style:dashed}
+
+/* Layout */
+.wrap{width:100%;max-width:1120px;margin:0 auto;padding:0 16px}
+.narrow{max-width:640px}
+.card{border:1.5px solid var(--b);padding:16px;background:#fff;border-radius:4px}
+.card + .card{margin-top:12px}
+.stack-gap > * + *{margin-top:12px}
+.eyebrow{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--t2);margin:0 0 .4em}
+.muted{color:var(--t2)} .small{font-size:.88rem} .center{text-align:center}
+.row{display:flex;align-items:center;gap:10px} .between{justify-content:space-between} .wrap-row{flex-wrap:wrap}
+hr.sep{border:0;border-top:1px dashed var(--b);margin:14px 0}
+
+/* Cabecera mínima */
+.mini-head{padding:12px 0;border-bottom:1px solid var(--g2);margin-bottom:16px}
+.mini-head .wrap{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.logo{display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:var(--t)}
+.logo .wf-ph{width:96px;height:36px}
+.logo small{font-size:.65rem;text-transform:uppercase;color:var(--t2);font-weight:600}
+.lang{display:inline-flex;border:1.5px solid var(--b)}
+.lang button{border:0;background:#fff;padding:4px 10px;font-size:.8rem;font-weight:700;min-height:30px}
+.lang button[aria-pressed="true"]{background:#333;color:#fff}
+
+/* Navbar Home (solo escritorio) */
+.nav-desk{display:none}
+@media (min-width:960px){
+  .nav-desk{display:block;position:fixed;inset:0 0 auto 0;height:var(--nav-h);z-index:50;background:#fff;border-bottom:1.5px solid var(--b)}
+  .nav-desk .wrap{height:100%;display:flex;align-items:center;gap:20px}
+  .nav-desk ul{display:flex;gap:4px;list-style:none;margin:0 0 0 auto;padding:0}
+  .nav-desk ul button{background:none;border:0;padding:8px 10px;font-size:.8rem;font-weight:700;text-decoration:underline}
+  .home-mobile-head{display:none}
+  .page-home{padding-top:var(--nav-h)}
+}
+
+/* Progreso */
+.progress{margin:0 0 18px}
+.progress .row{margin-bottom:8px}
+.progress-label{font-size:.85rem;font-weight:700}
+.bar{height:8px;border:1px solid var(--b);background:#fff}
+.bar > span{display:block;height:100%;background:#777}
+
+/* Formularios */
+label.lbl{display:block;font-weight:700;font-size:.9rem;margin-bottom:6px}
+.field{width:100%;min-height:44px;border:1.5px solid var(--b);background:#fff;padding:0 12px;font:inherit;border-radius:3px}
+.field[aria-invalid="true"]{border:2px solid #000;border-style:dashed}
+.field.valid{border-color:#000}
+.hint{display:flex;gap:6px;align-items:flex-start;font-size:.85rem;margin-top:6px;min-height:1.4em;color:var(--t2)}
+.hint.err{color:#000;font-weight:700}.hint.err::before{content:"[ERROR] ";white-space:pre}
+.hint.ok{color:#000}.hint.ok::before{content:"[OK] ";white-space:pre}
+.code-row{display:flex;gap:6px;justify-content:space-between}
+.code-box{width:100%;max-width:48px;height:54px;text-align:center;font-size:1.3rem;border:1.5px solid var(--b);background:#fff}
+.notice{border:1.5px dashed var(--b2);padding:12px;display:flex;gap:10px;align-items:flex-start;font-size:.9rem;background:var(--g1)}
+.notice-demo b{font-size:1.3rem;letter-spacing:.2em}
+.notice-err,.notice-warn{border-style:solid}
+
+/* Verificar */
+.page-verify{min-height:100vh}
+.verify-main{display:grid;place-items:center;padding:12px 16px 40px}
+.verify-card{width:100%;max-width:460px}
+.verify-art{display:flex;justify-content:center;margin-bottom:12px}
+.verify-art .wf-ph{width:80px;height:80px}
+
+/* Home */
+.hero{border-bottom:1.5px solid var(--b);padding:24px 0 40px;background:var(--g1)}
+.hero .wrap{display:grid;gap:24px}
+.hero h1{font-size:clamp(1.8rem,6vw,2.6rem)}
+.hero h1 em{font-style:normal}
+.hero .meta{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 18px}
+.hero .meta span{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--b);padding:4px 8px;font-size:.82rem;background:#fff}
+.hero-art .wf-ph{aspect-ratio:1/1;width:100%;max-width:360px;margin:0 auto}
+@media (min-width:960px){.hero{padding:48px 0}.hero .wrap{grid-template-columns:1.2fr .8fr;align-items:center}}
+.sec{padding:40px 0;scroll-margin-top:calc(var(--nav-h) + 8px)}
+.sec-head{margin-bottom:18px}
+.steps{display:grid;gap:10px;list-style:none;padding:0;margin:0}
+.steps li{border:1.5px solid var(--b);padding:14px}
+.steps .num{display:inline-block;border:1px solid var(--b2);padding:0 8px;font-weight:700;margin-bottom:8px}
+.steps p{margin:0;color:var(--t2);font-size:.9rem}
+@media (min-width:720px){.steps{grid-template-columns:repeat(2,1fr)}}
+@media (min-width:1040px){.steps{grid-template-columns:repeat(5,1fr)}}
+.req-grid{display:grid;gap:10px}
+@media (min-width:760px){.req-grid{grid-template-columns:repeat(3,1fr)}}
+.req{border:1.5px solid var(--b);padding:14px}
+.req .ic{width:36px;height:36px;border:1px dashed var(--b2);display:grid;place-items:center;margin-bottom:8px}
+.req p{margin:0;color:var(--t2);font-size:.9rem}
+details.acc{border:1.5px solid var(--b);margin-top:8px}
+details.acc summary{cursor:pointer;padding:12px 14px;font-weight:700}
+details.acc .acc-body{padding:0 14px 12px;color:var(--t2)}
+details.acc .acc-body p:last-child{margin:0}
+.erasmus-band{border:2px dashed var(--b2);padding:16px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;background:var(--g1)}
+.erasmus-band h3{margin:0 0 4px}.erasmus-band p{margin:0}
+.erasmus-band .actions{display:flex;flex-wrap:wrap;gap:8px}
+.faq-wrap{max-width:780px}
+.cta-final{border:2px solid var(--b2);padding:32px 16px;text-align:center;background:var(--g1)}
+.cta-final p{max-width:46ch;margin:0 auto 16px}
+.foot{padding:20px 0 40px;color:var(--t2);font-size:.82rem;border-top:1px solid var(--g2)}
+.foot .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px}
+
+/* Reserva */
+.page-flow{padding-bottom:40px}
+.count-card{display:flex;align-items:center;justify-content:space-between;gap:12px;border:2px solid var(--b2);padding:16px;background:var(--g1)}
+.count-card .q{font-size:1.2rem;font-weight:700}
+.count-card .n{font-size:2.6rem;font-weight:700;line-height:1}
+.member{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px dashed var(--b)}
+.member:last-child{border-bottom:0}
+.member .who{flex:1;min-width:0}
+.member .who .em{display:block;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.member .who .sub{font-size:.8rem;color:var(--t2)}
+.member .av{margin-left:0}
+.member .link-btn{display:block;margin-top:4px;text-align:left}
+.add-row{display:flex;gap:8px}.add-row .field{flex:1;min-width:0}
+.add-btn{width:44px;height:44px;border:1.5px solid #333;background:#333;color:#fff;display:grid;place-items:center;flex:none;border-radius:4px}
+.add-btn[disabled]{opacity:.4}
+.rule{border-left:4px solid #333;background:var(--g1);padding:10px 12px;font-size:.9rem}
+.day-pill{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--b);padding:6px 10px;font-weight:600;font-size:.88rem}
+.seg{display:inline-flex;border:1.5px solid var(--b)}
+.seg button{border:0;background:#fff;padding:6px 12px;font-size:.85rem;font-weight:600;min-height:34px}
+.seg button[aria-pressed="true"]{background:#333;color:#fff}
+.slots{display:grid;gap:10px;margin-top:14px}
+.slot{width:100%;text-align:left;background:#fff;border:1.5px solid var(--b);padding:14px;display:grid;gap:10px;border-radius:4px}
+.slot[aria-checked="true"]{border:3px solid #000}
+.slot .time{font-size:1.4rem;font-weight:700}
+.slot .top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.slot .chips{display:flex;flex-wrap:wrap;gap:6px}
+.slot .bottom{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.slot .seats{font-size:.9rem;font-weight:600}
+.slot .perfect{font-size:.78rem;border:1px solid var(--b);padding:2px 8px}
+.slot .radio{width:20px;height:20px;border-radius:50%;border:2px solid var(--b2);display:grid;place-items:center}
+.slot[aria-checked="true"] .radio::after{content:"";width:10px;height:10px;border-radius:50%;background:#000}
+.slot.locked{background:var(--g1);border-style:dashed;color:var(--t2);cursor:not-allowed}
+.slot.full .time{text-decoration:line-through}
+.slot .why{display:flex;align-items:center;gap:6px;font-size:.85rem}
+.bottom-bar{position:fixed;inset:auto 0 0 0;z-index:40;background:#fff;border-top:2px solid var(--b2);padding:10px 0 calc(10px + env(safe-area-inset-bottom))}
+.bottom-bar .wrap{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.bottom-bar .sum b{display:block}
+.bottom-bar .sum span{font-size:.82rem;color:var(--t2)}
+.has-bottom-bar{padding-bottom:110px}
+.sumlist{list-style:none;margin:0;padding:0}
+.sumlist li{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px dashed var(--b)}
+.sumlist li:last-child{border-bottom:0}
+.sumlist .k{color:var(--t2);font-size:.9rem}.sumlist .v{font-weight:600;text-align:right}
+.success{text-align:center}
+.success .seal{width:72px;height:72px;margin:0 auto 12px;border:2px solid #333;border-radius:50%;display:grid;place-items:center}
+
+/* Mi reserva */
+.team-head{border:2px solid var(--b2);padding:16px;background:var(--g1)}
+.team-head h1{margin:6px 0 10px}
+.team-head .facts{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+.team-head .facts li{display:flex;gap:8px;align-items:center;font-size:.92rem}
+.countdown{font-size:2rem;font-weight:700;font-variant-numeric:tabular-nums}
+.ticket{border:2px solid var(--b2);background:#fff}
+.ticket-top{border-bottom:1.5px solid var(--b);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--g1)}
+.ticket-top .wf-ph{width:90px;height:30px}
+.ticket-body{padding:16px;display:grid;gap:14px}
+@media (min-width:560px){.ticket-body{grid-template-columns:140px 1fr}}
+.qr .wf-ph{width:140px;height:140px;margin:0 auto}
+.ticket dl{margin:0;display:grid;gap:8px}
+.ticket dt{font-size:.7rem;text-transform:uppercase;color:var(--t2);font-weight:700}
+.ticket dd{margin:0;font-weight:600;overflow-wrap:anywhere}
+.ticket-cut{border-top:2px dashed var(--b)}
+.ticket-frag{padding:14px 16px}
+.frag{font-size:1.15rem;font-weight:700;font-style:italic;margin:4px 0 10px}
+.ticket-locked{padding:20px 16px;text-align:center}
+.ticket-locked .ic{width:48px;height:48px;margin:0 auto 10px;border:1.5px dashed var(--b2);display:grid;place-items:center}
+.actions-grid{display:grid;gap:8px}
+@media (min-width:560px){.actions-grid{grid-template-columns:1fr 1fr}}
+
+/* Modal */
+.modal-back{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center}
+@media (min-width:640px){.modal-back{align-items:center;padding:20px}}
+.modal{background:#fff;width:100%;max-width:560px;max-height:92vh;overflow:auto;padding:20px 16px 16px;position:relative;border:2px solid #333}
+.modal.wide{max-width:860px}
+.modal h2{padding-right:44px}
+.modal .x{position:absolute;right:10px;top:10px}
+.modal-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;margin-top:16px}
+.modal-actions .btn{flex:1 1 auto}
+.legal-list{padding-left:20px;margin:0 0 10px}.legal-list li{margin-bottom:6px}
+.legal-box{max-height:42vh;overflow:auto;border:1px solid var(--b);padding:12px}
+
+/* Emails */
+.inbox{display:grid;gap:12px}
+@media (min-width:760px){.inbox{grid-template-columns:220px 1fr}}
+.inbox-list{display:flex;gap:6px;overflow:auto}
+@media (min-width:760px){.inbox-list{flex-direction:column}}
+.inbox-list button{text-align:left;border:1.5px solid var(--b);background:#fff;padding:8px 10px;min-width:190px}
+.inbox-list button[aria-selected="true"]{border:3px solid #000}
+.inbox-list b{display:block;font-size:.85rem}.inbox-list span{font-size:.75rem;color:var(--t2)}
+.mail{border:1.5px solid var(--b)}
+.mail-meta{padding:10px 12px;font-size:.8rem;border-bottom:1px solid var(--b);background:var(--g1)}
+.mail-head{padding:12px;border-bottom:1px solid var(--b)}
+.mail-head .wf-ph{width:120px;height:36px;margin:0 auto}
+.mail-body{padding:16px}
+.mail-foot{padding:10px;font-size:.72rem;color:var(--t2);text-align:center;border-top:1px solid var(--b)}
+
+/* Toast y demo */
+.toasts{position:fixed;left:50%;transform:translateX(-50%);top:12px;z-index:150;display:grid;gap:6px;width:min(92vw,420px);pointer-events:none}
+.toast{background:#222;color:#fff;padding:10px 14px;font-size:.88rem;display:flex;gap:8px;align-items:center}
+.demo-fab{position:fixed;left:12px;bottom:12px;z-index:90;border:1.5px dashed #333;background:#fff;font-size:.7rem;font-weight:700;padding:6px 10px}
+body.bb .demo-fab{bottom:90px}
+.demo-panel{position:fixed;left:12px;bottom:50px;z-index:95;width:min(320px,calc(100vw - 24px));max-height:75vh;overflow:auto;background:#fff;border:2px solid #333;padding:12px;font-size:.84rem}
+body.bb .demo-panel{bottom:128px}
+.demo-panel h4{margin:10px 0 6px;font-size:.7rem;text-transform:uppercase}
+.demo-panel h4:first-child{margin-top:0}
+.demo-panel .grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.demo-panel button{border:1px solid var(--b);background:#fff;padding:6px;text-align:left;font-size:.78rem}
+.demo-panel button.cur{border:2px solid #000;font-weight:700}
+.demo-panel .who{font-size:.74rem;color:var(--t2);margin-top:8px;word-break:break-all}
+
+@media print{body *{visibility:hidden}#ticket-print,#ticket-print *{visibility:visible}#ticket-print{position:absolute;left:0;top:0;width:100%}}
+</style>
+</head>
+<body>
+<!-- WIREFRAME: misma estructura, contenido y funcionalidad que index.html, sin estética -->
+<a class="skip" href="#app" id="skip">Saltar al contenido</a>
+<div id="app" tabindex="-1"></div>
+<div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
+<div id="modal-root"></div>
+<div id="demo-root"></div>
+<noscript><p style="padding:24px">Esta web necesita JavaScript. · This site requires JavaScript.</p></noscript>
+
+<script>
+/* =========================================================
+   PARÁMETROS (editables)
+   ========================================================= */
+const DEMO_MODE = true;               // false → oculta el botón DEMO y los avisos de código
+const MIN_GRUPO = 3;
+const MAX_GRUPO = 6;
+const HORAS_CONFIRMACION = 48;
+const DOMINIO_PERMITIDO = "alumnado.esada.es";
+const EVENTO = {                      // SOLO UN DÍA de evento
+  fecha: new Date(2026, 10, 20),      // 20 noviembre 2026 (mes 0-indexado)
+  lugar: { es: "ESADA · Sala polivalente (planta baja)", en: "ESADA · Multipurpose room (ground floor)" },
+  mapsUrl: "https://www.google.com/maps/search/?api=1&query=ESADA+Escuela+Superior+de+Arte+y+Dise%C3%B1o+de+Andaluc%C3%ADa+Granada"
+};
+/* Wireframe: el logotipo se muestra como caja LOGO */
+
+/* Fragmentos de la frase secreta (1 por integrante; si sois menos de 6, alguien recibe varios).
+   Juntos revelan la palabra que hay que decir al Game Master. → Los define el equipo de atrezo. */
+const FRAGMENTOS = {
+  es: ["I · «Cuando el sol", "II · no quiera dormir,", "III · buscad la flor", "IV · que nunca se cierra:", "V · decid su nombre", "VI · y el prado os abrirá paso.»"],
+  en: ["I · “When the sun", "II · refuses to sleep,", "III · seek the flower", "IV · that never closes:", "V · speak its name", "VI · and the meadow will let you in.”"]
+};
+/* Pistas del escape room (1 por entrada). → Las define el equipo de atrezo. */
+const PISTAS = {
+  es: ["Cuenta los pétalos antes de abrir nada.", "No todo lo que brilla es el sol.", "La corona pesa más de lo que parece.", "El primer reloj no tenía agujas.", "Lo que cuelga del palo de mayo no es decoración.", "Escuchad la canción: repite un número."],
+  en: ["Count the petals before opening anything.", "Not everything that shines is the sun.", "The crown weighs more than it looks.", "The first clock had no hands.", "What hangs from the maypole isn't decoration.", "Listen to the song: it repeats a number."]
+};
+/* Aviso legal: textos placeholder editables */
+const AVISO_LEGAL = {
+  es: ["Riesgo de [X]: descripción del riesgo y medidas tomadas.", "Riesgo de [Y]: espacios con poca iluminación y elementos de atrezo en el suelo.", "Aviso de luces: la experiencia incluye luces estroboscópicas e intermitentes. Si tienes fotosensibilidad o epilepsia, avisa a la organización antes de entrar.", "Riesgo de [Z]: humo artificial / sonidos fuertes.", "La organización no se hace cargo de [objetos personales perdidos, daños causados por un uso indebido del material, …].", "Es obligatorio seguir en todo momento las indicaciones del Game Master."],
+  en: ["Risk of [X]: description of the risk and measures taken.", "Risk of [Y]: dimly lit spaces and props on the floor.", "Light warning: the experience includes strobe and flashing lights. If you are photosensitive or have epilepsy, tell the organisers before entering.", "Risk of [Z]: artificial smoke / loud sounds.", "The organisers are not responsible for [lost personal belongings, damage caused by misuse of the props, …].", "You must follow the Game Master's instructions at all times."]
+};
+
+/* =========================================================
+   ESTADO (en memoria: nada de localStorage/sessionStorage)
+   ========================================================= */
+const H = 3600e3;
+const dom = (n) => n + "@" + DOMINIO_PERMITIDO;
+const state = {
+  lang: (navigator.language || "es").toLowerCase().startsWith("en") ? "en" : "es",
+  sesion: null,                    // { email }
+  verif: { fase: 1, email: "", codigo: "", reenvioEn: 0 },
+  draft: { miembros: [], turnoId: null, equipo: "" },
+  filtroErasmus: false,
+  popupVisto: false,
+  exito: null,                     // id de la reserva recién creada (pantalla de éxito)
+  esperaMia: {},                   // turnos en lista de espera
+  editandoEquipo: false
+};
+const L = (es, en) => state.lang === "en" ? en : es;
+
+/* =========================================================
+   BACKEND SIMULADO · base de datos + API
+   (sustituir cada función de `api` por una llamada real)
+   ========================================================= */
+function seed() {
+  const now = Date.now();
+  return {
+    turnos: [
+      { id: "t0", inicio: "16:00", fin: "17:00", erasmus: true,  equipo: "Midnight Sun" },
+      { id: "t1", inicio: "17:00", fin: "18:00", erasmus: false, equipo: "Las Hijas del Solsticio" },
+      { id: "t2", inicio: "18:30", fin: "19:30", erasmus: false, equipo: "" },
+      { id: "t3", inicio: "19:45", fin: "20:45", erasmus: false, equipo: "Los Druidas del Patio" },
+      { id: "t4", inicio: "21:00", fin: "22:00", erasmus: false, equipo: "" },
+      { id: "t5", inicio: "22:15", fin: "23:15", erasmus: true,  equipo: "" }
+    ],
+    reservas: [
+      { id: "r1", turnoId: "t1", lider: dom("ana.garcia"), creada: now - 36 * H, medio: false,
+        miembros: [m("ana.garcia", 1), m("marta.lopez", 1), m("pablo.ruiz", 0), m("irene.sanz", 1)] },
+      { id: "r2", turnoId: "t3", lider: dom("jon.etxeberria"), creada: now - 60 * H, medio: false,
+        miembros: [m("jon.etxeberria", 1), m("lucas.moreno", 1), m("sara.diaz", 1), m("hugo.navarro", 1), m("claudia.romero", 1), m("nerea.gil", 1)] },
+      { id: "r3", turnoId: "t0", lider: dom("emma.schmidt"), creada: now - 10 * H, medio: false,
+        miembros: [m("emma.schmidt", 1), m("luca.rossi", 0)] }
+    ],
+    codigos: {},
+    espera: {},
+    seq: 4
+  };
+  function m(n, c) { return { email: dom(n), confirmado: !!c }; }
+}
+let db = seed();
+
+const EMAIL_RE = new RegExp("^[a-zñç]+(?:[.\\-][a-zñç]+)+@" + DOMINIO_PERMITIDO.replace(/\./g, "\\.") + "$", "i");
+const PERSONALES = /@(gmail|googlemail|hotmail|outlook|live|yahoo|icloud|me|msn|proton(mail)?|aol|gmx)\./i;
+
+function validarCorreo(raw) {
+  const e = (raw || "").trim().toLowerCase();
+  if (!e) return { ok: false, motivo: "vacio", email: e };
+  if (EMAIL_RE.test(e)) return { ok: true, motivo: "ok", email: e };
+  if (PERSONALES.test(e)) return { ok: false, motivo: "personal", email: e };
+  const at = e.indexOf("@");
+  if (at === -1) return { ok: false, motivo: "incompleto", email: e };
+  const domPart = e.slice(at + 1);
+  if (domPart === DOMINIO_PERMITIDO) return { ok: false, motivo: "formato", email: e };
+  if (DOMINIO_PERMITIDO.startsWith(domPart)) return { ok: false, motivo: "incompleto", email: e };
+  return { ok: false, motivo: "dominio", email: e };
+}
+function mensajeCorreo(motivo) {
+  return {
+    vacio: L("Escribe tu correo institucional.", "Type your school email."),
+    incompleto: L("Sigue escribiendo… debe terminar en @" + DOMINIO_PERMITIDO, "Keep typing… it must end in @" + DOMINIO_PERMITIDO),
+    personal: L("¡Ups! Ese parece un correo personal 🙂 Solo vale el institucional: nombre.apellido@" + DOMINIO_PERMITIDO, "Oops! That looks like a personal email 🙂 Only your school one works: name.surname@" + DOMINIO_PERMITIDO),
+    dominio: L("Ese dominio no es de ESADA. Usa nombre.apellido@" + DOMINIO_PERMITIDO, "That domain isn't ESADA's. Use name.surname@" + DOMINIO_PERMITIDO),
+    formato: L("Casi: el formato es nombre.apellido@" + DOMINIO_PERMITIDO, "Almost: the format is name.surname@" + DOMINIO_PERMITIDO),
+    ok: L("Correo institucional válido", "Valid school email")
+  }[motivo];
+}
+
+const api = {
+  /** Envía (simula) un código de 6 dígitos al correo. */
+  verificarCorreo(email) {
+    const v = validarCorreo(email);
+    if (!v.ok) return { ok: false, motivo: v.motivo };
+    const codigo = String(Math.floor(100000 + Math.random() * 900000));
+    db.codigos[v.email] = codigo;
+    return { ok: true, codigo };               // en producción NO se devuelve el código
+  },
+  comprobarCodigo(email, codigo) { return db.codigos[email] === codigo; },
+  buscarReservaDe(email) { return db.reservas.find(r => r.miembros.some(x => x.email === email)) || null; },
+  correoInscrito(email) { return !!api.buscarReservaDe(email); },
+  turno(id) { return db.turnos.find(t => t.id === id); },
+  personasEnTurno(id) { return db.reservas.filter(r => r.turnoId === id).flatMap(r => r.miembros); },
+  infoTurno(id) {
+    const t = api.turno(id), personas = api.personasEnTurno(id), n = personas.length;
+    const estado = n === 0 ? "libre" : n >= MAX_GRUPO ? "completo" : "formacion";
+    return { ...t, personas, ocupadas: n, hueco: Math.max(0, MAX_GRUPO - n), estado };
+  },
+  turnos() { return db.turnos.map(t => api.infoTurno(t.id)); },
+  /** Crea una reserva. El líder queda confirmado (ya verificó su correo); el resto recibe un correo. */
+  reservar({ lider, miembros, turnoId, equipo }) {
+    const todos = [lider, ...miembros];
+    const ya = todos.find(e => api.correoInscrito(e));
+    if (ya) return { ok: false, error: "inscrito", email: ya };
+    const t = api.infoTurno(turnoId);
+    if (t.hueco < todos.length) return { ok: false, error: "sin_hueco" };
+    if (t.estado === "libre" && todos.length < MIN_GRUPO) return { ok: false, error: "minimo" };
+    if (t.estado === "libre" && equipo) api.turno(turnoId).equipo = equipo.trim().slice(0, 40);
+    const r = { id: "r" + (db.seq++), turnoId, lider, creada: Date.now(), medio: false,
+      miembros: todos.map(e => ({ email: e, confirmado: e === lider })) };
+    db.reservas.push(r);
+    return { ok: true, reserva: r };
+  },
+  confirmarAsistencia(email) {
+    const r = api.buscarReservaDe(email); if (!r) return null;
+    r.miembros.find(x => x.email === email).confirmado = true;
+    return r;
+  },
+  /** Cambia SOLO a esta persona a otro turno con hueco; el resto del grupo no se mueve. */
+  cambiarHora(email, turnoId) {
+    const r = api.buscarReservaDe(email); const t = api.infoTurno(turnoId);
+    if (!r || t.hueco < 1 || t.estado === "libre") return { ok: false };
+    const yo = r.miembros.find(x => x.email === email);
+    api._sacar(r, email);
+    const nueva = { id: "r" + (db.seq++), turnoId, lider: email, creada: Date.now(), medio: false, miembros: [{ email, confirmado: yo.confirmado }] };
+    db.reservas.push(nueva);
+    return { ok: true, reserva: nueva };
+  },
+  /** Cancela SOLO la plaza de esta persona. */
+  cancelarAsistencia(email) {
+    const r = api.buscarReservaDe(email); if (!r) return { ok: false };
+    api._sacar(r, email); return { ok: true };
+  },
+  cancelarGrupo(reservaId, email) {
+    const r = db.reservas.find(x => x.id === reservaId);
+    if (!r || r.lider !== email) return { ok: false };
+    db.reservas = db.reservas.filter(x => x !== r);
+    if (!api.personasEnTurno(r.turnoId).length) api.turno(r.turnoId).equipo = "";
+    return { ok: true };
+  },
+  renombrarEquipo(reservaId, email, nombre) {
+    const r = db.reservas.find(x => x.id === reservaId);
+    if (!r || r.lider !== email) return { ok: false };
+    api.turno(r.turnoId).equipo = nombre.trim().slice(0, 40); return { ok: true };
+  },
+  apuntarListaEspera(turnoId, email) { (db.espera[turnoId] ||= []).includes(email) || db.espera[turnoId].push(email); return { ok: true }; },
+  /** Cron simulado: aplica las reglas al vencer el plazo de confirmación. */
+  aplicarPlazo(reservaId) {
+    const r = db.reservas.find(x => x.id === reservaId); if (!r) return null;
+    const conf = r.miembros.filter(x => x.confirmado);
+    const perdidos = r.miembros.length - conf.length;
+    r.miembros = conf;
+    if (!conf.length) { db.reservas = db.reservas.filter(x => x !== r); return { eliminada: true, perdidos }; }
+    if (!conf.some(x => x.email === r.lider)) r.lider = conf[0].email;
+    r.medio = conf.length < MIN_GRUPO;
+    r.creada = Date.now() - HORAS_CONFIRMACION * H - 1;
+    return { perdidos, medio: r.medio };
+  },
+  _sacar(r, email) {
+    r.miembros = r.miembros.filter(x => x.email !== email);
+    if (!r.miembros.length) { db.reservas = db.reservas.filter(x => x !== r); }
+    else {
+      if (r.lider === email) r.lider = r.miembros[0].email;
+      if (r.miembros.length < MIN_GRUPO) r.medio = true;
+    }
+    if (!api.personasEnTurno(r.turnoId).length) api.turno(r.turnoId).equipo = "";
+  },
+  /** Estado del grupo para mostrar */
+  estadoGrupo(r) {
+    const enTurno = api.personasEnTurno(r.turnoId).length;
+    if (enTurno < MIN_GRUPO || r.medio && enTurno < MIN_GRUPO) return "medio";
+    return r.miembros.every(x => x.confirmado) ? "confirmada" : "pendiente";
+  },
+  limite(r) { return r.creada + HORAS_CONFIRMACION * H; }
+};
+
+/* =========================================================
+   UTILIDADES
+   ========================================================= */
+const $ = (s, c = document) => c.querySelector(s);
+const $$ = (s, c = document) => [...c.querySelectorAll(s)];
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const nombreDe = (email) => email.split("@")[0].split(/[.\-]/).map(w => w[0].toUpperCase() + w.slice(1)).join(" ");
+const inic = (email) => { const p = email.split("@")[0].split(/[.\-]/); return (p[0][0] + (p[1] ? p[1][0] : "")).toUpperCase(); };
+const colorDe = (email) => "c" + ([...email].reduce((a, c) => a + c.charCodeAt(0), 0) % 6);
+const fechaLarga = (d = EVENTO.fecha) => d.toLocaleDateString(state.lang === "en" ? "en-GB" : "es-ES", { weekday: "long", day: "numeric", month: "long" });
+const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+function fmtRestante(ms) {
+  if (ms <= 0) return "00:00:00";
+  const s = Math.floor(ms / 1000), h = Math.floor(s / 3600), mi = Math.floor(s % 3600 / 60), se = s % 60;
+  return [h, mi, se].map(n => String(n).padStart(2, "0")).join(":");
+}
+function avatares(emails, { max = 6, lg = false, vacios = 0 } = {}) {
+  const shown = emails.slice(0, max);
+  return `<span class="stack" aria-hidden="true">${shown.map(e => `<span class="av ${lg ? "lg" : ""} ${colorDe(e)}">${inic(e)}</span>`).join("")}${Array.from({ length: vacios }, () => `<span class="av empty ${lg ? "lg" : ""}">+</span>`).join("")}</span>`;
+}
+function toast(msg, tipo = "") {
+  const el = document.createElement("div");
+  el.className = "toast " + tipo; el.innerHTML = msg;
+  $("#toasts").appendChild(el);
+  setTimeout(() => el.remove(), 3800);
+}
+function go(path) { if (location.hash === "#" + path) router(); else location.hash = path; }
+
+/* Iconos */
+const I = {
+  back: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>',
+  plus: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  x: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  lock: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>',
+  check: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  alert: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5v.01"/></svg>',
+  clock: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  pin: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0119 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>',
+  cal: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>',
+  users: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5"/><path d="M16 4.8a3.5 3.5 0 010 6.4M18.5 14.8c1.5.8 2.6 2.5 3 5.2"/></svg>',
+  mail: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M4 7l8 6 8-6"/></svg>',
+  pencil: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9a2.8 2.8 0 00-4-4L4 16v4z"/></svg>',
+  ticket: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 8a2 2 0 012-2h14a2 2 0 012 2v2a2 2 0 000 4v2a2 2 0 01-2 2H5a2 2 0 01-2-2v-2a2 2 0 000-4V8z"/><path d="M14 6v12" stroke-dasharray="2 2"/></svg>',
+  shield: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6l8-3z"/></svg>',
+  flower: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="2.5"/><path d="M12 9.5C10 6 10.5 3 12 3s2 3 0 6.5M14.5 12c3.5-2 6.5-1.5 6.5 0s-3 2-6.5 0M12 14.5c2 3.5 1.5 6.5 0 6.5s-2-3 0-6.5M9.5 12C6 14 3 13.5 3 12s3-2 6.5 0"/></svg>',
+  globe: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.7 5.7 3.7 9s-1.2 6.3-3.7 9c-2.5-2.7-3.7-5.7-3.7-9S9.5 5.7 12 3z"/></svg>',
+  sun: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>'
+};
+
+/* Sol + lirios decorativo (hero) */
+function heroArt() {
+  const rays = Array.from({ length: 24 }, (_, i) => { const a = i * 15 * Math.PI / 180, r1 = 118, r2 = i % 2 ? 160 : 185;
+    return `<line x1="${200 + r1 * Math.cos(a)}" y1="${200 + r1 * Math.sin(a)}" x2="${200 + r2 * Math.cos(a)}" y2="${200 + r2 * Math.sin(a)}"/>`; }).join("");
+  const lily = (x, y, s, rot, col) => `<g transform="translate(${x} ${y}) rotate(${rot}) scale(${s})">${[0, 60, 120, 180, 240, 300].map(a => `<path transform="rotate(${a})" d="M0 0 C 10 -14 8 -38 0 -50 C -8 -38 -10 -14 0 0Z" fill="${col}" opacity=".95"/>`).join("")}<circle r="5" fill="#F2C98F"/></g>`;
+  return `<svg viewBox="0 0 400 400" role="img" aria-label="${L("Sol de medianoche con lirios", "Midnight sun with lilies")}">
+    <g class="sun-rays" stroke="#F2C98F" stroke-width="3" stroke-linecap="round" opacity=".7">${rays}</g>
+    <circle cx="200" cy="200" r="104" fill="#AB3D00"/><circle cx="200" cy="200" r="104" fill="url(#g1)"/>
+    <circle cx="200" cy="200" r="82" fill="none" stroke="#F2C98F" stroke-width="1.5" stroke-dasharray="3 7" opacity=".8"/>
+    <defs><radialGradient id="g1" cx=".35" cy=".3"><stop offset="0" stop-color="#E9864C"/><stop offset="1" stop-color="#BA0452" stop-opacity=".9"/></radialGradient></defs>
+    <path d="M40 330 Q 200 270 360 330" stroke="#787350" stroke-width="10" fill="none" stroke-linecap="round"/>
+    ${lily(92, 300, .9, 10, "#F5EEE1")}${lily(150, 318, .62, -20, "#CCB693")}${lily(300, 305, .85, 25, "#F5EEE1")}${lily(250, 322, .55, 0, "#BA0452")}${lily(200, 300, .7, 40, "#CCB693")}
+    <g fill="#787350">${[60, 120, 175, 230, 280, 340].map((x, i) => `<ellipse cx="${x}" cy="${330 - (i % 2) * 6}" rx="14" ry="5" transform="rotate(${i % 2 ? 25 : -25} ${x} 330)"/>`).join("")}</g>
+  </svg>`;
+}
+
+/* QR simulado (decorativo, determinista) */
+function qrSVG(seedStr) {
+  let h = 2166136261; for (const c of seedStr) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); }
+  const rnd = () => { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; return ((h >>> 0) % 1000) / 1000; };
+  const N = 25; let rects = "";
+  const finder = (x, y) => `<rect x="${x}" y="${y}" width="7" height="7" fill="#2E1E10"/><rect x="${x + 1}" y="${y + 1}" width="5" height="5" fill="#fff"/><rect x="${x + 2}" y="${y + 2}" width="3" height="3" fill="#2E1E10"/>`;
+  const inF = (x, y) => (x < 8 && y < 8) || (x > N - 9 && y < 8) || (x < 8 && y > N - 9);
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) if (!inF(x, y) && rnd() > .5) rects += `<rect x="${x}" y="${y}" width="1" height="1"/>`;
+  return `<svg viewBox="0 0 ${N} ${N}" role="img" aria-label="${L("Código QR de la entrada (simulado)", "Ticket QR code (simulated)")}" shape-rendering="crispEdges"><rect width="${N}" height="${N}" fill="#fff"/><g fill="#2E1E10">${rects}</g>${finder(0, 0)}${finder(N - 7, 0)}${finder(0, N - 7)}</svg>`;
+}
+
+/* =========================================================
+   PIEZAS COMUNES
+   ========================================================= */
+function langToggle() {
+  return `<div class="lang" role="group" aria-label="${L("Idioma", "Language")}">
+    <button type="button" data-act="lang" data-v="es" aria-pressed="${state.lang === "es"}" lang="es">ES</button>
+    <button type="button" data-act="lang" data-v="en" aria-pressed="${state.lang === "en"}" lang="en">EN</button></div>`;
+}
+function logo(variant = "oscuro", link = true) {
+  const img = `<span class="wf-ph" role="img" aria-label="Lilium">LOGO</span>`;
+  const inner = `${img}<small>Escape Room<br>ESADA</small>`;
+  return link && state.sesion ? `<a class="logo" href="#/home" aria-label="Lilium · ${L("Inicio", "Home")}">${inner}</a>` : `<span class="logo">${inner}</span>`;
+}
+function miniHead(dark = false) {
+  return `<header class="mini-head ${dark ? "on-dark" : ""}"><div class="wrap">${logo(dark ? "crema" : "oscuro")}${langToggle()}</div></header>`;
+}
+function progreso(paso, back) {
+  return `<div class="progress">
+    <div class="row between">
+      <a class="icon-btn" href="#${back}" aria-label="${L("Volver", "Back")}">${I.back}</a>
+      <span class="progress-label">${L(`Paso ${paso} de 3`, `Step ${paso} of 3`)}</span>
+      <span style="width:44px" aria-hidden="true"></span>
+    </div>
+    <div class="bar" role="progressbar" aria-valuemin="1" aria-valuemax="3" aria-valuenow="${paso}" aria-label="${L("Progreso de la reserva", "Booking progress")}"><span style="width:${paso / 3 * 100}%"></span></div>
+  </div>`;
+}
+function chipTurno(estado) {
+  return { libre: `<span class="chip chip-libre">${L("Sala libre", "Room free")}</span>`,
+    formacion: `<span class="chip chip-formacion">${L("En formación", "Forming")}</span>`,
+    completo: `<span class="chip chip-completo">${L("Completo", "Full")}</span>` }[estado];
+}
+function chipGrupo(e) {
+  return { pendiente: `<span class="chip chip-pend">${L("Pendiente de confirmación", "Awaiting confirmation")}</span>`,
+    confirmada: `<span class="chip chip-ok">${L("Confirmada", "Confirmed")}</span>`,
+    medio: `<span class="chip chip-medio">${L("Grupo medio formado", "Half-formed group")}</span>` }[e];
+}
+const chipErasmus = () => `<span class="chip chip-erasmus noddot">${I.globe.replace('class="icon"', 'class="icon" style="width:14px;height:14px"')} ${L("Solo Erasmus", "Erasmus only")}</span>`;
+const horaTurno = (t) => `${t.inicio}–${t.fin}`;
+
+/* =========================================================
+   MODAL genérico (foco atrapado + Escape)
+   ========================================================= */
+let lastFocus = null;
+function openModal({ title, body, actions = "", wide = false, onMount, label }) {
+  lastFocus = document.activeElement;
+  $("#modal-root").innerHTML = `<div class="modal-back" data-act="modal-back">
+    <div class="modal ${wide ? "wide" : ""}" role="dialog" aria-modal="true" aria-labelledby="m-title">
+      <button class="icon-btn x" data-act="modal-close" aria-label="${L("Cerrar", "Close")}">${I.x}</button>
+      <h2 id="m-title">${title}</h2>
+      <div class="m-body">${body}</div>
+      ${actions ? `<div class="modal-actions">${actions}</div>` : ""}
+    </div></div>`;
+  document.body.style.overflow = "hidden";
+  const m = $(".modal");
+  onMount && onMount(m);
+  (m.querySelector("[data-autofocus]") || m.querySelector(".modal-actions .btn, .m-body button, .m-body input") || m.querySelector(".x")).focus();
+}
+function closeModal() {
+  $("#modal-root").innerHTML = ""; document.body.style.overflow = "";
+  lastFocus && document.contains(lastFocus) && lastFocus.focus();
+}
+document.addEventListener("keydown", (e) => {
+  const m = $(".modal"); if (!m) return;
+  if (e.key === "Escape") closeModal();
+  if (e.key === "Tab") {
+    const f = $$('button,a[href],input,select,textarea,[tabindex]:not([tabindex="-1"])', m).filter(x => !x.disabled && x.offsetParent !== null);
+    if (!f.length) return;
+    if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length - 1].focus(); }
+    else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
+  }
+});
+
+/* =========================================================
+   PÁGINA 1 · #/verificar
+   ========================================================= */
+function pVerificar() {
+  const v = state.verif;
+  const fase1 = `
+    <p class="eyebrow">${L("Acceso", "Access")}</p>
+    <h1 id="h1" tabindex="-1">${L("Antes de entrar al prado…", "Before you enter the meadow…")}</h1>
+    <p class="muted">${L("Solo el alumnado de ESADA puede reservar. Confirma tu correo institucional y te enviaremos un código.", "Only ESADA students can book. Confirm your school email and we'll send you a code.")}</p>
+    <form id="f-email" novalidate>
+      <label class="lbl" for="email">${L("Correo institucional", "School email")}</label>
+      <input class="field" id="email" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false"
+        placeholder="nombre.apellido@${DOMINIO_PERMITIDO}" value="${esc(v.email)}" aria-describedby="email-hint" required>
+      <div class="hint info" id="email-hint" aria-live="polite">${L("Formato: nombre.apellido@", "Format: name.surname@") + DOMINIO_PERMITIDO}</div>
+      <button class="btn btn-primary btn-block" id="btn-send" type="submit" disabled style="margin-top:14px">${I.mail} ${L("Enviar código", "Send code")}</button>
+    </form>`;
+  const fase2 = `
+    <p class="eyebrow">${L("Paso final del acceso", "Last access step")}</p>
+    <h1 id="h1" tabindex="-1">${L("Revisa tu correo", "Check your inbox")}</h1>
+    <p class="muted">${L("Hemos enviado un código de 6 dígitos a", "We've sent a 6-digit code to")} <b>${esc(v.email)}</b>.
+      <button class="link-btn" data-act="verif-cambiar">${L("Cambiar correo", "Change email")}</button></p>
+    ${DEMO_MODE ? `<div class="notice notice-demo" role="status" style="margin-bottom:16px">${I.mail}<div><span class="small">${L("DEMO · Código enviado (simulado):", "DEMO · Code sent (simulated):")}</span><br><b>${v.codigo}</b></div></div>` : ""}
+    <form id="f-code" novalidate>
+      <fieldset style="border:0;padding:0;margin:0">
+        <legend class="lbl">${L("Código de verificación", "Verification code")}</legend>
+        <div class="code-row">${Array.from({ length: 6 }, (_, i) => `<input class="code-box" inputmode="numeric" maxlength="1" autocomplete="${i ? "off" : "one-time-code"}" aria-label="${L("Dígito", "Digit")} ${i + 1}">`).join("")}</div>
+      </fieldset>
+      <div class="hint" id="code-hint" aria-live="polite"></div>
+      <button class="btn btn-primary btn-block" type="submit" style="margin-top:8px">${L("Verificar y entrar", "Verify and enter")}</button>
+    </form>
+    <p class="center small muted" style="margin:16px 0 0">${L("¿No te ha llegado?", "Didn't get it?")}
+      <button class="link-btn" id="btn-resend" data-act="verif-reenviar">${L("Reenviar código", "Resend code")}</button></p>`;
+  return {
+    cls: "page-verify",
+    html: `${miniHead()}
+      <main class="verify-main" id="main">
+        <div class="verify-card">
+          <div class="verify-art" aria-hidden="true"><div class="wf-ph">${L("Imagen", "Image")}</div></div>
+          <div class="card">${v.fase === 1 ? fase1 : fase2}</div>
+          <p class="center small muted" style="margin-top:16px">${L(`Un correo = una reserva. Mínimo ${MIN_GRUPO}, máximo ${MAX_GRUPO} personas por sala.`, `One email = one booking. ${MIN_GRUPO} to ${MAX_GRUPO} people per room.`)}</p>
+        </div>
+      </main>`,
+    mount() {
+      if (v.fase === 1) {
+        const inp = $("#email"), hint = $("#email-hint"), btn = $("#btn-send");
+        let tocado = false;
+        const check = () => {
+          const r = validarCorreo(inp.value);
+          const mostrar = tocado || inp.value.includes("@");
+          btn.disabled = !r.ok;
+          inp.classList.toggle("valid", r.ok);
+          if (r.ok) { inp.removeAttribute("aria-invalid"); hint.className = "hint ok"; hint.innerHTML = I.check + mensajeCorreo("ok"); }
+          else if (mostrar && r.motivo !== "vacio" && r.motivo !== "incompleto") { inp.setAttribute("aria-invalid", "true"); hint.className = "hint err"; hint.innerHTML = I.alert + mensajeCorreo(r.motivo); }
+          else if (mostrar && r.motivo === "incompleto") { inp.removeAttribute("aria-invalid"); hint.className = "hint info"; hint.textContent = mensajeCorreo("incompleto"); }
+          else { inp.removeAttribute("aria-invalid"); hint.className = "hint info"; hint.textContent = L("Formato: nombre.apellido@", "Format: name.surname@") + DOMINIO_PERMITIDO; }
+          return r;
+        };
+        inp.addEventListener("input", check);
+        inp.addEventListener("blur", () => { if (inp.value) { tocado = true; check(); } });
+        check();
+        $("#f-email").addEventListener("submit", (e) => {
+          e.preventDefault(); tocado = true; const r = check(); if (!r.ok) { inp.focus(); return; }
+          const res = api.verificarCorreo(r.email);
+          Object.assign(state.verif, { fase: 2, email: r.email, codigo: res.codigo, reenvioEn: Date.now() + 30000 });
+          render();
+        });
+      } else {
+        const boxes = $$(".code-box");
+        boxes[0].focus();
+        boxes.forEach((b, i) => {
+          b.addEventListener("input", () => { b.value = b.value.replace(/\D/g, "").slice(-1); if (b.value && boxes[i + 1]) boxes[i + 1].focus(); });
+          b.addEventListener("keydown", (e) => { if (e.key === "Backspace" && !b.value && boxes[i - 1]) boxes[i - 1].focus(); });
+          b.addEventListener("paste", (e) => { const d = (e.clipboardData.getData("text") || "").replace(/\D/g, "").slice(0, 6); if (!d) return; e.preventDefault(); d.split("").forEach((c, j) => boxes[j] && (boxes[j].value = c)); (boxes[d.length] || boxes[5]).focus(); });
+        });
+        $("#f-code").addEventListener("submit", (e) => {
+          e.preventDefault();
+          const code = boxes.map(b => b.value).join(""), hint = $("#code-hint");
+          if (code.length < 6) { hint.className = "hint err"; hint.innerHTML = I.alert + L("Introduce los 6 dígitos.", "Enter all 6 digits."); return; }
+          if (!api.comprobarCodigo(v.email, code)) { hint.className = "hint err"; hint.innerHTML = I.alert + L("Código incorrecto. Revísalo o pide uno nuevo.", "Wrong code. Check it or request a new one."); boxes.forEach(b => b.setAttribute("aria-invalid", "true")); return; }
+          state.sesion = { email: v.email };
+          state.verif = { fase: 1, email: "", codigo: "", reenvioEn: 0 };
+          state.draft = { miembros: [], turnoId: null, equipo: "" };
+          const r = api.buscarReservaDe(state.sesion.email);
+          toast(I.check + L("Correo verificado", "Email verified"), "ok");
+          go(r ? "/mi-reserva" : "/home");
+        });
+      }
+    }
+  };
+}
+
+/* =========================================================
+   PÁGINA 2 · #/home
+   ========================================================= */
+function pHome() {
+  const navItems = [["inicio", L("HOME", "HOME")], ["como", L("CÓMO RESERVAR", "HOW TO BOOK")], ["requisitos", L("REQUISITOS", "REQUIREMENTS")], ["faq", L("PREGUNTAS FRECUENTES", "FAQ")]];
+  const pasos = [
+    [L("Verifica tu correo", "Verify your email"), L("Entra con tu correo @" + DOMINIO_PERMITIDO + " y el código que te enviamos.", "Sign in with your @" + DOMINIO_PERMITIDO + " email and the code we send you.")],
+    [L("Añade a tu gente", "Add your people"), L(`Escribe los correos de tu grupo (de ${MIN_GRUPO} a ${MAX_GRUPO}). Quien reserva es la persona líder.`, `Add your group's emails (${MIN_GRUPO} to ${MAX_GRUPO}). Whoever books is the leader.`)],
+    [L("Elige hora", "Pick a time"), L("Un único día de fiesta. Verás qué salas están libres y qué grupos buscan gente.", "One single party day. See which rooms are free and which groups need people.")],
+    [L("Confirmad por correo", "Confirm by email"), L(`Cada integrante recibe un correo y tiene ${HORAS_CONFIRMACION} h para confirmar su plaza.`, `Each member gets an email and has ${HORAS_CONFIRMACION} h to confirm their spot.`)],
+    [L("Recibe tu entrada", "Get your ticket"), L("Entrada digital con QR y un fragmento secreto. Al llegar, el Game Master os da la entrada física.", "Digital ticket with QR and a secret fragment. On arrival, the Game Master hands you the physical ticket.")]
+  ];
+  const faqs = [
+    [L(`¿Cuánto tiempo hay para confirmar?`, `How long do we have to confirm?`), L(`${HORAS_CONFIRMACION} horas desde que se crea la reserva. Cada integrante confirma desde el enlace de su correo; os avisamos cuando queden 12 h.`, `${HORAS_CONFIRMACION} hours from when the booking is created. Each member confirms from the link in their email; we'll remind you when 12 h are left.`)],
+    [L("¿Qué pasa si alguien no confirma?", "What if someone doesn't confirm?"), L(`Si al acabar el plazo hay ${MIN_GRUPO} o más confirmados, la reserva sigue y quien no confirmó pierde su plaza. Si sois 1 o 2, el grupo pasa a "medio formado" y otras personas pueden completar los huecos.`, `If ${MIN_GRUPO} or more have confirmed when time runs out, the booking stays and unconfirmed people lose their spot. If only 1 or 2 confirmed, the group becomes "half-formed" and others can fill the gaps.`)],
+    [L("¿Puedo cambiar de hora?", "Can I change my time?"), L(`Sí, desde "Mi reserva". El cambio es individual: solo te mueves tú a otro turno con hueco; tu grupo se queda donde está.`, `Yes, from "My booking". It's individual: only you move to another slot with space; your group stays put.`)],
+    [L("¿Cómo cancelo?", "How do I cancel?"), L("Desde el enlace de tu correo o en \"Mi reserva\". Cancelar tu asistencia solo te afecta a ti. La persona líder también puede cancelar la reserva de todo el grupo.", "Via your email link or \"My booking\". Cancelling your attendance only affects you. The leader can also cancel the whole group's booking.")],
+    [L("¿Entrada digital y entrada física?", "Digital and physical ticket?"), L("Cada persona recibe una entrada digital con QR y un fragmento de una frase secreta: juntadlos antes del día para descubrir la palabra que desbloquea una ventaja inicial. Al llegar, el Game Master escanea vuestro QR y os entrega la entrada física (una por grupo): un objeto que es también vuestra primera pista.", "Everyone gets a digital ticket with a QR and a fragment of a secret phrase: put them together before the day to discover the word that unlocks a head start. On arrival, the Game Master scans your QR and gives you the physical ticket (one per group): an object that is also your first clue.")],
+    [L("¿Qué es el aviso de luces?", "What's the light warning?"), L("La sala usa luces estroboscópicas e intermitentes. Si tienes fotosensibilidad o epilepsia, avísanos antes de reservar: adaptamos la experiencia.", "The room uses strobe and flashing lights. If you're photosensitive or have epilepsy, let us know before booking: we'll adapt the experience.")],
+    [L("¿Puedo reservar dos veces?", "Can I book twice?"), L("No. Un correo = una única reserva. Si alguien ya te añadió a su grupo, al entrar irás directamente a tu reserva.", "No. One email = one booking. If someone already added you to their group, you'll go straight to your booking when you sign in.")]
+  ];
+  const req = [
+    [I.mail, L("Correo de ESADA", "ESADA email"), L(`Todas las personas del grupo necesitan su correo nombre.apellido@${DOMINIO_PERMITIDO}.`, `Everyone in the group needs their name.surname@${DOMINIO_PERMITIDO} email.`)],
+    [I.users, L(`De ${MIN_GRUPO} a ${MAX_GRUPO} personas`, `${MIN_GRUPO} to ${MAX_GRUPO} people`), L(`Hacen falta ${MIN_GRUPO} para abrir una sala nueva. Máximo ${MAX_GRUPO} por turno.`, `You need ${MIN_GRUPO} to open a new room. Max ${MAX_GRUPO} per slot.`)],
+    [I.clock, L(`Confirmar en ${HORAS_CONFIRMACION} h`, `Confirm within ${HORAS_CONFIRMACION} h`), L("Cada integrante confirma desde su correo. Llegad 10 minutos antes de vuestra hora.", "Each member confirms from their email. Arrive 10 minutes before your time.")]
+  ];
+  return {
+    cls: "page-home",
+    html: `
+    <nav class="nav-desk" aria-label="${L("Navegación principal", "Main navigation")}"><div class="wrap">
+      ${logo("oscuro")}
+      <ul>${navItems.map(([id, txt]) => `<li><button type="button" data-act="scroll" data-target="${id}">${txt}</button></li>`).join("")}</ul>
+      <a class="btn btn-primary btn-sm" href="#/reserva/1">${L("RESERVA YA", "BOOK NOW")}</a>
+      ${langToggle()}
+    </div></nav>
+    <div class="home-mobile-head">${miniHead(true)}</div>
+    <main id="main">
+      <section class="hero" id="inicio" aria-labelledby="h1">
+        <div class="wrap">
+          <div>
+            <p class="eyebrow">${L("Escape room · Fiesta de ESADA", "Escape room · ESADA party")}</p>
+            <h1 id="h1" tabindex="-1">${L("El sol no se pone.<br><em>Vosotros tampoco</em> deberíais salir.", "The sun never sets.<br><em>Neither should</em> you leave.")}</h1>
+            <p class="lead">${L("Una hermandad, un prado en flor y un ritual que nadie recuerda haber empezado. Tenéis 60 minutos para descubrir qué celebra Lilium… antes de que la fiesta os celebre a vosotros.", "A sisterhood, a meadow in bloom and a ritual nobody remembers starting. You have 60 minutes to find out what Lilium is celebrating… before the party celebrates you.")}</p>
+            <div class="meta"><span>${I.cal} ${cap(fechaLarga())}</span><span>${I.users} ${MIN_GRUPO}–${MAX_GRUPO} ${L("personas", "people")}</span><span>${I.clock} 60 min</span></div>
+            <a class="btn btn-primary" href="#/reserva/1">${L("Reservar", "Book")} →</a>
+          </div>
+          <div class="hero-art"><div class="wf-ph" role="img" aria-label="${L("Ilustración", "Illustration")}">${L("Ilustración / imagen del hero", "Hero illustration / image")}</div></div>
+        </div>
+      </section>
+
+      <section class="sec" id="como" aria-labelledby="h-como"><div class="wrap">
+        <div class="sec-head"><p class="eyebrow">${L("Cómo reservar", "How to book")}</p><h2 id="h-como">${L("Cinco pasos hasta el prado", "Five steps to the meadow")}</h2></div>
+        <ol class="steps">${pasos.map(([t, d], i) => `<li><span class="num" aria-hidden="true">${["I", "II", "III", "IV", "V"][i]}</span><h3>${t}</h3><p>${d}</p></li>`).join("")}</ol>
+      </div></section>
+
+      <section class="sec" id="requisitos" aria-labelledby="h-req" style="padding-top:0"><div class="wrap">
+        <div class="sec-head"><p class="eyebrow">${L("Requisitos", "Requirements")}</p><h2 id="h-req">${L("Lo que pide el ritual", "What the ritual asks")}</h2></div>
+        <div class="req-grid">${req.map(([ic, t, d]) => `<div class="req"><div class="ic" aria-hidden="true">${ic}</div><h3>${t}</h3><p>${d}</p></div>`).join("")}</div>
+        <details class="acc"><summary>${L(`¿Si somos menos de ${MIN_GRUPO} personas?`, `What if we're fewer than ${MIN_GRUPO}?`)}</summary>
+          <div class="acc-body"><p>${L(`¡Podéis venir igual! Los grupos de 1 o 2 personas ocupan las plazas restantes de grupos medio formados. Así nadie se queda con plazas sueltas y todas las salas se llenan. Al elegir hora verás los grupos "En formación" con hueco para vosotros.`, `You can still come! Groups of 1 or 2 fill the remaining spots of half-formed groups. That way nobody is left with loose spots and every room fills up. When picking a time you'll see "Forming" groups with space for you.`)}</p></div>
+        </details>
+        <div class="erasmus-band" style="margin-top:32px" role="region" aria-label="Erasmus">
+          <div><h3>${L("¿Eres Erasmus?", "Erasmus student?")} ${I.globe}</h3><p>${L("Hay turnos solo Erasmus y la web entera está en inglés.", "There are Erasmus-only slots and the whole site is in English.")}</p></div>
+          <div class="actions">
+            <button class="btn btn-light btn-sm" data-act="ver-erasmus">${L("Ver horas Erasmus", "See Erasmus times")}</button>
+            ${state.lang === "es" ? `<button class="btn btn-ghost btn-sm" data-act="lang" data-v="en" lang="en">Switch to English</button>` : `<button class="btn btn-ghost btn-sm" data-act="lang" data-v="es" lang="es">Ver en español</button>`}
+          </div>
+        </div>
+      </div></section>
+
+      <section class="sec" id="faq" aria-labelledby="h-faq" style="padding-top:0"><div class="wrap faq-wrap">
+        <div class="sec-head"><p class="eyebrow">${L("Preguntas frecuentes", "FAQ")}</p><h2 id="h-faq">${L("Lo que todo el mundo pregunta", "What everyone asks")}</h2></div>
+        ${faqs.map(([q, a]) => `<details class="acc"><summary>${q}</summary><div class="acc-body"><p>${a}</p></div></details>`).join("")}
+      </div></section>
+
+      <section class="sec" style="padding-top:0" aria-labelledby="h-cta"><div class="wrap">
+        <div class="cta-final">
+          <p class="eyebrow">${cap(fechaLarga())}</p>
+          <h2 id="h-cta">${L("La corona de flores os espera", "The flower crown awaits")}</h2>
+          <p>${L("Las plazas vuelan. Reunid a vuestra hermandad y elegid hora antes de que el sol cambie de opinión.", "Spots go fast. Gather your sisterhood and pick a time before the sun changes its mind.")}</p>
+          <a class="btn btn-primary" href="#/reserva/1">${L("RESERVA YA", "BOOK NOW")}</a>
+        </div>
+      </div></section>
+    </main>
+    <footer class="foot"><div class="wrap"><span>Lilium · Escape Room ESADA · ${new Date().getFullYear()}</span><span>${esc(state.sesion.email)}</span></div></footer>`,
+    mount() {
+      if (!state.popupVisto) { state.popupVisto = true; setTimeout(() => rutaActual === "/home" && !$(".modal") && popupErasmus(), 350); }
+    }
+  };
+}
+function popupErasmus() {
+  openModal({
+    title: `<span lang="en">Erasmus student?</span> · <span lang="es">¿Eres Erasmus?</span>`,
+    body: `<p lang="en"><b>Welcome!</b> This escape room is for you too. The whole site and the game are available in English, and some slots are reserved for Erasmus students only.</p>
+           <p lang="es" class="muted">¡Bienvenida/o! Hay turnos reservados solo para estudiantes Erasmus y toda la web está disponible en inglés.</p>`,
+    actions: `${state.lang === "es" ? `<button class="btn btn-ghost" data-act="popup-en" lang="en">Switch to English</button>` : ""}
+              <button class="btn btn-primary" data-act="popup-erasmus" data-autofocus>${L("Ver turnos Erasmus", "See Erasmus slots")}</button>`
+  });
+}
+
+/* =========================================================
+   PÁGINA 3 · #/reserva/1 · Integrantes
+   ========================================================= */
+function pPaso1() {
+  const lider = state.sesion.email, d = state.draft, todos = [lider, ...d.miembros], n = todos.length;
+  const lleno = n >= MAX_GRUPO;
+  return {
+    cls: "page-flow",
+    html: `${miniHead()}
+    <main class="wrap narrow" id="main">
+      ${progreso(1, "/home")}
+      <p class="eyebrow">${L("Integrantes", "Members")}</p>
+      <h1 id="h1" tabindex="-1">${L("¿Quién viene al prado?", "Who's coming to the meadow?")}</h1>
+      <div class="count-card" aria-live="polite">
+        <div><div class="q">${L("¿Cuántos sois?", "How many are you?")}</div>
+          <div class="small" style="opacity:.8;margin-top:4px">${L("Lo detectamos automáticamente", "We detect it automatically")}</div>
+          <div style="margin-top:12px">${avatares(todos, { lg: true, vacios: Math.max(0, MIN_GRUPO - n) })}</div></div>
+        <div class="n" aria-label="${n} ${L("personas", "people")}">${n}<span style="font-size:1.2rem;opacity:.7">/${MAX_GRUPO}</span></div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <div class="member">
+          <span class="av ${colorDe(lider)}">${inic(lider)}</span>
+          <div class="who"><span class="em">${esc(lider)}</span><span class="sub">${L("Tú · correo verificado", "You · verified email")}</span></div>
+          <span class="chip chip-lider">${L("Líder", "Leader")}</span>
+        </div>
+        ${d.miembros.map((e, i) => `<div class="member">
+          <span class="av ${colorDe(e)}">${inic(e)}</span>
+          <div class="who"><span class="em">${esc(e)}</span><span class="sub">${L("Recibirá un correo para confirmar", "Will get an email to confirm")}</span></div>
+          <button class="icon-btn" data-act="quitar" data-i="${i}" aria-label="${L("Quitar a", "Remove")} ${esc(e)}">${I.x}</button>
+        </div>`).join("")}
+        <hr class="sep">
+        <form id="f-add" novalidate>
+          <label class="lbl" for="add-email">${L("Añadir integrante", "Add member")}</label>
+          <div class="add-row">
+            <input class="field" id="add-email" type="email" inputmode="email" autocapitalize="off" spellcheck="false" placeholder="nombre.apellido@${DOMINIO_PERMITIDO}" aria-describedby="add-hint" ${lleno ? "disabled" : ""}>
+            <button class="add-btn" type="submit" aria-label="${L("Añadir integrante", "Add member")}" ${lleno ? "disabled" : ""}>${I.plus}</button>
+          </div>
+          <div class="hint info" id="add-hint" aria-live="polite">${lleno ? L(`Máximo ${MAX_GRUPO} personas por grupo.`, `Maximum ${MAX_GRUPO} people per group.`) : ""}</div>
+        </form>
+      </div>
+      <div class="rule" style="margin-top:16px">${L(`<b>Mínimo ${MIN_GRUPO} personas para abrir sala nueva.</b> Con 1 o 2 personas, únete a un grupo en formación para completar la hermandad.`, `<b>Minimum ${MIN_GRUPO} people to open a new room.</b> With 1 or 2 people, join a forming group to complete the sisterhood.`)}</div>
+      <div style="margin-top:24px">
+        <a class="btn btn-primary btn-block" href="#/reserva/2">${n < MIN_GRUPO ? L("Continuar y unirme a un grupo", "Continue and join a group") : L(`Continuar · ${n} personas`, `Continue · ${n} people`)} →</a>
+      </div>
+    </main>`,
+    mount() {
+      const inp = $("#add-email"), hint = $("#add-hint"); if (!inp || inp.disabled) return;
+      const evaluar = (enviar) => {
+        const r = validarCorreo(inp.value);
+        let msg = "", cls = "info";
+        if (r.ok) {
+          if (todos.includes(r.email)) { msg = L("Este correo ya está en tu grupo.", "This email is already in your group."); cls = "err"; }
+          else if (api.correoInscrito(r.email)) { msg = L(`${esc(r.email)} ya está inscrito en otra reserva. Cada correo solo puede estar en una.`, `${esc(r.email)} is already in another booking. Each email can only be in one.`); cls = "err"; }
+          else { msg = L("Correo válido · pulsa + para añadir", "Valid email · press + to add"); cls = "ok"; }
+        } else if ((enviar || inp.value.includes("@")) && r.motivo !== "incompleto" && r.motivo !== "vacio") { msg = mensajeCorreo(r.motivo); cls = "err"; }
+        else if (enviar && r.motivo === "vacio") { msg = mensajeCorreo("vacio"); cls = "err"; }
+        hint.className = "hint " + cls; hint.innerHTML = (cls === "err" ? I.alert : cls === "ok" ? I.check : "") + msg;
+        inp.toggleAttribute("aria-invalid", cls === "err"); if (cls === "err") inp.setAttribute("aria-invalid", "true");
+        return cls === "ok" ? r.email : null;
+      };
+      inp.addEventListener("input", () => evaluar(false));
+      $("#f-add").addEventListener("submit", (e) => {
+        e.preventDefault(); const ok = evaluar(true); if (!ok) { inp.focus(); return; }
+        d.miembros.push(ok); render(); toast(I.check + L("Integrante añadido", "Member added"), "ok"); $("#add-email") && $("#add-email").focus();
+      });
+    }
+  };
+}
+
+/* =========================================================
+   PÁGINA 4 · #/reserva/2 · Elegir hora
+   ========================================================= */
+function evaluarTurno(t, n) {
+  if (t.estado === "completo") return { ok: false, tipo: "completo" };
+  if (t.estado === "libre" && n < MIN_GRUPO) return { ok: false, tipo: "minimo" };
+  if (t.estado === "formacion" && t.hueco < n) return { ok: false, tipo: "hueco" };
+  return { ok: true };
+}
+function pPaso2() {
+  const d = state.draft, n = 1 + d.miembros.length;
+  let lista = api.turnos();
+  if (state.filtroErasmus) lista = lista.filter(t => t.erasmus);
+  // orden: disponibles primero
+  lista.sort((a, b) => (evaluarTurno(b, n).ok - evaluarTurno(a, n).ok) || a.inicio.localeCompare(b.inicio));
+  if (d.turnoId && !evaluarTurno(api.infoTurno(d.turnoId), n).ok) d.turnoId = null;
+  const sel = d.turnoId ? api.infoTurno(d.turnoId) : null;
+  const card = (t) => {
+    const ev = evaluarTurno(t, n), checked = d.turnoId === t.id;
+    const plazas = t.estado === "libre" ? L(`${MAX_GRUPO} plazas libres`, `${MAX_GRUPO} spots free`) : t.estado === "completo" ? L("0 plazas", "0 spots") : L(`Quedan ${t.hueco} plazas · ${t.ocupadas} inscritos`, `${t.hueco} spots left · ${t.ocupadas} in`);
+    const perfect = t.estado === "libre" ? L(`Perfecto para ${MIN_GRUPO}–${MAX_GRUPO}`, `Perfect for ${MIN_GRUPO}–${MAX_GRUPO}`) : t.estado === "formacion" ? L(`Perfecto para ${t.hueco === 1 ? "1" : "1–" + t.hueco}`, `Perfect for ${t.hueco === 1 ? "1" : "1–" + t.hueco}`) : "";
+    const why = { completo: L("Turno completo", "Slot full"), minimo: L(`Necesitas ser al menos ${MIN_GRUPO} para abrir un nuevo grupo`, `You need at least ${MIN_GRUPO} people to open a new group`), hueco: L(`Solo quedan ${t.hueco} plazas y sois ${n}`, `Only ${t.hueco} spots left and you're ${n}`) }[ev.tipo];
+    const inner = `
+      <div class="top">
+        <div><div class="time">${horaTurno(t)}</div>${t.equipo ? `<div class="small muted" style="margin-top:4px">«${esc(t.equipo)}»</div>` : ""}</div>
+        <div class="row" style="align-items:flex-start">${ev.ok ? `<span class="radio" aria-hidden="true"></span>` : `<span aria-hidden="true">${I.lock}</span>`}</div>
+      </div>
+      <div class="chips" style="justify-content:flex-start">${chipTurno(t.estado)}${t.erasmus ? chipErasmus() : ""}</div>
+      <div class="bottom">
+        <div class="row">${t.ocupadas ? avatares(t.personas.map(p => p.email), { max: 6 }) : ""}<span class="seats">${plazas}</span></div>
+        ${ev.ok && perfect ? `<span class="perfect">${perfect}</span>` : ""}
+      </div>
+      ${!ev.ok ? `<div class="why">${I.lock} ${why}</div>` : ""}`;
+    if (ev.ok) return `<button type="button" class="slot" role="radio" aria-checked="${checked}" data-act="elegir" data-id="${t.id}">${inner}</button>`;
+    const enEspera = state.esperaMia[t.id];
+    return `<div class="slot-wrap"><div class="slot locked ${t.estado === "completo" ? "full" : ""}" role="radio" aria-checked="false" aria-disabled="true" aria-label="${horaTurno(t)} · ${why}">${inner}
+      ${t.estado === "completo" ? `<div>${enEspera ? `<span class="chip chip-ok">${L("Estás en la lista de espera · te avisaremos", "You're on the waitlist · we'll let you know")}</span>` : `<button class="link-btn" data-act="espera" data-id="${t.id}">${L("Avísame si se libera una plaza", "Notify me if a spot opens up")}</button>`}</div>` : ""}
+    </div></div>`;
+  };
+  const extraSel = `${sel && sel.estado === "libre" ? `<div class="card" style="margin-top:-2px">
+        <label class="lbl" for="equipo">${L("¡Sois los primeros en este turno! Poned nombre al equipo", "You're the first in this slot! Name your team")} <span class="muted" style="font-weight:400">(${L("opcional", "optional")})</span></label>
+        <input class="field" id="equipo" maxlength="40" placeholder="${L("Ej.: Las Hijas del Solsticio", "E.g.: Daughters of the Solstice")}" value="${esc(d.equipo)}">
+      </div>` : sel && sel.equipo ? `<div class="notice notice-ok" style="margin-top:-2px">${I.flower}<div>${L(`Os uniréis al equipo <b>«${esc(sel.equipo)}»</b>.`, `You'll join team <b>“${esc(sel.equipo)}”</b>.`)}</div></div>` : ""}`;
+  return {
+    cls: "page-flow has-bottom-bar",
+    bottomBar: true,
+    html: `${miniHead()}
+    <main class="wrap narrow" id="main">
+      ${progreso(2, "/reserva/1")}
+      <p class="eyebrow">${L("Elegir hora", "Pick a time")}</p>
+      <h1 id="h1" tabindex="-1">${L("¿Cuándo empieza vuestro ritual?", "When does your ritual begin?")}</h1>
+      <div class="row wrap-row between" style="margin:8px 0 6px">
+        <span class="day-pill">${I.cal} ${cap(fechaLarga())} · ${L("único día", "one day only")}</span>
+        <div class="seg" role="group" aria-label="${L("Filtrar turnos", "Filter slots")}">
+          <button type="button" data-act="filtro" data-v="0" aria-pressed="${!state.filtroErasmus}">${L("Todos", "All")}</button>
+          <button type="button" data-act="filtro" data-v="1" aria-pressed="${state.filtroErasmus}">${L("Solo Erasmus", "Erasmus only")}</button>
+        </div>
+      </div>
+      <div class="notice notice-info" style="margin-top:12px">${I.users}<div>${L(`Sois <b>${n}</b>.`, `You're <b>${n}</b>.`)} ${n >= MIN_GRUPO ? L("Puedes abrir una sala libre o uniros a un grupo en formación con hueco.", "You can open a free room or join a forming group with space.") : L("Te mostramos los grupos en formación con hueco para vosotros.", "Here are the forming groups with space for you.")} <a href="#/reserva/1">${L("Editar", "Edit")}</a></div></div>
+      <div class="slots" role="radiogroup" aria-label="${L("Turnos disponibles", "Available slots")}">${lista.map(t => card(t) + (t.id === d.turnoId ? extraSel : "")).join("") || `<p class="muted">${L("No hay turnos con este filtro.", "No slots with this filter.")}</p>`}</div>
+    </main>
+    <div class="bottom-bar" role="region" aria-label="${L("Resumen de la selección", "Selection summary")}"><div class="wrap narrow">
+      <div class="sum" aria-live="polite">${sel ? `<b>${horaTurno(sel)}</b><span>${n} ${L(n === 1 ? "persona" : "personas", n === 1 ? "person" : "people")} · ${sel.estado === "libre" ? L("Sala nueva", "New room") : L("Grupo en formación", "Forming group")}</span>` : `<b>${L("Elige un turno", "Pick a slot")}</b><span>${n} ${L(n === 1 ? "persona" : "personas", n === 1 ? "person" : "people")}</span>`}</div>
+      <a class="btn btn-primary" href="#/reserva/3" ${sel ? "" : 'aria-disabled="true" data-act="noop"'}>${L("Continuar", "Continue")} →</a>
+    </div></div>`,
+    mount() { const eq = $("#equipo"); eq && eq.addEventListener("input", () => d.equipo = eq.value); }
+  };
+}
+
+/* =========================================================
+   PÁGINA 5 · #/reserva/3 · Confirmación
+   ========================================================= */
+function pPaso3() {
+  if (state.exito) return pExito();
+  const d = state.draft, lider = state.sesion.email, todos = [lider, ...d.miembros], t = api.infoTurno(d.turnoId);
+  const equipo = t.estado === "libre" ? (d.equipo.trim() || L("Sin nombre (podéis ponerlo luego)", "No name yet (you can add it later)")) : (t.equipo || "—");
+  return {
+    cls: "page-flow",
+    html: `${miniHead()}
+    <main class="wrap narrow" id="main">
+      ${progreso(3, "/reserva/2")}
+      <p class="eyebrow">${L("Confirmación", "Confirmation")}</p>
+      <h1 id="h1" tabindex="-1">${L("Revisad la ofrenda", "Review your offering")}</h1>
+      <div class="card">
+        <h3>${L("Turno", "Slot")}</h3>
+        <ul class="sumlist">
+          <li><span class="k">${L("Día", "Day")}</span><span class="v">${cap(fechaLarga())}</span></li>
+          <li><span class="k">${L("Hora", "Time")}</span><span class="v">${horaTurno(t)}</span></li>
+          <li><span class="k">${L("Lugar", "Place")}</span><span class="v">${EVENTO.lugar[state.lang]}</span></li>
+          <li><span class="k">${L("Equipo", "Team")}</span><span class="v">${esc(equipo)}</span></li>
+          <li><span class="k">${L("Tipo", "Type")}</span><span class="v">${t.estado === "libre" ? L("Abrís sala nueva", "You open a new room") : L(`Os unís a un grupo (${t.ocupadas} + ${todos.length} = ${t.ocupadas + todos.length}/${MAX_GRUPO})`, `You join a group (${t.ocupadas} + ${todos.length} = ${t.ocupadas + todos.length}/${MAX_GRUPO})`)}</span></li>
+          <li><span class="k">${L("Estado", "Status")}</span><span class="v">${chipGrupo("pendiente")}</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="row between"><h3 style="margin:0">${L("Integrantes", "Members")} (${todos.length})</h3>${avatares(todos)}</div>
+        <div style="margin-top:8px">${todos.map(e => `<div class="member"><span class="av ${colorDe(e)}">${inic(e)}</span><div class="who"><span class="em">${esc(e)}</span><span class="sub">${e === lider ? L("Líder · confirmado automáticamente", "Leader · auto-confirmed") : L("Recibirá correo de confirmación", "Will receive a confirmation email")}</span></div>${e === lider ? `<span class="chip chip-lider">${L("Líder", "Leader")}</span>` : ""}</div>`).join("")}</div>
+      </div>
+      <div class="notice notice-warn" style="margin-top:16px">${I.clock}<div>${L(`Cada integrante tendrá <b>${HORAS_CONFIRMACION} h</b> para confirmar desde su correo. Si al final sois ${MIN_GRUPO} o más confirmados, la reserva sigue; si sois 1 o 2, pasa a grupo medio formado.`, `Each member will have <b>${HORAS_CONFIRMACION} h</b> to confirm from their email. If ${MIN_GRUPO}+ confirm, the booking stays; if only 1 or 2, it becomes a half-formed group.`)}</div></div>
+      <div style="margin-top:24px" class="stack-gap">
+        <button class="btn btn-primary btn-block" data-act="reservar">${L("Reservar", "Book")}</button>
+        <a class="btn btn-ghost btn-block" href="#/reserva/2">${L("Cambiar hora", "Change time")}</a>
+      </div>
+    </main>`
+  };
+}
+function avisoLegal() {
+  openModal({
+    title: L("Aviso legal y de seguridad", "Legal & safety notice"),
+    body: `<p class="muted">${L("Antes de reservar, lee y acepta las condiciones de la experiencia.", "Before booking, read and accept the experience's conditions.")}</p>
+      <div class="legal-box" tabindex="0" aria-label="${L("Texto del aviso legal", "Legal notice text")}"><ul class="legal-list">${AVISO_LEGAL[state.lang].map(x => `<li>${esc(x)}</li>`).join("")}</ul>
+      <p class="small muted" style="margin:0">${L("Al aceptar, confirmas que todo el grupo ha sido informado de estos términos.", "By accepting, you confirm the whole group has been informed of these terms.")}</p></div>`,
+    actions: `<button class="btn btn-ghost" data-act="modal-close">${L("Cancelar", "Cancel")}</button><button class="btn btn-primary" data-act="aceptar-legal">${L("Aceptar los términos", "Accept the terms")}</button>`
+  });
+}
+function pExito() {
+  const r = db.reservas.find(x => x.id === state.exito);
+  if (!r) { state.exito = null; return pPaso3(); }
+  const t = api.infoTurno(r.turnoId);
+  return {
+    cls: "page-flow",
+    html: `${miniHead()}
+    <main class="wrap narrow" id="main">
+      ${progreso(3, "/home")}
+      <div class="card success">
+        <div class="seal" aria-hidden="true">${I.check.replace('class="icon"', 'class="icon" style="width:44px;height:44px"')}</div>
+        <h1 id="h1" tabindex="-1">${L("Reserva creada", "Booking created")}</h1>
+        <p class="muted" style="max-width:40ch;margin:0 auto 14px">${L("Se ha enviado un correo a cada integrante para confirmar su asistencia.", "An email has been sent to each member to confirm their attendance.")}</p>
+        <p>${chipGrupo("pendiente")}</p>
+        <p class="small muted">${horaTurno(t)} · ${cap(fechaLarga())}${t.equipo ? ` · «${esc(t.equipo)}»` : ""}</p>
+        <div class="stack-gap" style="margin-top:20px">
+          <a class="btn btn-primary btn-block" href="#/mi-reserva" data-act="ir-mi-reserva">${L("Ir a mi reserva", "Go to my booking")} →</a>
+          <button class="btn btn-ghost btn-block" data-act="bandeja">${I.mail} ${L("Ver correos simulados", "See simulated emails")}</button>
+        </div>
+      </div>
+    </main>`
+  };
+}
+
+/* =========================================================
+   PÁGINA 6 · #/mi-reserva · Gestión
+   ========================================================= */
+function pMiReserva() {
+  const yo = state.sesion.email, r = api.buscarReservaDe(yo), t = api.infoTurno(r.turnoId);
+  const esLider = r.lider === yo, miEstado = r.miembros.find(x => x.email === yo);
+  const eg = api.estadoGrupo(r), pend = r.miembros.filter(x => !x.confirmado);
+  const enTurno = t.personas, idx = enTurno.findIndex(p => p.email === yo);
+  const misFrag = FRAGMENTOS[state.lang].filter((_, j) => j % enTurno.length === idx);
+  const pista = PISTAS[state.lang][idx % PISTAS[state.lang].length];
+  const restante = api.limite(r) - Date.now();
+  const otros = enTurno.filter(p => !r.miembros.some(x => x.email === p.email));
+  const equipoNombre = t.equipo || L("Equipo sin nombre", "Unnamed team");
+  const ticket = miEstado.confirmado ? `
+    <article class="ticket" id="ticket-print" aria-label="${L("Entrada digital", "Digital ticket")}">
+      <div class="ticket-top"><span class="wf-ph" role="img" aria-label="Lilium">LOGO</span><span class="chip noddot">${I.ticket.replace('class="icon"', 'class="icon" style="width:14px;height:14px"')} ${L("Entrada digital", "Digital ticket")}</span></div>
+      <div class="ticket-body">
+        <div class="qr"><div class="wf-ph" role="img" aria-label="QR">QR</div></div>
+        <dl>
+          <div><dt>${L("Equipo", "Team")}</dt><dd>${esc(equipoNombre)}</dd></div>
+          <div><dt>${L("Turno", "Slot")}</dt><dd>${cap(fechaLarga())} · ${horaTurno(t)}</dd></div>
+          <div><dt>${L("Correo", "Email")}</dt><dd>${esc(yo)}</dd></div>
+        </dl>
+      </div>
+      <div class="ticket-cut" aria-hidden="true"></div>
+      <div class="ticket-frag">
+        <p class="eyebrow" style="margin:0">${L("Tu fragmento secreto", "Your secret fragment")} · ${idx + 1}/${enTurno.length}</p>
+        ${misFrag.map(f => `<p class="frag">${esc(f)}</p>`).join("")}
+        <p class="small" style="margin:0 0 10px">${L("Cada integrante tiene un fragmento distinto. Juntadlos antes del día: la frase completa esconde la palabra secreta que debéis decirle al Game Master para desbloquear una ventaja inicial.", "Each member has a different fragment. Put them together before the day: the full phrase hides the secret word to tell the Game Master to unlock a head start.")}</p>
+        <p class="small" style="margin:0"><b>${I.flower.replace('class="icon"', 'class="icon" style="width:16px;height:16px;vertical-align:-3px"')} ${L("Pista", "Clue")}:</b> <i>${esc(pista)}</i></p>
+      </div>
+    </article>
+    <div class="actions-grid" style="margin-top:12px">
+      <button class="btn btn-dark" data-act="pdf">${L("Descargar PDF", "Download PDF")}</button>
+      <button class="btn btn-ghost" data-act="wallet">${L("Añadir a Apple / Google Wallet", "Add to Apple / Google Wallet")}</button>
+    </div>` : `
+    <div class="ticket"><div class="ticket-locked">
+      <div class="ic" aria-hidden="true">${I.lock}</div>
+      <h3>${L("Tu entrada está bloqueada", "Your ticket is locked")}</h3>
+      <p class="muted small">${L("Confirma tu asistencia desde el correo para desbloquear la entrada digital, el PDF y la Wallet.", "Confirm your attendance from your email to unlock the digital ticket, PDF and Wallet.")}</p>
+      <button class="btn btn-primary" data-act="confirmar" data-email="${esc(yo)}">${L("Confirmar mi asistencia", "Confirm my attendance")}</button>
+      ${DEMO_MODE ? `<p class="small muted" style="margin:10px 0 0">${L("(Demo: equivale a pulsar el botón del correo)", "(Demo: same as clicking the email button)")}</p>` : ""}
+    </div></div>`;
+  return {
+    cls: "page-flow",
+    html: `${miniHead()}
+    <main class="wrap narrow" id="main">
+      <p class="small muted" style="margin:0 0 14px">${I.mail.replace('class="icon"', 'class="icon" style="width:16px;height:16px;vertical-align:-3px"')} ${L("Accedes con el enlace único enviado a", "Accessed via the unique link sent to")} <b>${esc(yo)}</b></p>
+      <section class="team-head" aria-labelledby="h1">
+        <div class="row between wrap-row"><span class="eyebrow" style="margin:0">${L("Mi reserva", "My booking")}</span>${chipGrupo(eg)}</div>
+        ${state.editandoEquipo && esLider ? `
+          <form id="f-equipo" class="row" style="margin:12px 0 14px"><label class="sr-only" for="eq-nombre">${L("Nombre del equipo", "Team name")}</label>
+            <input class="field" id="eq-nombre" maxlength="40" value="${esc(t.equipo)}" placeholder="${L("Nombre del equipo", "Team name")}">
+            <button class="btn btn-light btn-sm" type="submit">${L("Guardar", "Save")}</button></form>` : `
+          <div class="row" style="align-items:center"><h1 id="h1" tabindex="-1">${esc(equipoNombre)}</h1>
+          ${esLider ? `<button class="icon-btn edit" data-act="editar-equipo" aria-label="${L("Editar nombre del equipo", "Edit team name")}">${I.pencil}</button>` : ""}</div>`}
+        <ul class="facts">
+          <li>${I.cal} ${cap(fechaLarga())}</li>
+          <li>${I.clock} ${horaTurno(t)} · ${L("llegad 10 min antes", "arrive 10 min early")}</li>
+          <li>${I.pin} <a href="${EVENTO.mapsUrl}" target="_blank" rel="noopener">${EVENTO.lugar[state.lang]}</a></li>
+          <li>${I.users} ${t.ocupadas}/${MAX_GRUPO} ${L("personas en este turno", "people in this slot")}${t.erasmus ? " · " + L("Solo Erasmus", "Erasmus only") : ""}</li>
+        </ul>
+      </section>
+
+      ${!miEstado.confirmado ? `<div class="notice notice-warn" style="margin-top:16px" role="status">${I.alert}<div>${L("Aún no has confirmado tu asistencia. Si no lo haces antes de que acabe el plazo, perderás tu plaza.", "You haven't confirmed yet. If you don't before the deadline, you'll lose your spot.")}</div></div>` : ""}
+
+      ${eg === "pendiente" ? `<div class="card" style="margin-top:16px">
+        <p class="eyebrow">${L("Cuenta atrás de confirmación", "Confirmation countdown")}</p>
+        <div class="countdown" data-countdown="${api.limite(r)}" aria-live="off">${fmtRestante(restante)}</div>
+        <p class="small muted" style="margin:6px 0 12px">${restante > 0 ? L(`Faltan ${pend.length} ${pend.length === 1 ? "miembro" : "miembros"} por confirmar.`, `${pend.length} ${pend.length === 1 ? "member" : "members"} still to confirm.`) : L("El plazo ha vencido.", "The deadline has passed.")}</p>
+        <div class="rule small">${L(`Al acabar las ${HORAS_CONFIRMACION} h: con <b>${MIN_GRUPO} o más confirmados</b> la reserva sigue y quien no confirmó pierde su plaza; con <b>1 o 2</b>, pasa a <b>grupo medio formado</b> para que otras personas completen los huecos.`, `When the ${HORAS_CONFIRMACION} h end: with <b>${MIN_GRUPO}+ confirmed</b> the booking stays and unconfirmed people lose their spot; with <b>1 or 2</b>, it becomes a <b>half-formed group</b> so others can fill the gaps.`)}</div>
+        ${DEMO_MODE ? `<button class="btn btn-ghost btn-sm" style="margin-top:12px" data-act="expirar" data-id="${r.id}">${I.clock} ${L("Demo: simular fin del plazo", "Demo: simulate deadline")}</button>` : ""}
+      </div>` : eg === "medio" ? `<div class="notice notice-info" style="margin-top:16px">${I.users}<div>${L(`Vuestro turno tiene menos de ${MIN_GRUPO} personas: es un <b>grupo medio formado</b>. Aparece como "En formación" para que otras personas se unan.`, `Your slot has fewer than ${MIN_GRUPO} people: it's a <b>half-formed group</b>. It shows as "Forming" so others can join.`)}</div></div>` : `<div class="notice notice-ok" style="margin-top:16px">${I.check}<div>${L("Grupo cerrado y confirmado. ¡Nos vemos en el prado!", "Group closed and confirmed. See you in the meadow!")}</div></div>`}
+
+      <div class="card" style="margin-top:16px">
+        <div class="row between"><h3 style="margin:0">${L("Integrantes", "Members")}</h3>${avatares(r.miembros.map(x => x.email))}</div>
+        <div style="margin-top:6px">${r.miembros.map(x => `<div class="member">
+          <span class="av ${colorDe(x.email)}">${inic(x.email)}</span>
+          <div class="who"><span class="em">${esc(nombreDe(x.email))}${x.email === yo ? ` <span class="muted" style="font-weight:400">(${L("tú", "you")})</span>` : ""}</span><span class="sub">${esc(x.email)}</span>
+            ${!x.confirmado && DEMO_MODE && x.email !== yo ? `<button class="link-btn small" data-act="confirmar" data-email="${esc(x.email)}">${L("Demo: simular que confirma desde su correo", "Demo: simulate confirming from their email")}</button>` : ""}
+          <div class="row" style="gap:6px;flex-wrap:wrap;margin-top:6px">${x.email === r.lider ? `<span class="chip chip-lider">${L("Líder", "Leader")}</span>` : ""}${x.confirmado ? `<span class="chip chip-ok">${L("Confirmado", "Confirmed")}</span>` : `<span class="chip chip-pend">${L("Pendiente", "Pending")}</span>`}</div></div>
+        </div>`).join("")}</div>
+        ${otros.length ? `<hr class="sep"><p class="small muted" style="margin:0">${L(`También en vuestro turno (otra reserva): ${otros.length} ${otros.length === 1 ? "persona" : "personas"}.`, `Also in your slot (another booking): ${otros.length} ${otros.length === 1 ? "person" : "people"}.`)} ${avatares(otros.map(p => p.email))}</p>` : ""}
+      </div>
+
+      <h2 style="margin-top:32px">${L("Tu entrada", "Your ticket")}</h2>
+      ${ticket}
+
+      <div class="card" style="margin-top:16px">
+        <h3>${I.ticket} ${L("Entrada física (1 por grupo)", "Physical ticket (1 per group)")}</h3>
+        <p class="muted" style="margin:0">${L("Al llegar, el Game Master escanea vuestro QR digital y os entrega un objeto —una tarjeta, un mapa o una «identificación de investigadores»— que es vuestra entrada física y el primer elemento real del juego: vuestra primera pista. ¡No lo perdáis!", "On arrival, the Game Master scans your digital QR and hands you an object — a card, a map or an “investigator ID” — which is your physical ticket and the first real element of the game: your first clue. Don't lose it!")}</p>
+      </div>
+
+      <h2 style="margin-top:32px">${L("Gestionar", "Manage")}</h2>
+      <div class="card stack-gap">
+        <div><button class="btn btn-ghost btn-block" data-act="cambiar-hora">${I.clock} ${L("Cambiar de hora", "Change time")}</button>
+          <p class="small muted" style="margin:6px 4px 0">${L("Solo te afecta a ti: buscas otro turno con hueco y el resto del grupo no se mueve.", "Only affects you: you move to another slot with space; the rest of the group stays.")}</p></div>
+        <div><button class="btn btn-danger btn-block" data-act="cancelar-yo">${L("Cancelar mi asistencia", "Cancel my attendance")}</button>
+          <p class="small muted" style="margin:6px 4px 0">${L("Solo se cancela tu plaza. El resto del grupo sigue pudiendo asistir.", "Only your spot is cancelled. The rest of the group can still attend.")}</p></div>
+        ${esLider ? `<div><button class="btn btn-danger btn-block" data-act="cancelar-grupo">${L("Cancelar reserva del grupo", "Cancel group booking")}</button>
+          <p class="small muted" style="margin:6px 4px 0">${L("Solo visible para la persona líder.", "Only visible to the leader.")}</p></div>` : ""}
+        <button class="btn btn-ghost btn-block" data-act="bandeja">${I.mail} ${L("Ver correos simulados", "See simulated emails")}</button>
+      </div>
+      <p class="center" style="margin-top:24px"><a href="#/home">${L("Volver a la información del evento", "Back to event info")}</a></p>
+    </main>`,
+    mount() {
+      const f = $("#f-equipo");
+      if (f) { $("#eq-nombre").focus(); f.addEventListener("submit", (e) => { e.preventDefault(); api.renombrarEquipo(r.id, yo, $("#eq-nombre").value); state.editandoEquipo = false; render(); toast(I.check + L("Nombre del equipo guardado", "Team name saved"), "ok"); }); }
+    }
+  };
+}
+function landingConfirmado(email) {
+  const r = api.confirmarAsistencia(email); if (!r) return;
+  const faltan = r.miembros.filter(x => !x.confirmado).length;
+  openModal({
+    title: L("Has confirmado tu asistencia", "You've confirmed your attendance"),
+    body: `<div class="center"><div class="seal" style="width:72px;height:72px;margin:0 auto 14px;border-radius:50%;display:grid;place-items:center;border:2px solid #333">${I.check}</div>
+      <p class="small muted">${L("Simulación de la página que ve", "Simulation of the page seen by")} <b>${esc(email)}</b> ${L("al pulsar el botón del correo.", "after clicking the email button.")}</p>
+      <p style="font-size:1.15rem">${faltan ? L(`Faltan <b>${faltan}</b> ${faltan === 1 ? "miembro" : "miembros"} por confirmar.`, `<b>${faltan}</b> ${faltan === 1 ? "member" : "members"} still to confirm.`) : L("¡Todo el grupo ha confirmado! Grupo cerrado.", "The whole group has confirmed! Group closed.")}</p></div>`,
+    actions: `<button class="btn btn-primary" data-act="modal-close">${L("Entendido", "Got it")}</button>`
+  });
+  render(true);
+}
+function modalCambiarHora() {
+  const yo = state.sesion.email, r = api.buscarReservaDe(yo);
+  const opciones = api.turnos().filter(t => t.id !== r.turnoId);
+  openModal({
+    title: L("Cambiar de hora", "Change time"),
+    body: `<p class="muted">${L("Solo te mueves tú. Elige un grupo en formación con hueco (para abrir una sala nueva hacen falta " + MIN_GRUPO + " personas).", "Only you move. Pick a forming group with space (opening a new room needs " + MIN_GRUPO + " people).")}</p>
+      <div class="slots" role="radiogroup" aria-label="${L("Turnos", "Slots")}">${opciones.map(t => {
+        const ok = t.estado === "formacion" && t.hueco >= 1;
+        return `<button type="button" class="slot ${ok ? "" : "locked"} ${t.estado === "completo" ? "full" : ""}" ${ok ? `data-act="mover" data-id="${t.id}"` : 'aria-disabled="true" disabled'}>
+          <div class="top"><div class="time" style="font-size:1.5rem">${horaTurno(t)}</div><div class="chips">${chipTurno(t.estado)}${t.erasmus ? chipErasmus() : ""}</div></div>
+          <div class="bottom"><span class="seats">${t.estado === "formacion" ? L(`Quedan ${t.hueco} plazas`, `${t.hueco} spots left`) : t.estado === "libre" ? L(`Necesitas ser al menos ${MIN_GRUPO} para abrir un nuevo grupo`, `You need at least ${MIN_GRUPO} to open a new group`) : L("Completo", "Full")}</span>${t.ocupadas ? avatares(t.personas.map(p => p.email)) : ""}</div>
+        </button>`; }).join("")}</div>`
+  });
+}
+
+/* =========================================================
+   EMAILS SIMULADOS · Bandeja de demo
+   ========================================================= */
+function plantillasEmail(r) {
+  const t = api.infoTurno(r.turnoId), lider = nombreDe(r.lider), equipo = t.equipo || L("vuestro equipo", "your team");
+  const destino = r.miembros.find(x => x.email !== r.lider) || r.miembros[0];
+  const rec = new Date(EVENTO.fecha); rec.setDate(rec.getDate() - 2);
+  const btn = (txt, act, extra = "") => `<p style="text-align:center;margin:22px 0"><button class="btn btn-primary" style="min-height:58px;padding:0 34px;font-size:1.05rem" ${act ? `data-act="${act}"` : ""} ${extra}>${txt}</button></p>`;
+  const idx = Math.max(0, t.personas.findIndex(p => p.email === destino.email));
+  return [
+    { id: "inv", titulo: L("Inicio de reserva", "Booking started"), cuando: L("Al crear la reserva", "When booking is created"), para: destino.email,
+      asunto: L(`Has sido invitado al grupo de ${lider}. Confirma tu plaza.`, `You've been invited to ${lider}'s group. Confirm your spot.`),
+      html: `<h3>${L(`${lider} te ha invitado a Lilium`, `${lider} invited you to Lilium`)}</h3>
+        <p>${L(`Formas parte de <b>«${esc(equipo)}»</b> el ${fechaLarga()} a las <b>${t.inicio}</b>.`, `You're part of <b>“${esc(equipo)}”</b> on ${fechaLarga()} at <b>${t.inicio}</b>.`)}</p>
+        <p>${L(`Tienes <b>${HORAS_CONFIRMACION} horas</b> para confirmar tu plaza. Si no confirmas, la perderás.`, `You have <b>${HORAS_CONFIRMACION} hours</b> to confirm your spot. If you don't, you'll lose it.`)}</p>
+        ${btn(L("Confirmar mi asistencia", "Confirm my attendance"), destino.confirmado ? "" : "email-confirmar", `data-email="${esc(destino.email)}" ${destino.confirmado ? "disabled" : ""}`)}
+        <p class="small muted">${destino.confirmado ? L("(Esta persona ya ha confirmado.)", "(This person has already confirmed.)") : ""} ${L("Desde este enlace también podrás cambiar de hora o cancelar tu asistencia.", "From this link you can also change time or cancel your attendance.")}</p>` },
+    { id: "cd", titulo: L("Cuenta atrás", "Countdown"), cuando: L(`A las ${HORAS_CONFIRMACION - 12} h si no ha confirmado`, `At ${HORAS_CONFIRMACION - 12} h if not confirmed`), para: destino.email,
+      asunto: L("Te quedan 12 horas para confirmar tu plaza.", "You have 12 hours left to confirm your spot."),
+      html: `<h3>${L("El sol empieza a bajar…", "The sun is starting to set…")}</h3>
+        <p>${L(`Te quedan <b>12 horas</b> para confirmar tu plaza en «${esc(equipo)}». Tu grupo te espera.`, `You have <b>12 hours</b> left to confirm your spot in “${esc(equipo)}”. Your group is waiting.`)}</p>
+        ${btn(L("Confirmar mi asistencia", "Confirm my attendance"), destino.confirmado ? "" : "email-confirmar", `data-email="${esc(destino.email)}" ${destino.confirmado ? "disabled" : ""}`)}` },
+    { id: "ok", titulo: L("Éxito", "Success"), cuando: L("Cuando todo el grupo confirma", "When the whole group confirms"), para: L("Todo el grupo", "Whole group"),
+      asunto: L("Grupo cerrado y confirmado. Aquí están vuestras entradas y vuestra primera pista.", "Group closed and confirmed. Here are your tickets and your first clue."),
+      html: `<h3>${L("La hermandad está completa", "The sisterhood is complete")}</h3>
+        <p>${L(`«${esc(equipo)}» · ${fechaLarga()} · ${horaTurno(t)}. Adjuntamos tu entrada digital (PDF + Wallet).`, `“${esc(equipo)}” · ${fechaLarga()} · ${horaTurno(t)}. Your digital ticket is attached (PDF + Wallet).`)}</p>
+        <div class="notice notice-info"><div><b>${L("Tu fragmento", "Your fragment")}:</b> <i>${esc(FRAGMENTOS[state.lang][idx % 6])}</i><br><b>${L("Primera pista", "First clue")}:</b> <i>${esc(PISTAS[state.lang][idx % PISTAS[state.lang].length])}</i></div></div>
+        <p style="margin-top:14px">${L("Compartid vuestros fragmentos antes del día para descubrir la palabra secreta.", "Share your fragments before the day to discover the secret word.")}</p>` },
+    { id: "rec", titulo: L("Recordatorio", "Reminder"), cuando: L(`Enviado el ${fechaLarga(rec)} (2 días antes)`, `Sent on ${fechaLarga(rec)} (2 days before)`), para: L("Todo el grupo", "Whole group"),
+      asunto: L(`Pasado mañana: Lilium a las ${t.inicio}`, `The day after tomorrow: Lilium at ${t.inicio}`),
+      html: `<h3>${L("Faltan 2 días para el ritual", "2 days until the ritual")}</h3>
+        <ul class="sumlist">
+          <li><span class="k">${L("Hora", "Time")}</span><span class="v">${horaTurno(t)}</span></li>
+          <li><span class="k">${L("Ubicación exacta", "Exact location")}</span><span class="v"><a href="${EVENTO.mapsUrl}" target="_blank" rel="noopener">${EVENTO.lugar[state.lang]} · Google Maps ↗</a></span></li>
+        </ul>
+        <p style="margin-top:12px"><b>${L("Recomendaciones", "Tips")}:</b></p>
+        <ul><li>${L("Llegad <b>10 minutos antes</b>.", "Arrive <b>10 minutes early</b>.")}</li><li>${L("Llevad el QR de vuestra entrada en el móvil.", "Have your ticket QR on your phone.")}</li><li>${L("Recordad el aviso de luces estroboscópicas.", "Remember the strobe light warning.")}</li>
+        <li>${L("<b>Revisad la pista oculta de vuestra entrada</b> y juntad los fragmentos: la palabra secreta os dará ventaja.", "<b>Check the hidden clue on your ticket</b> and join the fragments: the secret word gives you a head start.")}</li></ul>` }
+  ];
+}
+function bandeja(selId = "inv") {
+  const r = api.buscarReservaDe(state.sesion.email) || db.reservas.find(x => x.id === state.exito);
+  if (!r) { toast(L("No hay reserva para mostrar correos.", "No booking to show emails for."), "err"); return; }
+  const mails = plantillasEmail(r), m = mails.find(x => x.id === selId) || mails[0];
+  openModal({
+    wide: true,
+    title: L("Bandeja de demo", "Demo inbox"),
+    body: `<div class="inbox">
+      <div class="inbox-list" role="tablist" aria-label="${L("Correos", "Emails")}">${mails.map(x => `<button role="tab" aria-selected="${x.id === m.id}" data-act="mail" data-id="${x.id}"><b>${x.titulo}</b><span>${x.cuando}</span></button>`).join("")}</div>
+      <div class="mail" role="tabpanel">
+        <div class="mail-meta"><b>${esc(m.asunto)}</b><br>${L("De", "From")}: Lilium · ESADA &lt;escaperoom@esada.es&gt; · ${L("Para", "To")}: ${esc(m.para)}</div>
+        <div class="mail-head"><div class="wf-ph" role="img" aria-label="Lilium">LOGO</div></div>
+        <div class="mail-body">${m.html}</div>
+        <div class="mail-foot">Lilium · Escape Room ESADA · ${L("Correo simulado para el prototipo", "Simulated email for the prototype")}</div>
+      </div></div>`
+  });
+}
+
+/* =========================================================
+   ROUTER
+   ========================================================= */
+const RUTAS = { "/verificar": pVerificar, "/home": pHome, "/reserva/1": pPaso1, "/reserva/2": pPaso2, "/reserva/3": pPaso3, "/mi-reserva": pMiReserva };
+let rutaActual = null;
+function router() {
+  let path = location.hash.replace(/^#/, "") || "/home";
+  if (!RUTAS[path]) path = "/home";
+  if (!state.sesion && path !== "/verificar") return go("/verificar");
+  if (state.sesion && path === "/verificar") return go(api.buscarReservaDe(state.sesion.email) ? "/mi-reserva" : "/home");
+  if (state.sesion) {
+    const r = api.buscarReservaDe(state.sesion.email);
+    if (path !== "/reserva/3") state.exito = null;
+    if (path.startsWith("/reserva") && r && !(path === "/reserva/3" && state.exito)) { toast(L("Ya tienes una reserva: un correo = una reserva.", "You already have a booking: one email = one booking.")); return go("/mi-reserva"); }
+    if (path === "/mi-reserva" && !r) return go("/home");
+    if (path === "/reserva/3" && !state.exito && !state.draft.turnoId) return go("/reserva/2");
+  }
+  if (path !== "/mi-reserva") state.editandoEquipo = false;
+  const cambio = rutaActual !== path; rutaActual = path;
+  if (cambio && $(".modal")) closeModal();
+  render(!cambio);
+}
+function render(mantenerScroll = true) {
+  const page = RUTAS[rutaActual]();
+  const y = window.scrollY;
+  document.documentElement.lang = state.lang;
+  document.title = { "/verificar": L("Acceso", "Access"), "/home": "Lilium", "/reserva/1": L("Reserva · Integrantes", "Booking · Members"), "/reserva/2": L("Reserva · Hora", "Booking · Time"), "/reserva/3": L("Reserva · Confirmación", "Booking · Confirmation"), "/mi-reserva": L("Mi reserva", "My booking") }[rutaActual] + " · Lilium Escape Room ESADA (wireframe)";
+  $("#skip").textContent = L("Saltar al contenido", "Skip to content");
+  const app = $("#app");
+  app.className = page.cls || "";
+  app.innerHTML = page.html;
+  document.body.classList.toggle("bb", !!page.bottomBar);
+  page.mount && page.mount();
+  if (mantenerScroll) window.scrollTo(0, y);
+  else { window.scrollTo(0, 0); const h = $("#h1"); h && !$(".modal") && h.focus({ preventScroll: true }); }
+  renderDemo();
+}
+window.addEventListener("hashchange", router);
+
+/* Cuenta atrás en vivo */
+setInterval(() => $$("[data-countdown]").forEach(el => el.textContent = fmtRestante(+el.dataset.countdown - Date.now())), 1000);
+
+/* =========================================================
+   ACCIONES (delegación de eventos)
+   ========================================================= */
+document.addEventListener("click", (e) => {
+  const el = e.target.closest("[data-act]"); if (!el) return;
+  const act = el.dataset.act, id = el.dataset.id, yo = state.sesion && state.sesion.email;
+  switch (act) {
+    case "noop": e.preventDefault(); toast(L("Elige primero un turno.", "Pick a slot first.")); break;
+    case "lang": state.lang = el.dataset.v; const m = $(".modal"); if (m) closeModal(); render(true); break;
+    case "scroll": { const t = document.getElementById(el.dataset.target); t && t.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); break; }
+    case "modal-close": closeModal(); break;
+    case "modal-back": if (e.target === el) closeModal(); break;
+    case "popup-en": state.lang = "en"; closeModal(); render(true); popupErasmus(); break;
+    case "popup-erasmus": closeModal(); state.filtroErasmus = true; go("/reserva/2"); break;
+    case "ver-erasmus": state.filtroErasmus = true; go("/reserva/2"); break;
+    case "verif-cambiar": state.verif.fase = 1; render(); break;
+    case "verif-reenviar": {
+      const falta = Math.ceil((state.verif.reenvioEn - Date.now()) / 1000);
+      if (falta > 0) { toast(L(`Espera ${falta} s para pedir otro código.`, `Wait ${falta} s to request another code.`)); break; }
+      const res = api.verificarCorreo(state.verif.email);
+      Object.assign(state.verif, { codigo: res.codigo, reenvioEn: Date.now() + 30000 });
+      render(); toast(I.mail + L("Código reenviado", "Code resent"), "ok"); break;
+    }
+    case "quitar": state.draft.miembros.splice(+el.dataset.i, 1); render(); break;
+    case "filtro": state.filtroErasmus = el.dataset.v === "1"; render(); break;
+    case "elegir": state.draft.turnoId = id; render(); { const b = $(`[data-act="elegir"][data-id="${id}"]`); b && b.focus({ preventScroll: true }); } break;
+    case "espera": api.apuntarListaEspera(id, yo); state.esperaMia[id] = true; render(); toast(I.check + L("Te avisaremos por correo si se libera una plaza.", "We'll email you if a spot opens up."), "ok"); break;
+    case "reservar": avisoLegal(); break;
+    case "aceptar-legal": {
+      const d = state.draft;
+      const res = api.reservar({ lider: yo, miembros: d.miembros, turnoId: d.turnoId, equipo: d.equipo });
+      closeModal();
+      if (!res.ok) {
+        const msg = { inscrito: L(`${res.email} ya está inscrito en otra reserva.`, `${res.email} is already in another booking.`), sin_hueco: L("Ese turno se ha llenado. Elige otro.", "That slot just filled up. Pick another."), minimo: L(`Necesitas ser al menos ${MIN_GRUPO} para abrir un nuevo grupo.`, `You need at least ${MIN_GRUPO} to open a new group.`) }[res.error];
+        toast(I.alert + msg, "err"); if (res.error !== "inscrito") go("/reserva/2"); break;
+      }
+      state.exito = res.reserva.id; state.draft = { miembros: [], turnoId: null, equipo: "" };
+      render(false); break;
+    }
+    case "ir-mi-reserva": state.exito = null; break;
+    case "bandeja": bandeja(); break;
+    case "mail": bandeja(id); break;
+    case "email-confirmar": closeModal(); landingConfirmado(el.dataset.email); break;
+    case "confirmar": landingConfirmado(el.dataset.email); break;
+    case "expirar": {
+      const res = api.aplicarPlazo(id);
+      if (!res) break;
+      if (!api.buscarReservaDe(yo)) { toast(L("El plazo venció y perdiste tu plaza por no confirmar.", "The deadline passed and you lost your spot for not confirming."), "err"); go("/home"); break; }
+      toast(res.medio ? L(`Plazo vencido: ${res.perdidos} sin confirmar pierden su plaza. Pasáis a grupo medio formado.`, `Deadline passed: ${res.perdidos} unconfirmed lose their spot. You're now a half-formed group.`) : L(`Plazo vencido: la reserva sigue. ${res.perdidos} sin confirmar pierden su plaza.`, `Deadline passed: booking stays. ${res.perdidos} unconfirmed lose their spot.`));
+      render(true); break;
+    }
+    case "editar-equipo": state.editandoEquipo = true; render(true); break;
+    case "pdf": toast(L("Generando PDF… (simulado: usa «Guardar como PDF»)", "Generating PDF… (simulated: use “Save as PDF”)")); setTimeout(() => window.print(), 400); break;
+    case "wallet": openModal({ title: "Apple Wallet · Google Wallet", body: `<p>${L("En producción, este botón generará un pase <b>.pkpass</b> (Apple) o un enlace de <b>Google Wallet</b> con tu QR, equipo y hora.", "In production, this button will generate a <b>.pkpass</b> pass (Apple) or a <b>Google Wallet</b> link with your QR, team and time.")}</p><div class="notice notice-info">${I.alert}<div>${L("Requiere integración real: certificado de Apple Developer (Pass Type ID) y cuenta de emisor en Google Wallet API. Solo disponible para personas que han confirmado su correo.", "Requires real integration: Apple Developer certificate (Pass Type ID) and a Google Wallet API issuer account. Only available to people who have confirmed their email.")}</div></div>`, actions: `<button class="btn btn-primary" data-act="modal-close">${L("Entendido", "Got it")}</button>` }); break;
+    case "cambiar-hora": modalCambiarHora(); break;
+    case "mover": {
+      const t = api.infoTurno(id);
+      const res = api.cambiarHora(yo, id); closeModal();
+      if (res.ok) { toast(I.check + L(`Te has cambiado al turno ${horaTurno(t)}. Tu antiguo grupo sigue en su hora.`, `You moved to ${horaTurno(t)}. Your old group keeps its time.`), "ok"); render(false); }
+      else toast(L("Ese turno ya no tiene hueco.", "That slot has no space left."), "err");
+      break;
+    }
+    case "cancelar-yo": openModal({ title: L("¿Cancelar tu asistencia?", "Cancel your attendance?"), body: `<p>${L("Solo se cancela la plaza de <b>" + esc(yo) + "</b>. El resto del grupo sigue pudiendo asistir; si quedan menos de " + MIN_GRUPO + ", pasará a grupo medio formado.", "Only <b>" + esc(yo) + "</b>'s spot is cancelled. The rest of the group can still attend; if fewer than " + MIN_GRUPO + " remain, it becomes a half-formed group.")}</p>`, actions: `<button class="btn btn-ghost" data-act="modal-close" data-autofocus>${L("Volver", "Back")}</button><button class="btn btn-rust" data-act="cancelar-yo-ok">${L("Sí, cancelar mi asistencia", "Yes, cancel my attendance")}</button>` }); break;
+    case "cancelar-yo-ok": api.cancelarAsistencia(yo); closeModal(); toast(L("Has cancelado tu asistencia. Tu grupo mantiene sus plazas.", "You cancelled your attendance. Your group keeps its spots."), "ok"); go("/home"); break;
+    case "cancelar-grupo": openModal({ title: L("¿Cancelar la reserva del grupo?", "Cancel the group booking?"), body: `<p>${L("Se cancelarán las plazas de <b>todo el grupo</b> y cada integrante recibirá un correo. Esta acción no se puede deshacer.", "<b>The whole group's</b> spots will be cancelled and each member will get an email. This can't be undone.")}</p>`, actions: `<button class="btn btn-ghost" data-act="modal-close" data-autofocus>${L("Volver", "Back")}</button><button class="btn btn-rust" data-act="cancelar-grupo-ok">${L("Sí, cancelar para todos", "Yes, cancel for everyone")}</button>` }); break;
+    case "cancelar-grupo-ok": { const r = api.buscarReservaDe(yo); api.cancelarGrupo(r.id, yo); closeModal(); toast(L("Reserva del grupo cancelada.", "Group booking cancelled."), "ok"); go("/home"); break; }
+    case "demo-toggle": demoAbierto = !demoAbierto; renderDemo(); break;
+    case "demo-go": demoAbierto = false; demoIr(el.dataset.v); break;
+    case "demo-estado": demoAbierto = false; demoEstado(el.dataset.v); break;
+    case "demo-reset": db = seed(); state.esperaMia = {}; state.draft = { miembros: [], turnoId: null, equipo: "" }; toast(L("Datos de ejemplo reiniciados", "Sample data reset")); router(); break;
+  }
+});
+
+/* =========================================================
+   MODO DEMO
+   ========================================================= */
+let demoAbierto = false;
+const USUARIOS_DEMO = { sin: dom("lucia.martin"), pendiente: dom("pablo.ruiz"), lider: dom("ana.garcia"), confirmada: dom("jon.etxeberria") };
+function demoEstado(k) {
+  db = seed(); state.esperaMia = {}; state.exito = null; state.popupVisto = k !== "sin";
+  state.sesion = { email: USUARIOS_DEMO[k] }; state.draft = { miembros: [], turnoId: null, equipo: "" };
+  toast("DEMO · " + USUARIOS_DEMO[k]);
+  go(k === "sin" ? "/home" : "/mi-reserva");
+}
+function demoIr(path) {
+  state.exito = null;
+  if (path === "/verificar") { state.sesion = null; state.verif = { fase: 1, email: "", codigo: "", reenvioEn: 0 }; return go(path); }
+  if (!state.sesion) state.sesion = { email: USUARIOS_DEMO.sin };
+  if (path.startsWith("/reserva") && api.buscarReservaDe(state.sesion.email)) {
+    state.sesion = { email: USUARIOS_DEMO.sin };
+    const r = api.buscarReservaDe(state.sesion.email); if (r) api.cancelarAsistencia(state.sesion.email);
+  }
+  if (path === "/reserva/3" && !state.draft.turnoId) {
+    state.draft = { miembros: [dom("alba.torres"), dom("diego.vega")].filter(e => !api.correoInscrito(e)), turnoId: "t2", equipo: "Las Coronas de Ortiga" };
+    if (1 + state.draft.miembros.length < MIN_GRUPO || api.infoTurno("t2").estado !== "libre") { db = seed(); state.draft = { miembros: [dom("alba.torres"), dom("diego.vega")], turnoId: "t2", equipo: "Las Coronas de Ortiga" }; }
+  }
+  if (path === "/mi-reserva" && !api.buscarReservaDe(state.sesion.email)) {
+    if (!api.buscarReservaDe(USUARIOS_DEMO.lider)) db = seed();
+    state.sesion = { email: USUARIOS_DEMO.lider };
+  }
+  go(path);
+}
+function renderDemo() {
+  const root = $("#demo-root"); if (!DEMO_MODE) { root.innerHTML = ""; return; }
+  const pags = [["/verificar", "1 · " + L("Verificar", "Verify")], ["/home", "2 · Home"], ["/reserva/1", "3 · " + L("Integrantes", "Members")], ["/reserva/2", "4 · " + L("Hora", "Time")], ["/reserva/3", "5 · " + L("Confirmación", "Confirm")], ["/mi-reserva", "6 · " + L("Mi reserva", "My booking")]];
+  const est = [["sin", L("Sin reserva", "No booking")], ["pendiente", L("Reserva pendiente", "Pending booking")], ["confirmada", L("Reserva confirmada", "Confirmed booking")], ["lider", L("Líder · grupo pendiente", "Leader · pending group")]];
+  root.innerHTML = `<button class="demo-fab" data-act="demo-toggle" aria-expanded="${demoAbierto}" aria-controls="demo-panel">DEMO</button>
+    ${demoAbierto ? `<div class="demo-panel" id="demo-panel" role="dialog" aria-label="${L("Panel de demo", "Demo panel")}">
+      <h4>${L("Páginas", "Pages")}</h4><div class="grid">${pags.map(([p, t]) => `<button data-act="demo-go" data-v="${p}" class="${rutaActual === p ? "cur" : ""}">${t}</button>`).join("")}</div>
+      <h4>${L("Estados de ejemplo", "Sample states")}</h4><div class="grid">${est.map(([k, t]) => `<button data-act="demo-estado" data-v="${k}" class="${state.sesion && state.sesion.email === USUARIOS_DEMO[k] ? "cur" : ""}">${t}</button>`).join("")}</div>
+      <h4>${L("Datos", "Data")}</h4><div class="grid"><button data-act="demo-reset">${L("Reiniciar datos", "Reset data")}</button>${state.sesion ? `<button data-act="demo-go" data-v="/verificar">${L("Cerrar sesión", "Sign out")}</button>` : ""}</div>
+      <div class="who">${state.sesion ? L("Sesión: ", "Session: ") + esc(state.sesion.email) : L("Sin sesión", "No session")}</div>
+      <div class="who">${L("Prueba también: correo ya inscrito → marta.lopez@", "Also try: already-booked email → marta.lopez@") + DOMINIO_PERMITIDO}</div>
+    </div>` : ""}`;
+}
+
+/* Arranque */
+router();
+</script>
+</body>
+</html>
