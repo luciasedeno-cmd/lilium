@@ -1,0 +1,6 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="51" height="51" viewBox="0 0 51 51" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Back button">
+<path id="Rectangle 11" d="M5 0.5H46C48.4853 0.5 50.5 2.51472 50.5 5V46C50.5 48.4853 48.4853 50.5 46 50.5H5C2.51472 50.5 0.5 48.4853 0.5 46V5C0.5 2.51472 2.51472 0.5 5 0.5Z" stroke="#732F23"/>
+<path id="Icon" d="M29 33L21 25L29 17" stroke-linecap="round" stroke-linejoin="round" stroke="#732F23"/>
+</g>
+</svg>

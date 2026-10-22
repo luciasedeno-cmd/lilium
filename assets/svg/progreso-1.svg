@@ -1,0 +1,13 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="316" height="12" viewBox="0 0 316 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Barrita progreso">
+<path id="Line 2" d="M11 6L77 6" stroke-width="2" stroke="#FFFAF2"/>
+<path id="Line 3" d="M87 6L153 6" stroke-width="2" stroke="#FFFAF2"/>
+<path id="Line 4" d="M163 6L229 6" stroke-width="2" stroke="#FFFAF2"/>
+<path id="Line 5" d="M239 6L305 6" stroke-width="2" stroke="#FFFAF2"/>
+<path id="Ellipse 5" d="M11.5 6C11.5 9.03757 9.03757 11.5 6 11.5C2.96243 11.5 0.5 9.03757 0.5 6C0.5 2.96243 2.96243 0.5 6 0.5C9.03757 0.5 11.5 2.96243 11.5 6Z" fill="#FFFAF2" stroke="#FFFAF2"/>
+<path id="Ellipse 6" d="M87.5 6C87.5 9.03757 85.0376 11.5 82 11.5C78.9624 11.5 76.5 9.03757 76.5 6C76.5 2.96243 78.9624 0.5 82 0.5C85.0376 0.5 87.5 2.96243 87.5 6Z" stroke="#FFFAF2"/>
+<path id="Ellipse 7" d="M163.5 6C163.5 9.03757 161.038 11.5 158 11.5C154.962 11.5 152.5 9.03757 152.5 6C152.5 2.96243 154.962 0.5 158 0.5C161.038 0.5 163.5 2.96243 163.5 6Z" stroke="#FFFAF2"/>
+<path id="Ellipse 8" d="M239.5 6C239.5 9.03757 237.038 11.5 234 11.5C230.962 11.5 228.5 9.03757 228.5 6C228.5 2.96243 230.962 0.5 234 0.5C237.038 0.5 239.5 2.96243 239.5 6Z" stroke="#FFFAF2"/>
+<path id="Ellipse 9" d="M315.5 6C315.5 9.03757 313.038 11.5 310 11.5C306.962 11.5 304.5 9.03757 304.5 6C304.5 2.96243 306.962 0.5 310 0.5C313.038 0.5 315.5 2.96243 315.5 6Z" stroke="#FFFAF2"/>
+</g>
+</svg>

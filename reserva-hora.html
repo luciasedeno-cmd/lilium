@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Elegir hora · Reserva Lilium</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baskervville:wght@400;500;600;700&family=Inter:ital,wght@0,400;0,600;1,400&family=Luxurious+Script&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/reserva.css">
+</head>
+<body data-pagina="hora">
+
+  <header class="nav-reserva">
+    <a class="logo" href="inicio.html" aria-label="Lilium, inicio">
+      <img src="assets/img/logo-lilium.png" alt="Lilium">
+    </a>
+    <div class="idioma" role="group" aria-label="Idioma">
+      <button type="button" aria-pressed="true" data-idioma="es">ES</button>
+      <button type="button" aria-pressed="false" data-idioma="en">EN</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="paso-cabecera">
+      <a class="boton-atras" href="reserva-integrantes.html" aria-label="Volver">
+        <img class="boton-atras__base" src="assets/svg/boton-atras.svg" width="51" height="51" alt="">
+        <img class="boton-atras__hover" src="assets/svg/boton-atras-hover.svg" width="51" height="51" alt="">
+      </a>
+      <p class="paso-cabecera__titulo">Paso 2 de 3</p>
+      <div class="barra-pasos" role="progressbar" aria-valuemin="1" aria-valuemax="3" aria-valuenow="2">
+        <div class="barra-pasos__relleno" style="width: 69.86%"></div>
+      </div>
+    </div>
+
+    <div class="columna">
+      <header class="hora-encabezado">
+        <p class="etiqueta">ELEGIR HORA</p>
+        <h1 class="titular">¿Cuándo empieza vuestro retiro?</h1>
+      </header>
+
+      <p class="dia">
+        <img src="assets/svg/icono-calendario.svg" width="20" height="22" alt="">
+        Viernes, 6 de noviembre · único día
+      </p>
+
+      <p class="eres">
+        <img src="assets/svg/icono-personas.svg" width="28" height="25.64" alt="">
+        <span><b data-eres>Eres 1.</b> <span data-eres-texto>Te mostramos los grupos en formación con hueco para vosotros.</span> <a href="reserva-integrantes.html">Editar</a></span>
+      </p>
+
+      <ul class="salas" role="radiogroup" aria-label="Turnos disponibles">
+        <li class="sala" role="radio" aria-checked="false" tabindex="0"
+            data-hora="10:00-11:00" data-equipo="Hijas del Solsticio" data-inscritos="2" data-tipo="Grupo en formación">
+          <p class="sala__hora">10:00-11:00</p>
+          <p class="sala__nombre">“Hijas del Solsticio”</p>
+          <div class="sala__chips">
+            <span class="chip">En formación</span>
+            <span class="chip"><img src="assets/svg/icono-mundo.svg" width="15" height="15" alt="">Solo Erasmus</span>
+          </div>
+          <div class="sala__pie">
+            <div class="avatares">
+              <img src="assets/img/perfil-1.png" width="51" height="51" alt="">
+              <img src="assets/img/perfil-2.png" width="51" height="51" alt="">
+            </div>
+            <p class="sala__plazas">Quedan 4 plazas. 2 inscritos</p>
+            <span class="chip">Perfecto para 1-4</span>
+          </div>
+          <span class="sala__elegir" aria-hidden="true">
+            <img class="base" src="assets/svg/sala-base.svg" width="42" height="42" alt="">
+            <img class="escogida" src="assets/svg/sala-escogida.svg" width="42" height="42" alt="">
+          </span>
+        </li>
+
+        <li class="sala" role="radio" aria-checked="false" tabindex="0"
+            data-hora="11:15-12:15" data-equipo="Los Gnomitos" data-inscritos="4" data-tipo="Grupo en formación">
+          <p class="sala__hora">11:15-12:15</p>
+          <p class="sala__nombre">“Los Gnomitos”</p>
+          <div class="sala__chips">
+            <span class="chip">En formación</span>
+          </div>
+          <div class="sala__pie">
+            <div class="avatares">
+              <img src="assets/img/perfil-1.png" width="51" height="51" alt="">
+              <img src="assets/img/perfil-2.png" width="51" height="51" alt="">
+              <img src="assets/img/perfil-1.png" width="51" height="51" alt="">
+              <img src="assets/img/perfil-2.png" width="51" height="51" alt="">
+            </div>
+            <p class="sala__plazas">Quedan 2 plazas. 4 inscritos</p>
+            <span class="chip">Perfecto para 1-2</span>
+          </div>
+          <span class="sala__elegir" aria-hidden="true">
+            <img class="base" src="assets/svg/sala-base.svg" width="42" height="42" alt="">
+            <img class="escogida" src="assets/svg/sala-escogida.svg" width="42" height="42" alt="">
+          </span>
+        </li>
+
+        <li class="sala" role="radio" aria-checked="false" tabindex="0"
+            data-hora="12:30-13:30" data-equipo="Nueva hermandad" data-inscritos="0" data-tipo="Nueva sala" data-libre>
+          <p class="sala__hora">12:30-13:30</p>
+          <p class="sala__nombre"></p>
+          <div class="sala__chips">
+            <span class="chip">Sala Libre</span>
+          </div>
+          <div class="sala__pie">
+            <div class="avatares">
+              <img src="assets/img/hueco-vacio.png" width="51" height="51" alt="">
+              <img src="assets/img/hueco-vacio.png" width="51" height="51" alt="">
+              <img src="assets/svg/hueco-mas.svg" width="51" height="51" alt="">
+            </div>
+            <p class="sala__plazas">Quedan 6 personas. 0 inscritos</p>
+            <span class="chip">Perfecto para 3-6</span>
+          </div>
+          <img class="sala__candado" src="assets/svg/icono-candado.svg" width="24.5" height="29.36" alt="Necesitáis 3 personas para abrir esta sala">
+          <span class="sala__elegir" aria-hidden="true" hidden>
+            <img class="base" src="assets/svg/sala-base.svg" width="42" height="42" alt="">
+            <img class="escogida" src="assets/svg/sala-escogida.svg" width="42" height="42" alt="">
+          </span>
+        </li>
+      </ul>
+
+      <a class="boton hora-continuar" href="reserva-confirmacion.html" data-continuar-hora>Continuar y confirmar →</a>
+      <p class="error" id="hora-error" role="alert"></p>
+    </div>
+  </main>
+
+  <script src="js/reserva.js"></script>
+</body>
+</html>
