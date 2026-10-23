@@ -2,8 +2,8 @@
 -- Cómo usarlo: Supabase → SQL Editor → pegar todo este texto → Run.
 -- ⚠️ Borra TODAS las reservas que haya (por eso solo se usa antes de abrir las reservas o con datos de prueba).
 
--- 1. Vaciar las reservas, los integrantes y los códigos
-truncate miembros, reservas, codigos cascade;
+-- 1. Vaciar las reservas, los integrantes, los códigos y la lista de espera
+truncate miembros, reservas, codigos, lista_espera cascade;
 
 -- 2. Quitar los turnos antiguos
 delete from turnos;

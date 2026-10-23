@@ -410,3 +410,164 @@ body:has(.pagina-acceso) {
 .pagina-acceso .nav-reserva {
   width: 100%;
 }
+
+/* ---------- Casilla de Términos y Condiciones ---------- */
+.aceptar-terminos {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 28px;
+  font-size: 16px;
+  line-height: 1.35;
+  color: var(--terracota);
+  cursor: pointer;
+}
+
+.aceptar-terminos input {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  accent-color: var(--terracota);
+}
+
+.aceptar-terminos a {
+  text-decoration: underline;
+}
+
+.acceso .aceptar-terminos {
+  margin-top: 0;
+}
+
+.aceptar-terminos + .boton.confirmar {
+  margin-top: 20px;
+}
+
+/* ---------- Página de Términos y Condiciones ---------- */
+.terminos {
+  padding-top: 60px;
+  color: var(--terracota);
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+.terminos .titular {
+  margin-bottom: 24px;
+}
+
+.terminos section {
+  margin-top: 28px;
+}
+
+.terminos h2 {
+  margin-bottom: 8px;
+  font-family: var(--font-baskervville);
+  font-weight: 700;
+  font-size: 24px;
+}
+
+.terminos ul {
+  margin: 8px 0;
+  padding-left: 22px;
+}
+
+.terminos a {
+  text-decoration: underline;
+}
+
+.terminos__aviso {
+  padding: 20px 24px;
+  border-radius: 15px;
+  background: var(--fondo-oscuro);
+  box-shadow: var(--sombra);
+}
+
+.terminos__contacto {
+  margin-top: 32px;
+}
+
+/* ---------- Lista de espera en los turnos llenos ---------- */
+.sala-envoltorio {
+  position: relative;
+}
+
+.sala__espera {
+  position: absolute;
+  left: 25px;
+  right: 25px;
+  bottom: 18px;
+  font-size: 15px;
+  color: var(--terracota);
+  cursor: default;
+}
+
+.sala__avisame {
+  height: auto;
+  min-height: 34px;
+  padding: 6px 14px;
+  background: var(--terracota);
+  color: var(--fondo);
+  cursor: pointer;
+}
+
+.sala__avisame:hover,
+.sala__avisame:focus-visible {
+  background: #5c251b;
+}
+
+/* ---------- Fragmento secreto al final de la entrada ---------- */
+.fragmento {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px dashed var(--terracota);
+  text-align: center;
+  font-family: var(--font-baskerville);
+}
+
+.fragmento__titulo {
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.fragmento__palabras {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 28px;
+  margin: 12px 0;
+  color: var(--verde-oscuro);
+}
+
+.fragmento__palabra {
+  font-size: 32px;
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+}
+
+.fragmento__palabra small {
+  margin-right: 4px;
+  font-size: 14px;
+  letter-spacing: 0.05em;
+  vertical-align: super;
+}
+
+.fragmento__ayuda {
+  max-width: 560px;
+  margin: 0 auto;
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--gris-texto);
+}
+
+/* En las tarjetas de acceso/confirmar, la casilla no hereda el estilo grande de las etiquetas */
+.acceso label.aceptar-terminos {
+  font-family: var(--font-inter);
+  font-weight: 400;
+  font-size: 16px;
+}
+
+/* Los turnos llenos son un poco más altos para que el botón «Avísame» no toque las fotos */
+.sala-envoltorio:has(.sala__espera) .sala {
+  min-height: 345px;
+}

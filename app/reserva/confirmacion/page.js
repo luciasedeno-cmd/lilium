@@ -4,6 +4,7 @@ import { Fragment, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import NavReserva from "@/components/NavReserva";
 import Cargando from "@/components/Cargando";
+import AceptarTerminos from "@/components/AceptarTerminos";
 import PasoCabecera from "@/components/PasoCabecera";
 import { leerBorrador, borrarBorrador, api } from "@/lib/borrador";
 import { useSesion } from "@/lib/useSesion";
@@ -19,6 +20,7 @@ export default function Confirmacion() {
   const [turno, setTurno] = useState(null);
   const [error, setError] = useState("");
   const [enviando, setEnviando] = useState(false);
+  const [aceptado, setAceptado] = useState(false);
 
   useEffect(() => {
     const b = leerBorrador();
@@ -39,11 +41,12 @@ export default function Confirmacion() {
   const equipo = nueva ? (borrador.equipo || "").trim() || "Sin nombre (podéis ponerlo luego)" : turno.equipo || "—";
 
   async function reservar() {
+    if (!aceptado) return setError("Para reservar tienes que aceptar los Términos y Condiciones.");
     setEnviando(true);
     setError("");
     const res = await api("/api/reservas", {
       metodo: "POST",
-      datos: { otros: borrador.integrantes || [], turnoId: turno.id, equipo: borrador.equipo || "" },
+      datos: { otros: borrador.integrantes || [], turnoId: turno.id, equipo: borrador.equipo || "", aceptaTerminos: aceptado },
     });
     setEnviando(false);
     if (!res.ok) return setError(res.mensaje);
@@ -109,7 +112,9 @@ export default function Confirmacion() {
             Cada integrante tendrá <b>{HORAS_CONFIRMACION} h</b> para confirmar desde su correo. Quien no confirme a tiempo perderá su plaza; la reserva sigue para quienes hayan confirmado.
           </p>
 
-          <button className="boton confirmar" type="button" onClick={reservar} disabled={enviando}>
+          <AceptarTerminos aceptado={aceptado} onCambiar={(v) => { setAceptado(v); if (v) setError(""); }} />
+
+          <button className="boton confirmar" type="button" onClick={reservar} disabled={enviando} aria-disabled={aceptado ? undefined : "true"}>
             {enviando ? "Reservando…" : "Confirmar reserva →"}
           </button>
           <p className="error error--centro" role="alert">{error}</p>

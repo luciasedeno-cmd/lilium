@@ -19,14 +19,18 @@ function motivoBloqueo(turno, total) {
   return null;
 }
 
-function Sala({ turno, total, escogida, onElegir }) {
+function Sala({ turno, total, escogida, onElegir, onEsperar }) {
   const bloqueo = motivoBloqueo(turno, total);
   const libre = turno.estado === "libre";
+  // Turno lleno (o sin hueco para todo el grupo): se puede pedir aviso si se libera una plaza
+  const sinHueco = bloqueo && !(libre && total < MIN_SALA_NUEVA);
   const clases = ["sala", escogida && "is-escogida", bloqueo && (libre ? "is-bloqueada" : "is-llena")].filter(Boolean).join(" ");
   const elegir = () => onElegir(turno, bloqueo);
 
+  // La tarjeta es el «botón» de elegir; el aviso de lista de espera va fuera de ella para poder pulsarlo aunque esté llena
   return (
-    <li className={clases} role="radio" aria-checked={escogida} aria-disabled={bloqueo ? "true" : undefined} tabIndex={0}
+    <li className="sala-envoltorio" role="none">
+    <div className={clases} role="radio" aria-checked={escogida} aria-disabled={bloqueo ? "true" : undefined} tabIndex={0}
       onClick={elegir} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); elegir(); } }}>
       <p className="sala__hora">{turno.inicio}-{turno.fin}</p>
       <p className="sala__nombre">{turno.equipo ? `“${turno.equipo}”` : ""}</p>
@@ -61,6 +65,16 @@ function Sala({ turno, total, escogida, onElegir }) {
           <img className="escogida" src="/assets/svg/sala-escogida.svg" width="42" height="42" alt="" />
         </span>
       )}
+    </div>
+      {sinHueco && (
+        <div className="sala__espera">
+          {turno.en_espera ? (
+            <p role="status">✓ Te avisaremos por correo si se libera una plaza.</p>
+          ) : (
+            <button type="button" className="chip sala__avisame" onClick={() => onEsperar(turno)}>Avísame si se libera una plaza</button>
+          )}
+        </div>
+      )}
     </li>
   );
 }
@@ -84,6 +98,14 @@ export default function Hora() {
   const soloErasmus = Boolean(borrador.soloErasmus);
   const visibles = (turnos || []).filter((t) => !soloErasmus || t.erasmus);
   const escogido = (turnos || []).find((t) => t.id === borrador.turnoId && !motivoBloqueo(t, total));
+
+  // «Avísame si se libera una plaza»: apunta a la persona en la lista de espera de ese turno
+  async function esperar(turno) {
+    const r = await api("/api/espera", { metodo: "POST", datos: { turnoId: turno.id } });
+    if (!r.ok) return setError(r.mensaje);
+    setError("");
+    setTurnos((lista) => lista.map((t) => (t.id === turno.id ? { ...t, en_espera: true } : t)));
+  }
 
   function elegir(turno, bloqueo) {
     if (bloqueo) return setError(bloqueo);
@@ -144,7 +166,7 @@ export default function Hora() {
 
           <ul className="salas" role="radiogroup" aria-label="Turnos disponibles">
             {visibles.map((t) => (
-              <Sala key={t.id} turno={t} total={total} escogida={escogido?.id === t.id} onElegir={elegir} />
+              <Sala key={t.id} turno={t} total={total} escogida={escogido?.id === t.id} onElegir={elegir} onEsperar={esperar} />
             ))}
           </ul>
 

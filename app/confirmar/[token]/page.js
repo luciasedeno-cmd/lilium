@@ -37,7 +37,7 @@ export default async function Confirmar({ params }) {
               {miembro.confirmado ? (
                 <>
                   <p className="acceso__intro">Ya habías confirmado tu plaza.</p>
-                  <BotonConfirmar token={token} texto="Ver mi reserva" />
+                  <BotonConfirmar token={token} texto="Ver mi reserva" pedirTerminos={false} />
                 </>
               ) : (
                 <BotonConfirmar token={token} texto="Confirmar mi asistencia" />

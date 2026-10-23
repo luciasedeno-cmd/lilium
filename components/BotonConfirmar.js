@@ -3,15 +3,18 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/borrador";
+import AceptarTerminos from "./AceptarTerminos";
 
-export default function BotonConfirmar({ token, texto }) {
+export default function BotonConfirmar({ token, texto, pedirTerminos = true }) {
   const router = useRouter();
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState("");
+  const [aceptado, setAceptado] = useState(!pedirTerminos);
 
   async function confirmar() {
+    if (!aceptado) return setError("Para confirmar tu plaza tienes que aceptar los Términos y Condiciones.");
     setEnviando(true);
-    const r = await api("/api/confirmar", { metodo: "POST", datos: { token } });
+    const r = await api("/api/confirmar", { metodo: "POST", datos: { token, aceptaTerminos: true } });
     setEnviando(false);
     if (!r.ok) return setError(r.mensaje);
     router.replace("/mi-reserva?confirmado=1");
@@ -19,7 +22,8 @@ export default function BotonConfirmar({ token, texto }) {
 
   return (
     <>
-      <button className="boton" type="button" onClick={confirmar} disabled={enviando}>{enviando ? "Confirmando…" : texto}</button>
+      {pedirTerminos && <AceptarTerminos aceptado={aceptado} onCambiar={(v) => { setAceptado(v); if (v) setError(""); }} />}
+      <button className="boton" type="button" onClick={confirmar} disabled={enviando} aria-disabled={aceptado ? undefined : "true"}>{enviando ? "Confirmando…" : texto}</button>
       <p className="error" role="alert">{error}</p>
     </>
   );

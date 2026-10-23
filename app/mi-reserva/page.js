@@ -145,6 +145,17 @@ function MiReservaContenido() {
             ) : (
               <p>Tu entrada aparecerá aquí cuando confirmes tu plaza desde el enlace de tu correo.</p>
             )}
+            {yo.confirmado && reserva.fragmentos?.length > 0 && (
+              <div className="fragmento">
+                <p className="fragmento__titulo">Tu fragmento secreto</p>
+                <p className="fragmento__palabras">
+                  {reserva.fragmentos.map((f) => (
+                    <span key={f.numero} className="fragmento__palabra"><small>{f.numero}</small> {f.palabra}</span>
+                  ))}
+                </p>
+                <p className="fragmento__ayuda">Cada persona de vuestra sala tiene una parte distinta. Juntadlas en orden (I a VI) antes del día y decidle a la guía lo que habéis descubierto. Si se une más gente a vuestra sala, el reparto puede cambiar: aquí lo verás siempre al día.</p>
+              </div>
+            )}
           </section>
 
           <section className="gestion" aria-label="Gestionar reserva">

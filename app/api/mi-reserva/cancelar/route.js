@@ -3,6 +3,10 @@ import { correoDeSesion } from "@/lib/sesion";
 import { cancelarAsistencia, cancelarGrupo } from "@/lib/reservas";
 import { correoCancelacion } from "@/lib/correo";
 import { ok, error, manejar, leerJson } from "@/lib/respuestas";
+import { avisarListaEspera } from "@/lib/avisos";
+
+// Al quedar una plaza libre, se avisa a quien la estaba esperando (si falla, lo reintenta /api/cron)
+const avisar = () => avisarListaEspera().catch((e) => console.error("Lista de espera:", e));
 
 export const POST = manejar(async (req) => {
   const email = await correoDeSesion();
@@ -11,7 +15,9 @@ export const POST = manejar(async (req) => {
 
   if (!grupo) {
     const res = await cancelarAsistencia(email);
-    return res.ok ? ok() : error("No tienes ninguna reserva.", 404);
+    if (!res.ok) return error("No tienes ninguna reserva.", 404);
+    await avisar();
+    return ok();
   }
 
   const res = await cancelarGrupo(email);
@@ -19,5 +25,6 @@ export const POST = manejar(async (req) => {
   await Promise.allSettled(res.avisar.map((para) =>
     correoCancelacion({ para, turno: res.turno, motivo: `${email} ha cancelado la reserva del grupo.` })
   ));
+  await avisar();
   return ok();
 });

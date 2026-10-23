@@ -115,7 +115,7 @@ export default function Inicio() {
       <footer className="footer">
         <p>Lilium · Escape Room ESADA · 2026</p>
         <a href={`mailto:${CONTACTO}`}>{CONTACTO}</a>
-        <a href="#">Términos y Condiciones</a>
+        <Link href="/terminos">Términos y Condiciones</Link>
         <a href="#">Aviso Legal</a>
       </footer>
     </>

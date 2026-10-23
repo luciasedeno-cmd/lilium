@@ -1,8 +1,10 @@
-// GET /api/cron · Tarea programada (cada hora): aplica el plazo de 48 h y envía los recordatorios.
+// GET /api/cron · Tarea programada (cada hora): aplica el plazo de 48 h, envía los recordatorios
+// y avisa a la lista de espera si se ha liberado alguna plaza.
 // Requiere la cabecera Authorization: Bearer <CRON_SECRET>.
 import { pendientesDeRecordatorio, marcarRecordatorio, limiteDe } from "@/lib/reservas";
 import { correoRecordatorio, urlSitio } from "@/lib/correo";
 import { ok, error, manejar } from "@/lib/respuestas";
+import { avisarListaEspera } from "@/lib/avisos";
 
 export const dynamic = "force-dynamic";
 
@@ -26,5 +28,6 @@ export const GET = manejar(async (req) => {
   const avisadas = [...new Set(pendientes.map((p) => p.reserva_id))].filter((id) => !fallidas.has(id));
   await marcarRecordatorio(avisadas);
 
-  return ok({ enviados: resultados.filter((r) => r.status === "fulfilled").length, fallidos: resultados.filter((r) => r.status === "rejected").length });
+  const listaEspera = await avisarListaEspera();
+  return ok({ listaEspera, enviados: resultados.filter((r) => r.status === "fulfilled").length, fallidos: resultados.filter((r) => r.status === "rejected").length });
 });

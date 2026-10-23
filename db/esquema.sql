@@ -37,11 +37,24 @@ create table if not exists codigos (
   intentos  integer not null default 0
 );
 
+-- Lista de espera: quien pulsa «Avísame si se libera una plaza» en un turno lleno
+create table if not exists lista_espera (
+  turno_id  integer not null references turnos(id) on delete cascade,
+  email     text not null,
+  creada    timestamptz not null default now(),
+  avisado   boolean not null default false,       -- ya se le escribió porque se liberó una plaza
+  primary key (turno_id, email)
+);
+
+-- Cuándo aceptó cada persona los Términos y Condiciones (al reservar o al confirmar su plaza)
+alter table miembros add column if not exists terminos_en timestamptz;
+
 -- Las tablas solo se usan desde el servidor (con la cadena de conexión), nunca desde el navegador
 alter table turnos   enable row level security;
 alter table reservas enable row level security;
 alter table miembros enable row level security;
 alter table codigos  enable row level security;
+alter table lista_espera enable row level security;
 
 -- Turnos del día (edítalos aquí o desde el panel de Supabase). Solo se insertan si la tabla está vacía.
 -- Cada turno dura una hora: 45 minutos de experiencia + 15 de cortesía para recolocar la sala.

@@ -1,7 +1,7 @@
 // GET /api/mi-reserva → la reserva de la persona con sesión (con QR si ya confirmó)
 import QRCode from "qrcode";
 import { correoDeSesion } from "@/lib/sesion";
-import { reservaDe } from "@/lib/reservas";
+import { reservaDe, fragmentosDe } from "@/lib/reservas";
 import { urlSitio } from "@/lib/correo";
 import { ok, error, manejar } from "@/lib/respuestas";
 
@@ -15,11 +15,13 @@ export const GET = manejar(async () => {
   if (!reserva) return ok({ reserva: null });
 
   let qr = null;
+  let fragmentos = [];
   if (reserva.yo.confirmado) {
+    fragmentos = await fragmentosDe(email);
     qr = await QRCode.toDataURL(`${urlSitio()}/entrada/${reserva.yo.token}`, {
       width: 320, margin: 1, color: { dark: "#292f20", light: "#fffaf2" },
     });
   }
   const { token, ...yo } = reserva.yo;
-  return ok({ reserva: { ...reserva, yo, qr } });
+  return ok({ reserva: { ...reserva, yo, qr, fragmentos } });
 });

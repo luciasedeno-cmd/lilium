@@ -32,3 +32,7 @@
 ## Reglas de las reservas (en `lib/reservas.js`)
 - De 3 a 6 personas por turno; con menos de 3 solo se puede unir a un grupo en formación.
 - Un correo = una reserva. El líder queda confirmado; el resto tiene 48 h para confirmar desde su correo o pierde la plaza.
+- Hay que aceptar los Términos y Condiciones (`app/terminos`, incluye el aviso de luces y efectos) para reservar y para confirmar la plaza; se guarda en `miembros.terminos_en`.
+- Lista de espera («Avísame si se libera una plaza», tabla `lista_espera`): al cancelar, cambiar de hora o en `/api/cron` se escribe una vez a quien esperaba (`lib/avisos.js`).
+- Fragmentos de la frase secreta (`lib/fragmentos.js`): «Dos rostros, un espíritu: elegid bien.», 6 palabras con número romano. Se reparten al azar (fijo por sala) entre todas las personas de la sala; con menos de 6, a alguien le tocan varias.
+- `lib/esquema.js` crea sola en Supabase lo que falte (tablas o columnas nuevas): no hace falta pegar SQL tras cada cambio.
