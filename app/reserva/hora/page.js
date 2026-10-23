@@ -1,0 +1,155 @@
+"use client";
+// Paso 2 · Elegir turno
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import NavReserva from "@/components/NavReserva";
+import PasoCabecera from "@/components/PasoCabecera";
+import { leerBorrador, guardarBorrador, api } from "@/lib/borrador";
+import { useSesion } from "@/lib/useSesion";
+import { fotoDe } from "@/lib/fotos";
+import { EVENTO, MIN_SALA_NUEVA, MAX_PERSONAS } from "@/lib/config";
+
+/** ¿Puede este grupo elegir el turno? Devuelve null si sí, o el motivo si no. */
+function motivoBloqueo(turno, total) {
+  if (turno.estado === "completo") return "Este turno está completo.";
+  if (turno.estado === "libre" && total < MIN_SALA_NUEVA) return `Necesitáis al menos ${MIN_SALA_NUEVA} personas para abrir una sala libre.`;
+  if (turno.hueco < total) return "En este turno no queda hueco para todo el grupo.";
+  return null;
+}
+
+function Sala({ turno, total, escogida, onElegir }) {
+  const bloqueo = motivoBloqueo(turno, total);
+  const libre = turno.estado === "libre";
+  const clases = ["sala", escogida && "is-escogida", bloqueo && (libre ? "is-bloqueada" : "is-llena")].filter(Boolean).join(" ");
+  const elegir = () => onElegir(turno, bloqueo);
+
+  return (
+    <li className={clases} role="radio" aria-checked={escogida} aria-disabled={bloqueo ? "true" : undefined} tabIndex={0}
+      onClick={elegir} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); elegir(); } }}>
+      <p className="sala__hora">{turno.inicio}-{turno.fin}</p>
+      <p className="sala__nombre">{turno.equipo ? `“${turno.equipo}”` : ""}</p>
+      <div className="sala__chips">
+        <span className="chip">{libre ? "Sala Libre" : turno.estado === "completo" ? "Completo" : "En formación"}</span>
+        {turno.erasmus && <span className="chip"><img src="/assets/svg/icono-mundo.svg" width="15" height="15" alt="" />Solo Erasmus</span>}
+      </div>
+      <div className="sala__pie">
+        <div className="avatares">
+          {libre ? (
+            <>
+              <img src="/assets/img/hueco-vacio.png" width="51" height="51" alt="" />
+              <img src="/assets/img/hueco-vacio.png" width="51" height="51" alt="" />
+              <img src="/assets/svg/hueco-mas.svg" width="51" height="51" alt="" />
+            </>
+          ) : (
+            Array.from({ length: turno.ocupadas }, (_, i) => <img key={i} src={fotoDe(i)} width="51" height="51" alt="" />)
+          )}
+        </div>
+        <p className="sala__plazas">
+          {libre ? `Quedan ${MAX_PERSONAS} plazas. 0 inscritos` : `Quedan ${turno.hueco} plazas. ${turno.ocupadas} inscritos`}
+        </p>
+        {turno.estado !== "completo" && (
+          <span className="chip">{libre ? `Perfecto para ${MIN_SALA_NUEVA}-${MAX_PERSONAS}` : `Perfecto para ${turno.hueco === 1 ? "1" : `1-${turno.hueco}`}`}</span>
+        )}
+      </div>
+      {bloqueo ? (
+        <img className="sala__candado" src="/assets/svg/icono-candado.svg" width="24.5" height="29.36" alt={bloqueo} />
+      ) : (
+        <span className="sala__elegir" aria-hidden="true">
+          <img className="base" src="/assets/svg/sala-base.svg" width="42" height="42" alt="" />
+          <img className="escogida" src="/assets/svg/sala-escogida.svg" width="42" height="42" alt="" />
+        </span>
+      )}
+    </li>
+  );
+}
+
+export default function Hora() {
+  const lider = useSesion("reserva");
+  const router = useRouter();
+  const [turnos, setTurnos] = useState(null);
+  const [borrador, setBorrador] = useState({});
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    setBorrador(leerBorrador());
+    api("/api/turnos").then((r) => (r.ok ? setTurnos(r.turnos) : setError(r.mensaje)));
+  }, []);
+
+  const actualizar = (cambios) => setBorrador(guardarBorrador(cambios));
+  const total = (borrador.integrantes || []).length + 1;
+  const soloErasmus = Boolean(borrador.soloErasmus);
+  const visibles = (turnos || []).filter((t) => !soloErasmus || t.erasmus);
+  const escogido = (turnos || []).find((t) => t.id === borrador.turnoId && !motivoBloqueo(t, total));
+
+  function elegir(turno, bloqueo) {
+    if (bloqueo) return setError(bloqueo);
+    setError("");
+    actualizar({ turnoId: turno.id });
+  }
+
+  function continuar(e) {
+    e.preventDefault();
+    if (!escogido) return setError("Elige un turno para continuar.");
+    router.push("/reserva/confirmacion");
+  }
+
+  if (!lider) return <NavReserva />;
+
+  return (
+    <>
+      <NavReserva />
+      <main>
+        <PasoCabecera paso={2} atras="/reserva/integrantes" />
+
+        <div className="columna">
+          <header className="hora-encabezado">
+            <p className="etiqueta">ELEGIR HORA</p>
+            <h1 className="titular">¿Cuándo empieza vuestro retiro?</h1>
+          </header>
+
+          <p className="dia">
+            <img src="/assets/svg/icono-calendario.svg" width="20" height="22" alt="" />
+            {EVENTO.fechaTexto} · único día
+          </p>
+
+          <p className="eres">
+            <img src="/assets/svg/icono-personas.svg" width="28" height="25.64" alt="" />
+            <span>
+              <b>{total === 1 ? "Eres 1." : `Sois ${total}.`}</b>{" "}
+              {total >= MIN_SALA_NUEVA ? "Podéis abrir una sala libre o uniros a un grupo con hueco." : "Te mostramos los grupos en formación con hueco para vosotros."}{" "}
+              <Link href="/reserva/integrantes">Editar</Link>
+            </span>
+          </p>
+
+          {soloErasmus && (
+            <p className="filtro-erasmus">
+              Mostrando solo turnos Erasmus. <button type="button" onClick={() => actualizar({ soloErasmus: false })}>Ver todos los turnos</button>
+            </p>
+          )}
+
+          {turnos === null && !error && <p className="cargando">Cargando turnos…</p>}
+
+          <ul className="salas" role="radiogroup" aria-label="Turnos disponibles">
+            {visibles.map((t) => (
+              <Sala key={t.id} turno={t} total={total} escogida={escogido?.id === t.id} onElegir={elegir} />
+            ))}
+          </ul>
+
+          {escogido?.estado === "libre" && (
+            <div className="hora-equipo">
+              <label htmlFor="equipo">¡Sois los primeros en este turno! Poned nombre al equipo (opcional)</label>
+              <input className="campo" id="equipo" maxLength={40} placeholder="Ej.: Las Hijas del Solsticio"
+                value={borrador.equipo || ""} onChange={(e) => actualizar({ equipo: e.target.value })} />
+            </div>
+          )}
+
+          <a className="boton hora-continuar" href="/reserva/confirmacion" onClick={continuar} aria-disabled={escogido ? undefined : "true"}>
+            Continuar y confirmar →
+          </a>
+          <p className="error" role="alert">{error}</p>
+        </div>
+      </main>
+    </>
+  );
+}
