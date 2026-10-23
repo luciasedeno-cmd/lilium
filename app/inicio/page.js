@@ -4,6 +4,7 @@ import { EVENTO, CONTACTO } from "@/lib/config";
 import HomeHeader from "@/components/home/HomeHeader";
 import CarruselPasos from "@/components/home/CarruselPasos";
 import Faq from "@/components/home/Faq";
+import ErasmusBanner from "@/components/ErasmusBanner";
 
 export const metadata = {
   title: "Lilium · Escape Room ESADA",
@@ -118,6 +119,9 @@ export default function Inicio() {
         <Link href="/terminos">Términos y Condiciones</Link>
         <a href="#">Aviso Legal</a>
       </footer>
+
+      {/* Pop-up Erasmus: solo aquí, y solo la primera vez */}
+      <ErasmusBanner />
     </>
   );
 }

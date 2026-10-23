@@ -214,10 +214,12 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: min(1234px, 96vw);
-  aspect-ratio: 1234 / 706;
-  padding: 8% 18%;
-  background: url("/assets/prototipo/erasmus-encaje.png") center / 100% 100% no-repeat;
+  /* Tamaño del mantel de encaje (1044 × 621): cabe a lo ancho y a lo alto de la pantalla */
+  width: min(1044px, 94vw, calc((100dvh - 32px) * 1044 / 621));
+  aspect-ratio: 1044 / 621;
+  /* Márgenes para que el texto quede en la tela lisa del centro, sin pisar el encaje */
+  padding: 18% 15% 17%;
+  background: url("/assets/img/erasmus-encaje.webp") center / 100% 100% no-repeat;
   color: var(--verde-oscuro);
   text-align: center;
 }
@@ -263,8 +265,8 @@
 
 .erasmus-pop__cerrar {
   position: absolute;
-  top: 15%;
-  right: 14%;
+  top: 24%;
+  right: 13%;
   width: 40px;
   height: 40px;
   border: 1px solid var(--verde-oscuro);
@@ -279,19 +281,20 @@
     text-align: center;
   }
 
+  /* En el móvil se usa el mantel en vertical (546 × 1012) */
   .erasmus-pop__caja {
-    width: 100%;
-    aspect-ratio: auto;
-    padding: 128px 60px 120px;
-    background-size: 132% 112%;
+    width: min(440px, 100%, calc((100dvh - 32px) * 546 / 1012));
+    aspect-ratio: 546 / 1012;
+    padding: 30% 26%;
+    background-image: url("/assets/img/erasmus-encaje-movil.webp");
   }
 
   .erasmus-pop__caja h2 {
-    font-size: 22px;
+    font-size: 21px;
   }
 
   .erasmus-pop__caja p {
-    font-size: 15px;
+    font-size: 14px;
   }
 
   .erasmus-pop__botones {
@@ -302,14 +305,16 @@
 
   .erasmus-pop__boton {
     min-width: 0;
-    font-size: 17px;
+    padding: 6px 8px;
+    font-size: 15px;
   }
 
   .erasmus-pop__cerrar {
-    top: 56px;
-    right: 40px;
-    width: 34px;
-    height: 34px;
+    top: 11%;
+    right: 23%;
+    width: 30px;
+    height: 30px;
+    font-size: 22px;
   }
 }
 

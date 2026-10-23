@@ -3,7 +3,6 @@ import "./estilos/home.css";
 import "./estilos/reserva.css";
 import "./estilos/cuenta-atras.css";
 import "./estilos/extra.css";
-import ErasmusBanner from "@/components/ErasmusBanner";
 
 export const metadata = {
   title: "Lilium · Escape Room ESADA",
@@ -24,7 +23,6 @@ export default function RootLayout({ children }) {
       </head>
       <body>
         {children}
-        <ErasmusBanner />
       </body>
     </html>
   );

@@ -1,25 +1,23 @@
 "use client";
-// ERASMUS BANNER (Figma): pop-up que sale una vez al entrar en la web
+// ERASMUS BANNER (Figma): pop-up que sale solo la primera vez que se entra en la página de inicio (/inicio)
 import { useEffect, useRef, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { guardarBorrador } from "@/lib/borrador";
 
+// Se guarda en el navegador (localStorage, como una nota que se queda en ese ordenador o móvil)
+// para no volver a enseñarlo aunque se cierre la web y se vuelva otro día
 const CLAVE = "lilium-erasmus-visto";
-// En estas páginas no molesta: se llega desde un correo o se enseña en la puerta
-const SIN_POPUP = ["/confirmar", "/entrada"];
 
 export default function ErasmusBanner() {
   const [abierto, setAbierto] = useState(false);
-  const pathname = usePathname();
   const router = useRouter();
   const dialogo = useRef(null);
 
   useEffect(() => {
-    if (SIN_POPUP.some((p) => pathname.startsWith(p))) return;
     let visto = false;
     try {
-      visto = sessionStorage.getItem(CLAVE) === "1";
-      sessionStorage.setItem(CLAVE, "1");
+      visto = localStorage.getItem(CLAVE) === "1";
+      localStorage.setItem(CLAVE, "1");
     } catch {
       // Sin almacenamiento (modo privado): se muestra igualmente una vez por carga
     }
@@ -27,7 +25,7 @@ export default function ErasmusBanner() {
       const t = setTimeout(() => setAbierto(true), 350);
       return () => clearTimeout(t);
     }
-  }, []); // solo al entrar en la web
+  }, []); // solo al abrir la página de inicio
 
   useEffect(() => {
     if (!abierto) return;

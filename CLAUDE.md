@@ -16,6 +16,7 @@
 
 ## Estructura
 - Orden de las páginas: 1) `/acceso` (confirmar el correo, ocupa justo la pantalla, sin scroll) → 2) `/inicio` (Home) → 3) reserva en 3 pasos. Quien ya tiene reserva (como líder o dentro de un grupo) va a `/mi-reserva` al entrar.
+- Pop-up Erasmus (`components/ErasmusBanner.js`): solo en `/inicio` y solo la primera vez en ese navegador (se guarda en localStorage). Fondos: `public/assets/img/erasmus-encaje.webp` (ordenador) y `erasmus-encaje-movil.webp` (móvil).
 - `middleware.js`: sin sesión, `/inicio`, `/reserva/*` y `/mi-reserva` llevan a `/acceso`.
 - `app/page.js`: portada con la cuenta atrás hasta el 30 de octubre; al llegar la fecha redirige a `/acceso`.
 - `app/inicio`, `app/acceso`, `app/reserva/{integrantes,hora,confirmacion}`, `app/mi-reserva`: páginas de la web.
