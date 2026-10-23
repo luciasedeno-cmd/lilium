@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Integrantes · Reserva Lilium</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baskervville:wght@400;500;600;700&family=Inter:ital,wght@0,400;0,600;1,400&family=Luxurious+Script&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/reserva.css">
+</head>
+<body data-pagina="integrantes">
+
+  <header class="nav-reserva">
+    <a class="logo" href="inicio.html" aria-label="Lilium, inicio">
+      <img src="assets/img/logo-lilium.png" alt="Lilium">
+    </a>
+    <div class="idioma" role="group" aria-label="Idioma">
+      <button type="button" aria-pressed="true" data-idioma="es">ES</button>
+      <button type="button" aria-pressed="false" data-idioma="en">EN</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="paso-cabecera">
+      <a class="boton-atras" href="acceso.html" aria-label="Volver">
+        <img class="boton-atras__base" src="assets/svg/boton-atras.svg" width="51" height="51" alt="">
+        <img class="boton-atras__hover" src="assets/svg/boton-atras-hover.svg" width="51" height="51" alt="">
+      </a>
+      <p class="paso-cabecera__titulo">Paso 1 de 3</p>
+      <div class="barra-pasos" role="progressbar" aria-valuemin="1" aria-valuemax="3" aria-valuenow="1">
+        <div class="barra-pasos__relleno" style="width: 34.93%"></div>
+      </div>
+    </div>
+
+    <section class="integrantes-intro">
+      <h1 class="titular">¿Quién asistirá al prado?</h1>
+      <p>Escribe los correos de todos los integrantes para que reciban la confirmación en su bandeja de entrada.</p>
+    </section>
+
+    <div class="grupo-resumen">
+      <div class="grupo-resumen__fondo"></div>
+      <div class="grupo-resumen__huecos" data-huecos></div>
+      <p class="grupo-resumen__contador" aria-live="polite"><b data-contador>1</b>/6</p>
+    </div>
+
+    <section class="integrantes" aria-label="Integrantes del grupo">
+      <ul class="integrantes__lista" data-lista-integrantes>
+        <li class="integrante">
+          <img src="assets/img/avatar-lider.png" width="94" height="94" alt="">
+          <div class="integrante__datos">
+            <p class="integrante__nombre">Tú (líder)</p>
+            <p class="integrante__correo" data-correo-lider>luciamartin@alumnado.esada.es</p>
+          </div>
+        </li>
+      </ul>
+
+      <img class="integrantes__linea" src="assets/svg/linea-trazo.svg" width="702" height="1" alt="">
+
+      <form class="integrantes__form" id="form-integrante" novalidate>
+        <label class="visually-hidden" for="correo-integrante">Correo del integrante</label>
+        <input class="campo" id="correo-integrante" type="email" placeholder="E-mail" autocomplete="off" aria-describedby="integrante-error">
+        <button class="boton-mas" type="submit" aria-label="Añadir integrante">
+          <img src="assets/svg/icono-mas.svg" width="29" height="29" alt="">
+        </button>
+      </form>
+      <p class="error" id="integrante-error" role="alert"></p>
+    </section>
+
+    <p class="aviso">
+      <b>Mínimo 3 personas para abrir sala nueva.</b>
+      Con 1 o 2 personas, únete a un grupo en formación para completar la hermandad.
+    </p>
+
+    <a class="boton integrantes-continuar" href="reserva-hora.html" data-continuar-integrantes>Continuar y unirme a un grupo →</a>
+  </main>
+
+  <script src="js/reserva.js"></script>
+</body>
+</html>

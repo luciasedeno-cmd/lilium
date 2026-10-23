@@ -1,0 +1,945 @@
+/* ==========================================================
+   Lilium · Home (Figma: HOME PAGE 1:7)
+   Las medidas siguen el frame de 1440 px; los bloques se
+   centran con calc(50% - 720px + x) para pantallas anchas.
+   ========================================================== */
+
+body {
+  background: var(--fondo-oscuro);
+}
+
+/* ---------- Header ---------- */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100px;
+  padding: 0 calc(50% - 720px + 168px) 0 calc(50% - 720px + 14px);
+  background: var(--fondo);
+}
+
+.header__nav {
+  display: flex;
+  align-items: center;
+  gap: 64px;
+  font-family: var(--font-baskerville);
+  font-size: 24px;
+  color: var(--verde-oscuro);
+}
+
+.header__nav > a:not(.boton-reserva) {
+  white-space: nowrap;
+  background: linear-gradient(currentColor, currentColor) left bottom / 0 1px no-repeat;
+  transition: background-size 0.25s;
+}
+
+.header__nav > a:not(.boton-reserva):hover {
+  background-size: 100% 1px;
+}
+
+.header__menu {
+  display: none;
+}
+
+/* ---------- Hero ---------- */
+.hero {
+  position: relative;
+  height: 924px;
+  background: url("../assets/img/hero.png") center / cover no-repeat;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.5;
+  background: radial-gradient(
+    ellipse 50% 50% at 50% 50%,
+    rgba(115, 47, 35, 1) 21.154%,
+    rgba(133, 72, 61, 0.8925) 30.108%,
+    rgba(150, 98, 87, 0.785) 39.063%,
+    rgba(185, 149, 139, 0.57) 56.971%,
+    rgba(255, 250, 242, 0.14) 92.788%
+  );
+}
+
+.hero__titulo {
+  position: absolute;
+  top: 248px;
+  left: 0;
+  right: 0;
+  font-family: var(--font-script);
+  font-size: 200px;
+  line-height: 155px;
+  color: var(--fondo-oscuro);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.hero__linea {
+  display: block;
+}
+
+.hero__linea--1 {
+  transform: translateX(-130.5px);
+}
+
+.hero__linea--2 {
+  transform: translateX(167px);
+}
+
+.hero__boton {
+  position: absolute;
+  top: 630px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* ---------- Encajes ---------- */
+.encaje {
+  position: absolute;
+  left: 50%;
+  z-index: 2;
+  width: 1612px;
+  height: 176px;
+  max-width: none;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.encaje--arriba {
+  top: -51px;
+  transform: translateX(-50%) rotate(180deg);
+}
+
+.encaje--abajo {
+  bottom: 0;
+}
+
+/* ---------- Historia ---------- */
+.historia {
+  position: relative;
+  z-index: 1;
+  padding: 157px 0 196px;
+  background: var(--verde-oscuro);
+  overflow-x: clip;
+}
+
+.historia__contenido {
+  display: flex;
+  gap: 94px;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding-left: 114px;
+}
+
+.retrato {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 509px;
+  height: 709px;
+}
+
+.retrato__marco {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.retrato__foto {
+  position: relative;
+  width: 348px;
+  height: 509px;
+}
+
+.historia__texto {
+  padding-top: 136px;
+  min-width: 0;
+}
+
+.marquesina {
+  width: calc(50vw + 3px);
+  overflow: hidden;
+}
+
+.marquesina__pista {
+  display: flex;
+  width: max-content;
+  font-family: var(--font-script);
+  font-size: 100px;
+  line-height: 128px;
+  color: var(--melocoton);
+  white-space: nowrap;
+  animation: marquesina 26s linear infinite;
+}
+
+.marquesina__pista span {
+  padding-right: 0.25em;
+}
+
+@keyframes marquesina {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquesina__pista {
+    animation: none;
+  }
+}
+
+.historia__parrafos {
+  width: 629px;
+  max-width: 100%;
+  font-family: var(--font-baskervville);
+  font-size: 24px;
+  color: var(--fondo-oscuro);
+}
+
+.historia__parrafos p + p {
+  margin-top: 1.2em;
+}
+
+.historia__parrafos b {
+  font-weight: 600;
+}
+
+/* ---------- ¿Cómo reservar? ---------- */
+.como-reservar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  padding: 17px 16px 95px;
+  color: var(--terracota);
+  text-align: center;
+}
+
+.como-reservar__titulo {
+  font-family: var(--font-script);
+  font-size: 100px;
+  line-height: 105px;
+}
+
+.como-reservar__subtitulo {
+  font-family: var(--font-baskerville);
+  font-size: 24px;
+}
+
+.como-reservar__bolitas {
+  width: 316px;
+  height: 12px;
+}
+
+/* ---------- Cómo funciona (carrusel) ---------- */
+.pasos {
+  position: relative;
+  height: 590px;
+  background: var(--terracota);
+  overflow: hidden;
+}
+
+.pasos__imagen {
+  position: absolute;
+  left: calc(50% - 720px + 9px);
+  top: 11px;
+  width: 575px;
+  height: 579px;
+  overflow: hidden;
+}
+
+.pasos__imagen img {
+  position: absolute;
+  left: 9.39%;
+  top: -4.06%;
+  width: 85.04%;
+  height: 103.99%;
+  max-width: none;
+}
+
+.pasos__texto {
+  position: absolute;
+  left: calc(50% - 720px + 562px);
+  top: 123px;
+  display: flex;
+  flex-direction: column;
+  gap: 34px;
+  width: 575px;
+  color: var(--fondo-oscuro);
+}
+
+.pasos__barra {
+  position: relative;
+  width: 316px;
+  height: 12px;
+}
+
+.pasos__barra img {
+  width: 316px;
+  height: 12px;
+}
+
+.pasos__puntos button {
+  position: absolute;
+  top: -6px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+
+.pasos__puntos button:nth-child(1) { left: -6px; }
+.pasos__puntos button:nth-child(2) { left: 70px; }
+.pasos__puntos button:nth-child(3) { left: 146px; }
+.pasos__puntos button:nth-child(4) { left: 222px; }
+.pasos__puntos button:nth-child(5) { left: 298px; }
+
+.pasos__puntos button:focus-visible {
+  outline: 2px solid var(--melocoton);
+}
+
+.pasos__numero,
+.pasos__titulo {
+  font-family: var(--font-baskervville);
+  font-size: 40px;
+  text-transform: uppercase;
+}
+
+.pasos__numero {
+  font-weight: 500;
+}
+
+.pasos__descripcion {
+  max-width: 500px;
+  font-family: var(--font-inter);
+  font-size: 16px;
+  color: var(--fondo);
+}
+
+.pasos__texto > * {
+  transition: opacity 0.3s;
+}
+
+.pasos.is-cambiando .pasos__texto > :not(.pasos__barra) {
+  opacity: 0;
+}
+
+/* ---------- ¿Qué necesita el ritual? ---------- */
+.ritual {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 71px;
+  height: 796px;
+  padding: 46px 16px 0;
+  background: var(--crudo);
+}
+
+.ritual__titulo {
+  font-family: var(--font-script);
+  font-size: 128px;
+  line-height: 105px;
+  color: var(--fondo-oscuro);
+  text-align: center;
+}
+
+.ritual__cuadros {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 88px;
+}
+
+.cuadro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--fondo);
+  text-align: center;
+}
+
+.cuadro h3 {
+  font-family: var(--font-baskerville);
+  font-size: 32px;
+  text-transform: uppercase;
+}
+
+.cuadro p {
+  font-family: var(--font-inter);
+  font-size: 16px;
+}
+
+.cuadro__texto {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.polaroid {
+  position: relative;
+  background: var(--fondo);
+  filter: var(--sombra-cuadros);
+  overflow: hidden;
+  transition: transform 0.3s;
+}
+
+.polaroid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cuadro--1 { width: 362px; gap: 38px; }
+.cuadro--1 .cuadro__texto { gap: 9px; }
+.cuadro--1 .polaroid {
+  width: 302px;
+  height: 344px;
+  margin: 12.5px 14.4px;
+  padding: 15px 14px 16px 13px;
+  transform: rotate(-5deg);
+}
+
+.cuadro--2 { width: 379px; gap: 50px; }
+.cuadro--2 .cuadro__texto { gap: 3px; }
+.cuadro--2 .cuadro__texto p { padding: 10px; }
+.cuadro--2 .polaroid {
+  width: 271.474px;
+  height: 309.228px;
+  margin: 7.7px 8.9px;
+  padding: 14px 13px 14px 12px;
+  transform: rotate(-3.38deg);
+}
+
+.cuadro--3 { width: 360px; gap: 62px; }
+.cuadro--3 .cuadro__texto { gap: 13px; color: var(--fondo-oscuro); }
+.cuadro--3 .polaroid {
+  width: 289.672px;
+  height: 329.957px;
+  margin: 10.2px 11.8px;
+  padding: 15px 14px 15px 13px;
+  transform: rotate(4.24deg);
+}
+
+.cuadro--3 .polaroid img {
+  object-position: 26% 5%;
+}
+
+.cuadro:hover .polaroid {
+  transform: rotate(0deg) scale(1.03);
+}
+
+.encaje--ritual {
+  top: auto;
+  bottom: -143px;
+  transform: translateX(-50%) rotate(180deg);
+}
+
+/* ---------- Cuándo y dónde ---------- */
+.ubicacion {
+  position: relative;
+  max-width: 1440px;
+  height: 569px;
+  margin: 0 auto;
+  color: #000;
+}
+
+.ubicacion__mapa {
+  position: absolute;
+  left: 316px;
+  top: 18px;
+  width: 893px;
+  height: 551px;
+  object-fit: cover;
+}
+
+.ubicacion__dato {
+  position: absolute;
+  z-index: 2;
+  font-family: var(--font-inter);
+  font-size: 16px;
+}
+
+.ubicacion__dato h2 {
+  display: flex;
+  align-items: flex-start;
+  gap: 19px;
+  font-family: var(--font-baskerville);
+  font-size: 40px;
+  text-transform: uppercase;
+}
+
+.ubicacion__dato h2 img {
+  width: 28px;
+  height: 28px;
+  margin-top: 3px;
+}
+
+.ubicacion__dato--cuando {
+  left: 1101px;
+  top: 143px;
+}
+
+.ubicacion__dato--cuando h2 {
+  margin-bottom: 5px;
+}
+
+.ubicacion__dato--cuando p {
+  padding-left: 53px;
+}
+
+.ubicacion__dato--donde {
+  left: 63px;
+  top: 435px;
+}
+
+.ubicacion__dato--donde h2 {
+  padding-left: 92px;
+  margin-bottom: 10px;
+  gap: 15px;
+}
+
+/* ---------- ¿Eres Erasmus? ---------- */
+.erasmus {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 627px;
+  padding: 79px 16px 0;
+  background: var(--rosa);
+  text-align: center;
+}
+
+.erasmus__titulo {
+  font-family: var(--font-script);
+  font-size: 96px;
+  line-height: 120px;
+  color: var(--fondo);
+}
+
+.erasmus__texto {
+  width: 629px;
+  max-width: 100%;
+  margin-top: 13px;
+  font-family: var(--font-baskervville);
+  font-size: 24px;
+  color: var(--fondo-oscuro);
+}
+
+/* ---------- Preguntas frecuentes ---------- */
+.faq {
+  position: relative;
+  height: 754px;
+  background:
+    linear-gradient(134.83deg, rgba(41, 47, 32, 0.31) 12.318%, rgba(255, 245, 230, 0.31) 29.818%, rgba(115, 47, 35, 0.31) 50.965%),
+    url("../assets/img/faq-fondo.jpg") center / cover no-repeat;
+}
+
+.faq__bloque {
+  position: absolute;
+  left: calc(50% - 720px + 861px);
+  top: 93px;
+  display: flex;
+  flex-direction: column;
+  gap: 21px;
+  width: 478px;
+}
+
+.faq__etiqueta {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  font-family: var(--font-inter);
+  font-size: 16px;
+  color: var(--fondo);
+}
+
+.faq__etiqueta img {
+  width: 7px;
+  height: 7px;
+  margin-top: 6px;
+}
+
+.faq__titulo {
+  width: 466px;
+  max-width: 100%;
+  font-family: var(--font-baskervville);
+  font-size: 36px;
+  color: #fff;
+}
+
+.faq__lista {
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
+}
+
+.faq__item {
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
+}
+
+.faq__caja {
+  padding: 0 9.5px;
+  transition: background-color 0.25s;
+}
+
+.faq__item.is-open {
+  gap: 1px;
+}
+
+.faq__item.is-open .faq__caja {
+  min-height: 93px;
+  padding: 8px 13px;
+  background: rgba(255, 250, 242, 0.47);
+}
+
+.faq__pregunta {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 16px;
+  font-family: var(--font-baskervville);
+  font-size: 16px;
+  color: var(--fondo);
+  text-align: left;
+}
+
+.faq__signo {
+  font-family: var(--font-inter);
+}
+
+.faq__respuesta {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.25s;
+}
+
+.faq__respuesta p {
+  overflow: hidden;
+  max-width: 448px;
+  font-family: var(--font-inter);
+  font-size: 13px;
+  color: #fff;
+}
+
+.faq__item.is-open .faq__respuesta {
+  grid-template-rows: 1fr;
+  margin-top: 10px;
+}
+
+.faq__linea {
+  width: 100%;
+  height: 1.2px;
+}
+
+/* ---------- CTA invitación ---------- */
+.cta {
+  position: relative;
+  height: 494px;
+  overflow: hidden;
+}
+
+.cta img {
+  position: absolute;
+  left: -18.89%;
+  top: -21.66%;
+  width: 141.47%;
+  height: 214.78%;
+  max-width: none;
+}
+
+/* ---------- Footer ---------- */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 217px;
+  height: 84px;
+  padding: 0 16px;
+  background: var(--verde-oscuro);
+  font-family: var(--font-inter);
+  font-size: 16px;
+  color: var(--fondo-oscuro);
+  white-space: nowrap;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================================
+   Pantallas medianas y móvil (Figma: HOME PAGE-TLF)
+   ========================================================== */
+@media (max-width: 1439px) {
+  .footer {
+    gap: 6vw;
+  }
+}
+
+@media (max-width: 1200px) {
+  .header {
+    padding: 0 24px 0 0;
+  }
+
+  .header__nav {
+    gap: 32px;
+    font-size: 20px;
+  }
+
+  .hero__titulo {
+    font-size: clamp(88px, 14vw, 200px);
+    line-height: 0.78em;
+  }
+
+  .hero__linea--1 { transform: translateX(-9vw); }
+  .hero__linea--2 { transform: translateX(11vw); }
+
+  .historia__contenido {
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    padding: 0 24px;
+  }
+
+  .historia__texto {
+    padding-top: 0;
+    width: 100%;
+    max-width: 629px;
+  }
+
+  .marquesina {
+    width: 100%;
+  }
+
+  .pasos {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 24px 60px;
+  }
+
+  .pasos__imagen {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: min(575px, 100%);
+    aspect-ratio: 575 / 579;
+    height: auto;
+  }
+
+  .pasos__texto {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: min(575px, 100%);
+    margin-top: 32px;
+  }
+
+  .ritual {
+    height: auto;
+    padding-bottom: 120px;
+  }
+
+  .ritual__titulo {
+    font-size: clamp(64px, 10vw, 128px);
+    line-height: 1;
+  }
+
+  .ritual__cuadros {
+    flex-direction: column;
+    align-items: center;
+    gap: 64px;
+  }
+
+  .ubicacion {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    padding: 180px 24px 48px;
+  }
+
+  .ubicacion__mapa {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 893 / 551;
+    order: 1;
+  }
+
+  .ubicacion__dato {
+    position: relative;
+    left: auto;
+    top: auto;
+  }
+
+  .ubicacion__dato--donde {
+    order: 2;
+  }
+
+  .ubicacion__dato--donde h2 {
+    padding-left: 0;
+  }
+
+  .ubicacion__dato--donde p {
+    padding-left: 47px;
+  }
+
+  .faq {
+    height: auto;
+    padding: 80px 24px;
+  }
+
+  .faq__bloque {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: min(478px, 100%);
+    margin-left: auto;
+  }
+
+  .footer {
+    flex-wrap: wrap;
+    gap: 12px 40px;
+    height: auto;
+    padding: 24px;
+    white-space: normal;
+  }
+}
+
+@media (max-width: 760px) {
+  .header {
+    height: 72px;
+    padding-right: 16px;
+  }
+
+  .header .logo {
+    width: 150px;
+    height: 72px;
+  }
+
+  .header .logo img {
+    left: 8px;
+    top: -6px;
+    width: 140px;
+    height: 84px;
+  }
+
+  .header__menu {
+    display: block;
+    font-family: var(--font-baskerville);
+    font-size: 20px;
+  }
+
+  .header__nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 24px 16px;
+    background: var(--fondo);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+    display: none;
+  }
+
+  .header.is-open .header__nav {
+    display: flex;
+  }
+
+  .hero {
+    height: 640px;
+  }
+
+  .hero__titulo {
+    top: 170px;
+    font-size: 72px;
+  }
+
+  .hero__linea--1 { transform: translateX(-6vw); }
+  .hero__linea--2 { transform: translateX(5vw); }
+
+  .hero__boton {
+    top: 440px;
+  }
+
+  .historia {
+    padding: 120px 0 200px;
+  }
+
+  .retrato {
+    width: 300px;
+    height: 418px;
+  }
+
+  .retrato__foto {
+    width: 205px;
+    height: 300px;
+  }
+
+  .marquesina__pista {
+    font-size: 64px;
+    line-height: 84px;
+  }
+
+  .historia__parrafos {
+    font-size: 18px;
+  }
+
+  .como-reservar__titulo {
+    font-size: 64px;
+    line-height: 1.1;
+  }
+
+  .como-reservar__subtitulo {
+    font-size: 18px;
+  }
+
+  .pasos__numero,
+  .pasos__titulo {
+    font-size: 28px;
+  }
+
+  .cuadro {
+    width: 100%;
+    max-width: 362px;
+  }
+
+  .erasmus {
+    height: auto;
+    padding: 64px 16px 80px;
+  }
+
+  .erasmus__titulo {
+    font-size: 64px;
+    line-height: 1.2;
+  }
+
+  .erasmus__texto {
+    font-size: 18px;
+  }
+
+  .faq__titulo {
+    font-size: 28px;
+  }
+
+  .cta {
+    height: 260px;
+  }
+}

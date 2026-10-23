@@ -1,0 +1,168 @@
+/* ==========================================================
+   Lilium · Cuenta atrás hasta la apertura (2 de noviembre)
+   Reutiliza el fondo, el degradado y el encaje de la Home.
+   ========================================================== */
+
+body {
+  background: var(--fondo-oscuro);
+}
+
+.cuenta-nav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  height: 100px;
+  padding-left: 14px;
+}
+
+.cuenta {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 120px 16px 200px;
+  background: url("../assets/img/hero.png") center / cover no-repeat;
+  color: var(--fondo-oscuro);
+  text-align: center;
+  overflow: hidden;
+}
+
+.cuenta::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.5;
+  background: radial-gradient(
+    ellipse 50% 50% at 50% 50%,
+    rgba(115, 47, 35, 1) 21.154%,
+    rgba(133, 72, 61, 0.8925) 30.108%,
+    rgba(150, 98, 87, 0.785) 39.063%,
+    rgba(185, 149, 139, 0.57) 56.971%,
+    rgba(255, 250, 242, 0.14) 92.788%
+  );
+}
+
+.cuenta > * {
+  position: relative;
+}
+
+.cuenta__etiqueta {
+  font-family: var(--font-baskervville);
+  font-weight: 700;
+  font-size: 26px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.cuenta__titulo {
+  font-family: var(--font-script);
+  font-size: clamp(72px, 10vw, 140px);
+  line-height: 0.85;
+}
+
+.cuenta__reloj {
+  display: flex;
+  justify-content: center;
+  gap: clamp(12px, 3vw, 40px);
+  margin-top: 12px;
+}
+
+.cuenta__bloque {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  min-width: clamp(70px, 12vw, 150px);
+  padding: 22px 12px 18px;
+  border: 1px solid rgba(255, 245, 230, 0.6);
+  border-radius: 15px;
+  background: rgba(41, 47, 32, 0.35);
+  backdrop-filter: blur(4px);
+}
+
+.cuenta__numero {
+  font-family: var(--font-baskervville);
+  font-weight: 500;
+  font-size: clamp(40px, 7vw, 96px);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.cuenta__unidad {
+  font-family: var(--font-inter);
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.cuenta__fecha {
+  font-family: var(--font-baskerville);
+  font-size: 24px;
+}
+
+.cuenta__encaje {
+  position: absolute;
+  left: 50%;
+  bottom: -2px;
+  width: 1612px;
+  height: 176px;
+  max-width: none;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.cuenta.is-abierto .cuenta__reloj {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .cuenta {
+    gap: 22px;
+    padding-bottom: 150px;
+  }
+
+  .cuenta-nav {
+    height: 72px;
+  }
+
+  .cuenta-nav .logo {
+    width: 150px;
+    height: 72px;
+  }
+
+  .cuenta-nav .logo img {
+    left: 0;
+    top: -6px;
+    width: 140px;
+    height: 84px;
+  }
+
+  .cuenta__etiqueta {
+    font-size: 20px;
+  }
+
+  .cuenta__bloque {
+    padding: 14px 6px 12px;
+  }
+
+  .cuenta__unidad {
+    font-size: 11px;
+  }
+
+  .cuenta__fecha {
+    font-size: 19px;
+  }
+
+  .cuenta__encaje {
+    height: 110px;
+    width: 1008px;
+  }
+}
