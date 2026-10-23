@@ -2,6 +2,7 @@
 import NavReserva from "@/components/NavReserva";
 import BotonConfirmar from "@/components/BotonConfirmar";
 import { miembroPorToken, reservaDe } from "@/lib/reservas";
+import { conDb } from "@/lib/db";
 import { EVENTO } from "@/lib/config";
 
 export const dynamic = "force-dynamic";
@@ -9,8 +10,10 @@ export const metadata = { title: "Confirmar plaza · Lilium", robots: { index: f
 
 export default async function Confirmar({ params }) {
   const { token } = await params;
-  const miembro = await miembroPorToken(token);
-  const reserva = miembro ? await reservaDe(miembro.email) : null;
+  const { miembro, reserva } = await conDb(async () => {
+    const m = await miembroPorToken(token);
+    return { miembro: m, reserva: m ? await reservaDe(m.email) : null };
+  });
 
   return (
     <>

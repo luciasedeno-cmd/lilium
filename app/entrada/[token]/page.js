@@ -1,5 +1,6 @@
 // Página que abre el QR de la entrada: el equipo de la puerta comprueba si es válida
 import { miembroPorToken, reservaDe } from "@/lib/reservas";
+import { conDb } from "@/lib/db";
 import { EVENTO } from "@/lib/config";
 
 export const dynamic = "force-dynamic";
@@ -7,8 +8,10 @@ export const metadata = { title: "Entrada · Lilium", robots: { index: false } }
 
 export default async function Entrada({ params }) {
   const { token } = await params;
-  const miembro = await miembroPorToken(token);
-  const reserva = miembro ? await reservaDe(miembro.email) : null;
+  const { miembro, reserva } = await conDb(async () => {
+    const m = await miembroPorToken(token);
+    return { miembro: m, reserva: m ? await reservaDe(m.email) : null };
+  });
   const valida = Boolean(reserva && miembro.confirmado);
 
   return (

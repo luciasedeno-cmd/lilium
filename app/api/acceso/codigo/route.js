@@ -15,7 +15,12 @@ export const POST = manejar(async (req) => {
   const res = await nuevoCodigo(correo);
   if (!res.ok) return error(`Espera ${res.espera} s para pedir otro código.`, 429);
 
-  await correoCodigo(correo, res.codigo);
+  try {
+    await correoCodigo(correo, res.codigo);
+  } catch (e) {
+    console.error("Error enviando el código:", e);
+    return error("No hemos podido enviar el correo con el código. Inténtalo de nuevo en un minuto.", 502);
+  }
   // En desarrollo sin Gmail configurado, el código se devuelve para poder probar
   const demo = process.env.NODE_ENV !== "production" && !process.env.GMAIL_USER ? { codigoDemo: res.codigo } : {};
   return ok(demo);

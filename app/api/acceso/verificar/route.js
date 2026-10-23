@@ -2,7 +2,7 @@
 import { normalizarCorreo } from "@/lib/config";
 import { comprobarCodigo } from "@/lib/codigos";
 import { iniciarSesion, comprobarLlaveSesion } from "@/lib/sesion";
-import { reservaDe } from "@/lib/reservas";
+import { tieneReserva } from "@/lib/reservas";
 import { ok, error, manejar, leerJson } from "@/lib/respuestas";
 
 const MENSAJES = {
@@ -21,6 +21,5 @@ export const POST = manejar(async (req) => {
   if (!res.ok) return error(MENSAJES[res.error]);
 
   await iniciarSesion(correo);
-  const reserva = await reservaDe(correo);
-  return ok({ email: correo, tieneReserva: Boolean(reserva) });
+  return ok({ email: correo, tieneReserva: await tieneReserva(correo) });
 });
