@@ -116,8 +116,9 @@ body:has(.cuenta) {
 .cuenta__encaje {
   position: absolute;
   left: 50%;
-  bottom: -2px;
-  width: 1612px;
+  /* El dibujo del SVG deja ~32 px transparentes abajo: lo bajamos para que el encaje toque el borde */
+  bottom: -33px;
+  width: max(1612px, 110vw); /* en pantallas muy anchas se estira (el dibujo deja un margen a cada lado) */
   height: 176px;
   max-width: none;
   transform: translateX(-50%);
@@ -164,5 +165,6 @@ body:has(.cuenta) {
   .cuenta__encaje {
     height: 110px;
     width: 1008px;
+    bottom: -21px;
   }
 }
