@@ -4,7 +4,9 @@
    HORA, CONFIRMACIÓN y MI RESERVA)
    ========================================================== */
 
-main {
+/* Márgenes de las páginas de reserva. En Next.js todos los estilos se comparten entre páginas,
+   así que se excluye la Home (la que tiene .hero) para que sus secciones lleguen de borde a borde. */
+main:not(:has(.hero)) {
   padding: 0 16px 120px;
 }
 

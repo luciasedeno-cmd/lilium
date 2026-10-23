@@ -21,6 +21,7 @@
 - `app/estilos/`: CSS del diseño (`base`, `home`, `reserva`, `cuenta-atras`) y `extra.css` para lo añadido con el backend.
 - `components/`: piezas de React. `lib/`: configuración del evento (`config.js`), base de datos, sesión, correo y reglas de reserva (`reservas.js`).
 - `db/esquema.sql`: tablas y turnos del día. Se aplica con `npm run db:migrar`.
+- `db/cambiar-turnos.sql`: para cambiar los turnos desde el SQL Editor de Supabase (borra las reservas que haya).
 - `public/assets/`: imágenes y SVG. `public/prototipo.html`: prototipo antiguo de una sola página (solo referencia).
 - `.github/workflows/recordatorios.yml`: llama cada hora a `/api/cron` (plazo de 48 h y recordatorios).
 - Diseño de referencia en Figma: https://www.figma.com/design/b0Z4AyQb7eFU08qjStTuFz/Lilium-Figma?node-id=1-6

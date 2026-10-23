@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import NavReserva from "@/components/NavReserva";
+import Cargando from "@/components/Cargando";
 import PasoCabecera from "@/components/PasoCabecera";
 import { leerBorrador, guardarBorrador } from "@/lib/borrador";
 import { useSesion } from "@/lib/useSesion";
@@ -13,7 +14,7 @@ const MAX_PERSONAS = 6;
 const MIN_SALA_NUEVA = 3;
 
 export default function Integrantes() {
-  const lider = useSesion("reserva");
+  const { email: lider, error: errorSesion } = useSesion("reserva");
   const [integrantes, setIntegrantes] = useState([]);
   const [campo, setCampo] = useState("");
   const [error, setError] = useState("");
@@ -41,7 +42,7 @@ export default function Integrantes() {
     setCampo("");
   }
 
-  if (!lider) return <NavReserva />;
+  if (!lider) return <Cargando error={errorSesion} />;
 
   return (
     <>

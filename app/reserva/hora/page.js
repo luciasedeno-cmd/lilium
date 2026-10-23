@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import NavReserva from "@/components/NavReserva";
+import Cargando from "@/components/Cargando";
 import PasoCabecera from "@/components/PasoCabecera";
 import { leerBorrador, guardarBorrador, api } from "@/lib/borrador";
 import { useSesion } from "@/lib/useSesion";
@@ -65,7 +66,7 @@ function Sala({ turno, total, escogida, onElegir }) {
 }
 
 export default function Hora() {
-  const lider = useSesion("reserva");
+  const { email: lider, error: errorSesion } = useSesion("reserva");
   const router = useRouter();
   const [turnos, setTurnos] = useState(null);
   const [borrador, setBorrador] = useState({});
@@ -94,7 +95,7 @@ export default function Hora() {
     router.push("/reserva/confirmacion");
   }
 
-  if (!lider) return <NavReserva />;
+  if (!lider) return <Cargando error={errorSesion} />;
 
   return (
     <>

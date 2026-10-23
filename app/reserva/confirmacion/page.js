@@ -3,6 +3,7 @@
 import { Fragment, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import NavReserva from "@/components/NavReserva";
+import Cargando from "@/components/Cargando";
 import PasoCabecera from "@/components/PasoCabecera";
 import { leerBorrador, borrarBorrador, api } from "@/lib/borrador";
 import { useSesion } from "@/lib/useSesion";
@@ -12,7 +13,7 @@ import { EVENTO, HORAS_CONFIRMACION } from "@/lib/config";
 const Separador = () => <img className="separador" src="/assets/svg/linea-discontinua.svg" width="720" height="1" alt="" />;
 
 export default function Confirmacion() {
-  const lider = useSesion("reserva");
+  const { email: lider, error: errorSesion } = useSesion("reserva");
   const router = useRouter();
   const [borrador, setBorrador] = useState(null);
   const [turno, setTurno] = useState(null);
@@ -25,12 +26,13 @@ export default function Confirmacion() {
     setBorrador(b);
     api("/api/turnos").then((r) => {
       const t = r.ok && r.turnos.find((x) => x.id === b.turnoId);
+      if (!r.ok) return setError(r.mensaje);
       if (!t) return router.replace("/reserva/hora");
       setTurno(t);
     });
   }, [router]);
 
-  if (!lider || !borrador || !turno) return <NavReserva />;
+  if (!lider || !borrador || !turno) return <Cargando error={errorSesion || error} />;
 
   const miembros = [lider, ...(borrador.integrantes || [])];
   const nueva = turno.estado === "libre";

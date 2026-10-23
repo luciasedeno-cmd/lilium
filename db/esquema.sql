@@ -44,14 +44,18 @@ alter table miembros enable row level security;
 alter table codigos  enable row level security;
 
 -- Turnos del día (edítalos aquí o desde el panel de Supabase). Solo se insertan si la tabla está vacía.
+-- Cada turno dura una hora: 45 minutos de experiencia + 15 de cortesía para recolocar la sala.
 insert into turnos (inicio, fin, erasmus)
 select * from (values
-  ('10:00', '11:00', true),
-  ('11:15', '12:15', false),
-  ('12:30', '13:30', false),
-  ('13:45', '14:45', false),
+  ('9:00',  '10:00', false),
+  ('10:00', '11:00', false),
+  ('11:00', '12:00', false),
+  ('12:00', '13:00', false),
+  ('13:00', '14:00', true),
   ('16:00', '17:00', true),
-  ('17:15', '18:15', false),
-  ('18:30', '19:30', false)
+  ('17:00', '18:00', false),
+  ('18:00', '19:00', false),
+  ('19:00', '20:00', false),
+  ('20:00', '21:00', false)
 ) as t(inicio, fin, erasmus)
 where not exists (select 1 from turnos);

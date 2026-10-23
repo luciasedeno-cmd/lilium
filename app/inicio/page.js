@@ -92,7 +92,7 @@ export default function Inicio() {
           <div className="ubicacion__dato ubicacion__dato--cuando">
             <h2><img src="/assets/svg/pin.svg" width="28" height="28" alt="" />Cuándo</h2>
             <p>{EVENTO.fechaTexto}</p>
-            <p><i>Un único día · turnos de 60 minutos</i></p>
+            <p><i>Un único día · experiencias de 45 minutos</i></p>
           </div>
           <div className="ubicacion__dato ubicacion__dato--donde">
             <h2><img src="/assets/svg/pin.svg" width="28" height="28" alt="" />Dónde</h2>

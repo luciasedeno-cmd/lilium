@@ -3,6 +3,7 @@
 import { Suspense, useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import NavReserva from "@/components/NavReserva";
+import Cargando from "@/components/Cargando";
 import { api } from "@/lib/borrador";
 import { useSesion } from "@/lib/useSesion";
 import { fotoDe } from "@/lib/fotos";
@@ -22,7 +23,7 @@ function Avisos() {
 }
 
 function MiReservaContenido() {
-  const email = useSesion("mi-reserva");
+  const { email, error: errorSesion } = useSesion("mi-reserva");
   const router = useRouter();
   const [reserva, setReserva] = useState(null);
   const [error, setError] = useState("");
@@ -73,9 +74,7 @@ function MiReservaContenido() {
     router.replace("/inicio");
   }
 
-  if (!email || !reserva) {
-    return (<><NavReserva /><main><div className="columna"><p className="error error--centro" role="alert">{error}</p></div></main></>);
-  }
+  if (!email || !reserva) return <Cargando error={errorSesion || error} texto="Cargando tu reserva…" />;
 
   const { turno, miembros, yo, lider } = reserva;
   const esLider = lider === yo.email;
@@ -183,7 +182,7 @@ function MiReservaContenido() {
 
 export default function MiReserva() {
   return (
-    <Suspense fallback={<NavReserva />}>
+    <Suspense fallback={<Cargando texto="Cargando tu reserva…" />}>
       <MiReservaContenido />
     </Suspense>
   );

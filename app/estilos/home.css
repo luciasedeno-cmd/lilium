@@ -116,7 +116,8 @@ body:has(.header) {
 }
 
 .encaje--abajo {
-  bottom: 0;
+  /* El dibujo del encaje deja 33 px transparentes por abajo: se baja para que no asome el verde */
+  bottom: -33px;
 }
 
 /* ---------- Historia ---------- */
