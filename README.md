@@ -18,7 +18,7 @@ Web de reservas de Lilium: Next.js + Supabase (Postgres) + correos con Gmail, de
 
 ## Probar antes del 30 de octubre
 
-Hasta la fecha de apertura no se pueden pedir códigos ni reservar. Para probar en Vercel, añade `PERMITIR_ANTES_DE_APERTURA=true`, prueba, y antes de abrir **quítala y vacía las reservas de prueba** en Supabase (`truncate miembros, reservas, codigos cascade; update turnos set equipo = null;`).
+Hasta la fecha de apertura solo pueden entrar y reservar los **correos de prueba**: `luciasedeno@alumnado.esada.es` (en `lib/config.js`) y los que añadas en la variable `CORREOS_PRUEBA` de Vercel, separados por comas. Las personas que añadas a tu grupo reciben su correo y pueden confirmar normalmente. Para abrirlo a todo el mundo durante una prueba existe `PERMITIR_ANTES_DE_APERTURA=true`. Antes de abrir, **vacía las reservas de prueba** en Supabase (`truncate miembros, reservas, codigos cascade; update turnos set equipo = null;`).
 
 ## Trabajar en local
 
