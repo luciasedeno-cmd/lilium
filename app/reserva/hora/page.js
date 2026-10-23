@@ -1,6 +1,6 @@
 "use client";
 // Paso 2 · Elegir turno
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import NavReserva from "@/components/NavReserva";
@@ -71,6 +71,8 @@ export default function Hora() {
   const [turnos, setTurnos] = useState(null);
   const [borrador, setBorrador] = useState({});
   const [error, setError] = useState("");
+  const botonContinuar = useRef(null);
+  const [recienElegido, setRecienElegido] = useState(0); // cambia en cada clic para bajar hasta el botón
 
   useEffect(() => {
     setBorrador(leerBorrador());
@@ -87,7 +89,16 @@ export default function Hora() {
     if (bloqueo) return setError(bloqueo);
     setError("");
     actualizar({ turnoId: turno.id });
+    setRecienElegido((n) => n + 1);
   }
+
+  // Al elegir un turno, la página baja sola hasta el botón «Continuar» (después de pintarse,
+  // por si aparece el recuadro del nombre del equipo encima del botón)
+  useEffect(() => {
+    if (!recienElegido || !botonContinuar.current) return;
+    const suave = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    botonContinuar.current.scrollIntoView({ behavior: suave ? "smooth" : "auto", block: "center" });
+  }, [recienElegido]);
 
   function continuar(e) {
     e.preventDefault();
@@ -145,7 +156,7 @@ export default function Hora() {
             </div>
           )}
 
-          <a className="boton hora-continuar" href="/reserva/confirmacion" onClick={continuar} aria-disabled={escogido ? undefined : "true"}>
+          <a className="boton hora-continuar" href="/reserva/confirmacion" ref={botonContinuar} onClick={continuar} aria-disabled={escogido ? undefined : "true"}>
             Continuar y confirmar →
           </a>
           <p className="error" role="alert">{error}</p>

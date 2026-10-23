@@ -166,36 +166,12 @@ body:has(.header) {
   min-width: 0;
 }
 
-.marquesina {
-  width: calc(50vw + 3px);
-  overflow: hidden;
-}
-
-.marquesina__pista {
-  display: flex;
-  width: max-content;
+/* Título fijo «¿Qué es Lilium?» (antes era una marquesina en movimiento) */
+.historia__titulo {
   font-family: var(--font-script);
   font-size: 100px;
   line-height: 128px;
   color: var(--melocoton);
-  white-space: nowrap;
-  animation: marquesina 26s linear infinite;
-}
-
-.marquesina__pista span {
-  padding-right: 0.25em;
-}
-
-@keyframes marquesina {
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .marquesina__pista {
-    animation: none;
-  }
 }
 
 .historia__parrafos {
@@ -539,16 +515,17 @@ body:has(.header) {
 /* ---------- Preguntas frecuentes ---------- */
 .faq {
   position: relative;
-  height: 754px;
+  /* Crece con el número de preguntas (mínimo, la altura del diseño) */
+  min-height: 754px;
+  padding: 93px 0 80px;
   background:
     linear-gradient(134.83deg, rgba(41, 47, 32, 0.31) 12.318%, rgba(255, 245, 230, 0.31) 29.818%, rgba(115, 47, 35, 0.31) 50.965%),
     url("/assets/img/faq-fondo.jpg") center / cover no-repeat;
 }
 
 .faq__bloque {
-  position: absolute;
-  left: calc(50% - 720px + 861px);
-  top: 93px;
+  position: relative;
+  margin-left: calc(50% - 720px + 861px);
   display: flex;
   flex-direction: column;
   gap: 21px;
@@ -719,9 +696,6 @@ body:has(.header) {
     max-width: 629px;
   }
 
-  .marquesina {
-    width: 100%;
-  }
 
   .pasos {
     height: auto;
@@ -894,7 +868,7 @@ body:has(.header) {
     height: 300px;
   }
 
-  .marquesina__pista {
+  .historia__titulo {
     font-size: 64px;
     line-height: 84px;
   }

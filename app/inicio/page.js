@@ -13,7 +13,7 @@ export const metadata = {
 const CUADROS = [
   { img: "ritual-correo.png", alt: "Mujer escribiendo una carta", titulo: "Correo de ESADA", texto: "Todas las personas del grupo necesitan su correo nombreapellido@alumnado.esada.es." },
   { img: "ritual-personas.png", alt: "Grupo de personas reunidas", titulo: "De 3 a 6 personas", texto: "Hacen falta 3 para abrir una sala nueva. Máximo 6 por turno" },
-  { img: "ritual-confirmar.png", alt: "Retrato de una dama con abanico", titulo: "Confirmar en 48 h", texto: "Cada integrante confirma desde su correo. Llegad 10 minutos antes de vuestra hora" },
+  { img: "ritual-confirmar.png", alt: "Retrato de una dama con abanico", titulo: "Confirmar en 48 h", texto: "Cada integrante confirma desde su correo. Llegad 15 minutos antes de vuestra hora" },
 ];
 
 export default function Inicio() {
@@ -28,7 +28,7 @@ export default function Inicio() {
             <span className="hero__linea hero__linea--1">Cinco guías</span>
             <span className="hero__linea hero__linea--2">Un destino</span>
           </h1>
-          <Link className="boton-reserva hero__boton" href="/acceso">Reserva ahora</Link>
+          <Link className="boton-reserva hero__boton" href="/reserva/integrantes">Reserva ahora</Link>
         </section>
 
         {/* Historia: ¿Qué es Lilium? */}
@@ -42,14 +42,11 @@ export default function Inicio() {
             </div>
 
             <div className="historia__texto">
-              <div className="marquesina" aria-label="¿Qué es Lilium?">
-                <p className="marquesina__pista" aria-hidden="true">
-                  <span>¿Qué es Lilium?¿Qué es Lilium?</span><span>¿Qué es Lilium?¿Qué es Lilium?</span>
-                </p>
-              </div>
+              <h2 className="historia__titulo">¿Qué es Lilium?</h2>
               <div className="historia__parrafos">
-                <p>Lilium nace de una <b>fiesta</b> que nunca termina: un prado en flor, una <b>hermandad</b> vestida de blanco y un <b>ritual</b> que nadie recuerda haber empezado. Durante <b>cuarenta y cinco</b> minutos, vuestro grupo tendrá que <b>descifrar</b> qué se celebra allí antes de que caiga la noche… si es que alguna vez cae.</p>
-                <p><b>Reservar</b> es sencillo y está pensado para que nadie se quede fuera: <b>entra con tu correo de ESADA, reúne a tu gente (de 3 a 6) y elegid hora. Si sois menos, os unimos a un grupo que esté formándose.</b></p>
+                <p>Dicen que algunos caminos están destinados a cruzarse. El de ellas lo hizo sin aviso: cinco desconocidas que se reconocieron al instante. A la luz de las velas unieron sus energías y nació Lilium.</p>
+                <p>Un libro antiguo y una noche de luna llena lo cambiaron todo. Ahora ha llegado el momento de abrir el círculo.</p>
+                <p>Este retiro es para ti, para soltar el cansancio de tantas entregas y liberar lo que pesa. Solo tienes que entrar: ellas se encargan del resto.</p>
               </div>
             </div>
           </div>

@@ -19,7 +19,7 @@ export default function HomeHeader() {
         <a href="#paraiso" onClick={cerrar}>El paraíso</a>
         <a href="#como-funciona" onClick={cerrar}>Cómo funciona</a>
         <a href="#faq" onClick={cerrar}>FaQ</a>
-        <Link className="boton-reserva" href="/acceso" onClick={cerrar}>Reserva ahora</Link>
+        <Link className="boton-reserva" href="/reserva/integrantes" onClick={cerrar}>Reserva ahora</Link>
       </nav>
     </header>
   );

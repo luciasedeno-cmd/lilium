@@ -1,4 +1,4 @@
-// Portada: cuenta atrás hasta la apertura de las reservas. Al llegar la fecha, lleva a la Home.
+// Portada: cuenta atrás hasta la apertura de las reservas. Al llegar la fecha, lleva a confirmar el correo.
 import { redirect } from "next/navigation";
 import { APERTURA } from "@/lib/config";
 import CuentaAtras from "@/components/CuentaAtras";
@@ -11,7 +11,7 @@ export const metadata = {
 };
 
 export default function Portada() {
-  if (Date.now() >= APERTURA.getTime()) redirect("/inicio");
+  if (Date.now() >= APERTURA.getTime()) redirect("/acceso");
 
   return (
     <>

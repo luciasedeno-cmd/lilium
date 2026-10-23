@@ -33,7 +33,7 @@ function MiReservaContenido() {
   const cargar = useCallback(async () => {
     const r = await api("/api/mi-reserva");
     if (!r.ok) return setError(r.mensaje);
-    if (!r.reserva) return router.replace("/reserva/integrantes");
+    if (!r.reserva) return router.replace("/inicio");
     setReserva(r.reserva);
   }, [router]);
 
@@ -97,7 +97,7 @@ function MiReservaContenido() {
             <dl className="datos">
               <div className="datos__fila"><dt>Día</dt><dd>{EVENTO.fechaTexto}</dd></div>
               <Separador />
-              <div className="datos__fila"><dt>Hora</dt><dd>{turno.inicio}-{turno.fin} · llegad 10 min antes</dd></div>
+              <div className="datos__fila"><dt>Hora</dt><dd>{turno.inicio}-{turno.fin} · llegad 15 min antes</dd></div>
               <Separador />
               <div className="datos__fila"><dt>Lugar</dt><dd>{EVENTO.lugar}</dd></div>
               <Separador />

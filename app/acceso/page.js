@@ -21,7 +21,7 @@ export default function Acceso() {
   useEffect(() => {
     setCorreo(leerBorrador().correo || "");
     api("/api/sesion").then((s) => {
-      if (s.email) router.replace(s.tieneReserva ? "/mi-reserva" : "/reserva/integrantes");
+      if (s.email) router.replace(s.tieneReserva ? "/mi-reserva" : "/inicio");
     });
   }, [router]);
 
@@ -54,11 +54,11 @@ export default function Acceso() {
     const res = await api("/api/acceso/verificar", { metodo: "POST", datos: { email: correo, codigo: codigo.trim() } });
     setEnviando(false);
     if (!res.ok) return setError(res.mensaje);
-    router.replace(res.tieneReserva ? "/mi-reserva" : "/reserva/integrantes");
+    router.replace(res.tieneReserva ? "/mi-reserva" : "/inicio");
   }
 
   return (
-    <>
+    <div className="pagina-acceso">
       <NavReserva />
       <main>
         <section className="acceso">
@@ -99,6 +99,6 @@ export default function Acceso() {
           )}
         </section>
       </main>
-    </>
+    </div>
   );
 }

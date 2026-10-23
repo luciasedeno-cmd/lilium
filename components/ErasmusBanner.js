@@ -42,7 +42,7 @@ export default function ErasmusBanner() {
   const verTurnos = () => {
     guardarBorrador({ soloErasmus: true });
     setAbierto(false);
-    router.push("/acceso");
+    router.push("/reserva/integrantes");
   };
 
   return (

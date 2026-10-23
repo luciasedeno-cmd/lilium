@@ -1,14 +1,18 @@
 "use client";
 // Preguntas frecuentes (acordeón: solo una abierta a la vez)
 import { useState } from "react";
+import { CONTACTO } from "@/lib/config";
 
 const PREGUNTAS = [
-  ["¿Cuánto tiempo hay para confirmar?", "48 horas desde que se crea la reserva. Cada integrante confirma desde el enlace de su correo; os avisamos cuando queden 12 h."],
-  ["¿Qué pasa si alguien no confirma?", "La reserva sigue adelante para las personas que hayan confirmado. Su plaza queda libre para otro grupo en formación."],
-  ["¿Puedo cambiar de hora?", "Sí, desde «Mi reserva» mientras queden plazas libres en otro turno del mismo día."],
-  ["¿Cómo cancelo?", "Desde «Mi reserva» o desde el enlace del correo de confirmación. Si eres líder, avisaremos al resto del grupo."],
-  ["¿Entrada digital y entrada física?", "Recibirás una entrada digital con un QR en tu correo. No hace falta imprimirla: basta con enseñarla en la puerta."],
-  ["¿Qué es el aviso de luces?", "Durante la experiencia hay cambios de luz y momentos de penumbra. Si alguien del grupo es sensible a ellos, avísanos antes."],
+  ["¿Cuánto dura?", "Una hora dentro de la sala. Llega 15 minutos antes, que hay una pequeña bienvenida."],
+  ["¿Qué pasa si alguien de mi grupo no confirma?", "Tenéis 48 horas. Si al final confirmáis 3 o más, seguís adelante y las plazas sin confirmar se liberan. Si quedáis 1 o 2, pasáis a ser un grupo abierto y otras personas pueden completarlo."],
+  ["¿Puedo cambiar de hora?", "Sí, desde el enlace que te llega al correo. El cambio es solo tuyo: el resto de tu grupo se queda en su hora."],
+  ["¿Y si no puedo ir?", "Cancela desde tu enlace y tu plaza queda libre para otra persona. Si fuiste tú quien hizo la reserva, también puedes cancelar la del grupo entero."],
+  ["¿Qué es eso que aparece al final de mi entrada?", "Cada persona recibe un fragmento distinto. Juntadlos antes del día y decidle al llegar a la guía lo que habéis descubierto. Merece la pena."],
+  ["¿Hay entrada física?", "Una por grupo. Os la dan en la puerta cuando os escanean el QR. Guardadla bien, que la vais a necesitar."],
+  ["El horario que quiero está lleno, ¿qué hago?", "Pulsa «Avísame si se libera una plaza». Si alguien la suelta, te escribimos."],
+  ["¿Hay luces o efectos fuertes?", `Puede que sí. Antes de reservar verás un aviso con todo lo que tienes que saber. Si tienes alguna sensibilidad, escríbenos a ${CONTACTO}.`],
+  ["¿Es de verdad un retiro espiritual?", "Hay cosas que es mejor vivirlas en persona."],
 ];
 
 export default function Faq() {

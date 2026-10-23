@@ -312,3 +312,101 @@
     height: 34px;
   }
 }
+
+/* ---------- Página de confirmar el correo: ocupa justo la pantalla, sin scroll ---------- */
+html:has(.pagina-acceso),
+body:has(.pagina-acceso) {
+  height: 100%;
+  overflow: hidden;
+}
+
+.pagina-acceso {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100svh; /* en móvil, la altura real sin las barras del navegador */
+  overflow: hidden;
+}
+
+.pagina-acceso main {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px 16px;
+}
+
+.pagina-acceso .acceso {
+  margin: 0 auto;
+}
+
+/* Pantallas bajitas (portátiles pequeños): se reduce el tamaño para que todo quepa */
+@media (max-height: 820px) {
+  .pagina-acceso .acceso {
+    gap: 14px;
+    padding: 24px 29px;
+  }
+
+  .pagina-acceso .acceso__titulo {
+    font-size: 64px;
+    line-height: 1.1;
+  }
+
+  .pagina-acceso .acceso__intro {
+    font-size: 20px;
+  }
+
+  .pagina-acceso .acceso form {
+    gap: 14px;
+  }
+}
+
+@media (max-height: 680px) {
+  .pagina-acceso .nav-reserva {
+    padding-top: 8px;
+    padding-bottom: 0;
+  }
+
+  .pagina-acceso .acceso__titulo {
+    font-size: 48px;
+  }
+
+  .pagina-acceso .acceso__intro,
+  .pagina-acceso .acceso label,
+  .pagina-acceso .acceso__etiqueta {
+    font-size: 18px;
+  }
+
+  .pagina-acceso .acceso .boton {
+    height: 44px;
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 760px) {
+  .pagina-acceso .acceso {
+    gap: 12px;
+    padding: 22px 18px;
+  }
+
+  .pagina-acceso .acceso__titulo {
+    font-size: 40px;
+    white-space: normal;
+    line-height: 1.1;
+  }
+
+  .pagina-acceso .acceso__intro {
+    font-size: 17px;
+  }
+
+  .pagina-acceso .acceso label,
+  .pagina-acceso .acceso__etiqueta {
+    font-size: 20px;
+  }
+}
+
+/* La cabecera ocupa todo el ancho (en columna, si no, se encoge al centro) */
+.pagina-acceso .nav-reserva {
+  width: 100%;
+}

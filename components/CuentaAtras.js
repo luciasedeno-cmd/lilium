@@ -23,7 +23,7 @@ export default function CuentaAtras({ apertura }) {
     const actualizar = () => {
       const r = objetivo - Date.now();
       setRestante(r);
-      if (r <= 0) window.location.replace("/inicio");
+      if (r <= 0) window.location.replace("/acceso");
     };
     actualizar();
     const intervalo = setInterval(actualizar, 1000);

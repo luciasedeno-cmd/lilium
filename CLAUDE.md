@@ -15,12 +15,15 @@
 - Variables de entorno: ver `.env.example`.
 
 ## Estructura
-- `app/page.js`: portada con la cuenta atrás hasta el 30 de octubre; al llegar la fecha redirige a `/inicio`.
+- Orden de las páginas: 1) `/acceso` (confirmar el correo, ocupa justo la pantalla, sin scroll) → 2) `/inicio` (Home) → 3) reserva en 3 pasos. Quien ya tiene reserva (como líder o dentro de un grupo) va a `/mi-reserva` al entrar.
+- `middleware.js`: sin sesión, `/inicio`, `/reserva/*` y `/mi-reserva` llevan a `/acceso`.
+- `app/page.js`: portada con la cuenta atrás hasta el 30 de octubre; al llegar la fecha redirige a `/acceso`.
 - `app/inicio`, `app/acceso`, `app/reserva/{integrantes,hora,confirmacion}`, `app/mi-reserva`: páginas de la web.
 - `app/confirmar/[token]`: enlace del correo para confirmar la plaza. `app/entrada/[token]`: lo que abre el QR de la entrada.
 - `app/estilos/`: CSS del diseño (`base`, `home`, `reserva`, `cuenta-atras`) y `extra.css` para lo añadido con el backend.
 - `components/`: piezas de React. `lib/`: configuración del evento (`config.js`), base de datos, sesión, correo y reglas de reserva (`reservas.js`).
 - `db/esquema.sql`: tablas y turnos del día. Se aplica con `npm run db:migrar`.
+- `db/borrar-reservas.sql`: vacía todas las reservas (los turnos se quedan).
 - `db/cambiar-turnos.sql`: para cambiar los turnos desde el SQL Editor de Supabase (borra las reservas que haya).
 - `public/assets/`: imágenes y SVG. `public/prototipo.html`: prototipo antiguo de una sola página (solo referencia).
 - `.github/workflows/recordatorios.yml`: llama cada hora a `/api/cron` (plazo de 48 h y recordatorios).
