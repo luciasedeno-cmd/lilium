@@ -405,7 +405,8 @@ details.acc .acc-body p:last-child{margin:0}
 .modal-erasmus .modal-actions{justify-content:center;gap:30px;margin-top:clamp(16px,3vw,36px)}
 .modal-erasmus .modal-actions .btn-erasmus{flex:0 0 auto;min-width:195px}
 .modal-erasmus .x{right:14%;top:15%;border-color:var(--verde);color:var(--verde)}
-@media (max-width:640px){.modal.modal-erasmus{aspect-ratio:auto;padding:64px 28px;background-size:cover;border-radius:15px}}
+.modal-back:has(.modal-erasmus){align-items:center;padding:16px}
+@media (max-width:640px){.modal.modal-erasmus{width:100%;aspect-ratio:auto;padding:128px 60px 120px;background-size:132% 112%;background-position:center}.modal-erasmus h2{font-size:22px}.modal-erasmus .m-body p{font-size:15px}.modal-erasmus .x{top:56px;right:40px;width:34px;height:34px}.modal-erasmus .modal-actions{flex-direction:column;align-items:stretch;gap:12px}.modal-erasmus .modal-actions .btn-erasmus{min-width:0;font-size:17px}}
 
 /* Emails */
 .inbox{display:grid;gap:12px}
@@ -863,7 +864,7 @@ function pVerificar() {
           state.draft = { miembros: [], turnoId: null, equipo: "" };
           const r = api.buscarReservaDe(state.sesion.email);
           toast(I.check + L("Correo verificado", "Email verified"), "ok");
-          go(r ? "/mi-reserva" : "/home");
+          go(r ? "/mi-reserva" : state.filtroErasmus ? "/reserva/2" : "/home");
         });
       }
     }
@@ -992,9 +993,6 @@ function pHome() {
       <button type="button" data-act="legal" data-v="terminos">${L("Términos y Condiciones", "Terms & Conditions")}</button>
       <button type="button" data-act="legal" data-v="aviso">${L("Aviso Legal", "Legal Notice")}</button>
     </div></footer>`,
-    mount() {
-      if (!state.popupVisto) { state.popupVisto = true; setTimeout(() => rutaActual === "/home" && !$(".modal") && popupErasmus(), 350); }
-    }
   };
 }
 function irPaso(i) {
@@ -1469,6 +1467,8 @@ function render(mantenerScroll = true) {
   if (mantenerScroll) window.scrollTo(0, y);
   else { window.scrollTo(0, 0); const h = $("#h1"); h && !$(".modal") && h.focus({ preventScroll: true }); }
   renderDemo();
+  // ERASMUS BANNER: pop-up que sale una vez al entrar en la web, en cualquier página
+  if (!state.popupVisto) { state.popupVisto = true; setTimeout(() => !$(".modal") && popupErasmus(), 350); }
 }
 window.addEventListener("hashchange", router);
 
