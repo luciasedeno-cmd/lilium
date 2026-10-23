@@ -55,7 +55,8 @@ export default function Inicio() {
           <img className="encaje encaje--abajo" src="/assets/svg/banner-encaje-reserva.svg" width="1612" height="176" alt="" />
         </section>
 
-        {/* ¿Cómo reservar? */}
+        {/* ¿Cómo reservar? + carrusel: la parte crema se queda quieta y la roja sube tapándola */}
+        <div className="como-bloque">
         <section className="como-reservar" id="como-funciona">
           <h2 className="como-reservar__titulo">¿Cómo reservar?</h2>
           <p className="como-reservar__subtitulo">Cinco sencillos pasos para completar la inscripción</p>
@@ -64,6 +65,7 @@ export default function Inicio() {
 
         {/* Cómo funciona (carrusel de 5 pasos) */}
         <CarruselPasos />
+        </div>
 
         {/* ¿Qué necesita el ritual? */}
         <section className="ritual">

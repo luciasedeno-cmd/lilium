@@ -1,6 +1,7 @@
 "use client";
 // Carrusel «Cómo funciona»: los 5 pasos de la reserva (variantes del componente de Figma)
-import { useCallback, useEffect, useRef, useState } from "react";
+// La barrita se va rellenando hasta el siguiente punto; al llenarse, pasa sola al paso siguiente.
+import { Fragment, useEffect, useState } from "react";
 
 const PASOS = [
   { titulo: "Entra con tu correo", descripcion: ["Te mandamos un código a tu correo nombreapellido@alumnado.esada.es para que verifiques tu cuenta."] },
@@ -13,41 +14,32 @@ const PASOS = [
 export default function CarruselPasos() {
   const [actual, setActual] = useState(0);
   const [cambiando, setCambiando] = useState(false);
-  const temporizador = useRef(null);
-  const reduceMotion = useRef(false);
-  const actualRef = useRef(0);
+  const [pausado, setPausado] = useState(false);
 
-  const mostrar = useCallback((indice) => {
+  // Cambia de paso con un pequeño fundido del texto
+  function mostrar(indice) {
     const siguiente = (indice + PASOS.length) % PASOS.length;
     setCambiando(true);
-    actualRef.current = siguiente;
     setTimeout(() => {
       setActual(siguiente);
       setCambiando(false);
-    }, reduceMotion.current ? 0 : 250);
-  }, []);
+    }, 250);
+  }
 
-  const detener = () => clearInterval(temporizador.current);
-  const iniciar = useCallback(() => {
-    if (reduceMotion.current) return;
-    clearInterval(temporizador.current);
-    temporizador.current = setInterval(() => mostrar(actualRef.current + 1), 6000);
-  }, [mostrar]);
-
+  // Quien tiene activado «reducir movimiento» en su móvil u ordenador no ve animaciones
+  // ni cambios automáticos (el CSS quita la animación y por eso nunca termina)
   useEffect(() => {
-    reduceMotion.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    iniciar();
-    return detener;
-  }, [iniciar]);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) setPausado(true);
+  }, []);
 
   const paso = PASOS[actual];
   return (
     <section
-      className={`pasos${cambiando ? " is-cambiando" : ""}`}
+      className={`pasos${cambiando ? " is-cambiando" : ""}${pausado ? " is-pausado" : ""}`}
       aria-roledescription="carrusel"
       aria-label="Pasos de la reserva"
-      onMouseEnter={detener}
-      onMouseLeave={iniciar}
+      onMouseEnter={() => setPausado(true)}
+      onMouseLeave={() => setPausado(window.matchMedia("(prefers-reduced-motion: reduce)").matches)}
       onKeyDown={(e) => {
         if (e.key === "ArrowRight") mostrar(actual + 1);
         if (e.key === "ArrowLeft") mostrar(actual - 1);
@@ -58,14 +50,23 @@ export default function CarruselPasos() {
       </div>
 
       <div className="pasos__texto" aria-live="polite">
-        <div className="pasos__barra">
-          <img src={`/assets/svg/progreso-${actual + 1}.svg`} width="316" height="12" alt="" />
-          <div className="pasos__puntos" role="tablist" aria-label="Elegir paso">
-            {PASOS.map((_, i) => (
-              <button key={i} type="button" role="tab" aria-label={`Paso ${i + 1}`} aria-selected={i === actual}
-                onClick={() => { mostrar(i); iniciar(); }} />
-            ))}
-          </div>
+        {/* Barrita de progreso: puntos (se pueden pulsar) unidos por líneas */}
+        <div className="pasos__barra" role="tablist" aria-label="Elegir paso">
+          {PASOS.map((_, i) => (
+            <Fragment key={i}>
+              {i > 0 && (
+                <span className={`pasos__linea${i <= actual ? " is-llena" : ""}`} aria-hidden="true">
+                  {/* La línea que va hacia el siguiente punto se rellena poco a poco */}
+                  {i === actual + 1 && <span key={actual} className="pasos__relleno" />}
+                </span>
+              )}
+              <button type="button" role="tab" aria-label={`Paso ${i + 1}`} aria-selected={i === actual}
+                className={`pasos__punto${i < actual ? " is-hecho" : ""}${i === actual ? " is-actual" : ""}`}
+                onClick={() => mostrar(i)} />
+            </Fragment>
+          ))}
+          {/* Reloj invisible: dura lo mismo que el relleno y, al acabar, pasa al siguiente paso */}
+          <span key={`reloj-${actual}`} className="pasos__reloj" aria-hidden="true" onAnimationEnd={() => mostrar(actual + 1)} />
         </div>
         <p className="pasos__numero">/0{actual + 1}</p>
         <h3 className="pasos__titulo">{paso.titulo}</h3>
