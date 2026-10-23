@@ -19,6 +19,19 @@ body:has(.header) {
   height: 100px;
   padding: 0 calc(50% - 720px + 168px) 0 calc(50% - 720px + 14px);
   background: var(--fondo);
+  transition: box-shadow 0.3s;
+}
+
+/* Al bajar por la página, una sombra suave separa la cabecera del contenido */
+.header.is-bajado {
+  box-shadow: 0 1px 0 rgba(41, 47, 32, 0.08), 0 6px 18px rgba(41, 47, 32, 0.08);
+}
+
+/* Al pulsar un enlace del menú, el apartado no queda escondido bajo la cabecera */
+#paraiso,
+#como-funciona,
+#faq {
+  scroll-margin-top: 100px;
 }
 
 .header__nav {
@@ -36,8 +49,21 @@ body:has(.header) {
   transition: background-size 0.25s;
 }
 
-.header__nav > a:not(.boton-reserva):hover {
+/* Subrayado al pasar el ratón y en el apartado que se está viendo */
+.header__nav > a:not(.boton-reserva):hover,
+.header__nav > a.is-activo {
   background-size: 100% 1px;
+}
+
+.header__nav > a.is-activo {
+  color: var(--terracota);
+}
+
+.header__nav a:focus-visible,
+.header__menu:focus-visible {
+  outline: 2px solid var(--terracota);
+  outline-offset: 4px;
+  border-radius: 2px;
 }
 
 .header__menu {
@@ -894,28 +920,86 @@ body:has(.header) {
     height: 84px;
   }
 
-  .header__menu {
-    display: block;
-    font-family: var(--font-baskerville);
-    font-size: 20px;
+  #paraiso,
+  #como-funciona,
+  #faq {
+    scroll-margin-top: 72px;
   }
 
+  /* Botón de tres rayas que se convierte en ✕ al abrir el menú */
+  .header__menu {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+  }
+
+  .header__rayas {
+    position: relative;
+    width: 24px;
+    height: 16px;
+  }
+
+  .header__rayas span {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 1.5px;
+    border-radius: 1px;
+    background: var(--verde-oscuro);
+    transition: transform 0.3s, opacity 0.2s, top 0.3s;
+  }
+
+  .header__rayas span:nth-child(1) { top: 0; }
+  .header__rayas span:nth-child(2) { top: 7px; }
+  .header__rayas span:nth-child(3) { top: 14px; }
+
+  .header.is-open .header__rayas span:nth-child(1) { top: 7px; transform: rotate(45deg); }
+  .header.is-open .header__rayas span:nth-child(2) { opacity: 0; }
+  .header.is-open .header__rayas span:nth-child(3) { top: 7px; transform: rotate(-45deg); }
+
+  /* Menú desplegable: baja suavemente desde la cabecera */
   .header__nav {
     position: absolute;
     top: 100%;
     left: 0;
     right: 0;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 20px;
-    padding: 24px 16px;
+    align-items: stretch;
+    gap: 0;
+    padding: 8px 16px 24px;
     background: var(--fondo);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
-    display: none;
+    border-top: 1px solid rgba(41, 47, 32, 0.1);
+    box-shadow: 0 12px 24px rgba(41, 47, 32, 0.14);
+    font-size: 22px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: opacity 0.25s, transform 0.25s, visibility 0s 0.25s;
   }
 
   .header.is-open .header__nav {
-    display: flex;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition: opacity 0.25s, transform 0.25s;
+  }
+
+  /* Cada enlace ocupa una fila ancha, fácil de tocar con el dedo */
+  .header__nav > a:not(.boton-reserva) {
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(41, 47, 32, 0.1);
+    background: none;
+  }
+
+  .header__nav > a.is-activo {
+    background: none;
+  }
+
+  .header__nav .boton-reserva {
+    margin-top: 20px;
+    font-size: 22px;
   }
 
   .hero {
