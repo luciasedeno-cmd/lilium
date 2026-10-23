@@ -1,7 +1,13 @@
 /* ==========================================================
-   Lilium · Cuenta atrás hasta la apertura (2 de noviembre)
+   Lilium · Cuenta atrás hasta la apertura (30 de octubre)
    Reutiliza el fondo, el degradado y el encaje de la Home.
    ========================================================== */
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
 
 body {
   background: var(--fondo-oscuro);
@@ -25,10 +31,10 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 28px;
-  min-height: 100vh;
-  min-height: 100svh;
-  padding: 120px 16px 200px;
+  gap: clamp(16px, 3.5vh, 36px);
+  height: 100vh;
+  height: 100svh;
+  padding: 100px 16px clamp(110px, 18vh, 180px);
   background: url("../assets/img/hero.png") center / cover no-repeat;
   color: var(--fondo-oscuro);
   text-align: center;
@@ -54,18 +60,16 @@ body {
   position: relative;
 }
 
-.cuenta__etiqueta {
-  font-family: var(--font-baskervville);
-  font-weight: 700;
-  font-size: 26px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
 .cuenta__titulo {
   font-family: var(--font-script);
-  font-size: clamp(72px, 10vw, 140px);
-  line-height: 0.85;
+  font-size: clamp(34px, min(11vw, 12vh), 120px);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Logotipo en blanco */
+.cuenta-nav .logo img {
+  filter: brightness(0) invert(1);
 }
 
 .cuenta__reloj {
@@ -79,9 +83,9 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: clamp(4px, 1vh, 10px);
   min-width: clamp(70px, 12vw, 150px);
-  padding: 22px 12px 18px;
+  padding: clamp(10px, 2.2vh, 22px) 12px clamp(8px, 1.8vh, 18px);
   border: 1px solid rgba(255, 245, 230, 0.6);
   border-radius: 15px;
   background: rgba(41, 47, 32, 0.35);
@@ -91,7 +95,7 @@ body {
 .cuenta__numero {
   font-family: var(--font-baskervville);
   font-weight: 500;
-  font-size: clamp(40px, 7vw, 96px);
+  font-size: clamp(32px, min(7vw, 10vh), 96px);
   line-height: 1;
   font-variant-numeric: tabular-nums;
 }
@@ -125,8 +129,7 @@ body {
 
 @media (max-width: 600px) {
   .cuenta {
-    gap: 22px;
-    padding-bottom: 150px;
+    padding-top: 72px;
   }
 
   .cuenta-nav {
@@ -143,10 +146,6 @@ body {
     top: -6px;
     width: 140px;
     height: 84px;
-  }
-
-  .cuenta__etiqueta {
-    font-size: 20px;
   }
 
   .cuenta__bloque {

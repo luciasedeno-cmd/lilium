@@ -1,9 +1,8 @@
-// Lilium · Cuenta atrás hasta el 2 de noviembre de 2026, 00:00 (hora peninsular, CET)
+// Lilium · Cuenta atrás hasta el 30 de octubre de 2026, 00:00 (hora peninsular, CET)
 
-const APERTURA = new Date("2026-11-02T00:00:00+01:00");
+const APERTURA = new Date("2026-10-30T00:00:00+01:00");
 
 const cuenta = document.querySelector(".cuenta");
-const etiqueta = document.querySelector("[data-cuenta-etiqueta]");
 const campos = {
   dias: document.querySelector("[data-dias]"),
   horas: document.querySelector("[data-horas]"),
@@ -18,7 +17,6 @@ function actualizar() {
 
   if (restante <= 0) {
     cuenta.classList.add("is-abierto");
-    etiqueta.textContent = "El prado ya está abierto";
     clearInterval(intervalo);
     return;
   }
