@@ -1,5 +1,9 @@
 # Lilium · notas para Claude
 
+## Cómo hablar con el equipo
+- El equipo no sabe nada de programación ni de webs. Cada paso que se les pida hacer, o que haga Claude, va con una explicación sencilla de **qué es** y **para qué sirve**, sin jerga (o explicando cada palabra técnica con una comparación de la vida diaria).
+- Instrucciones paso a paso, numeradas, diciendo exactamente dónde pulsar y qué deberían ver si ha ido bien.
+
 ## Ramas
 - Se trabaja **solo en la rama `main`**. No crear ramas nuevas: los commits van directamente a `main` y se suben con `git push origin main`.
 - Cada push a `main` se despliega en Vercel (producción). No subir nada a medias: compilar (`npm run build`) y probar antes.
