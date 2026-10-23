@@ -1,7 +1,7 @@
 "use client";
 // Carrusel «Cómo funciona»: los 5 pasos de la reserva (variantes del componente de Figma)
 // La barrita se va rellenando hasta el siguiente punto; al llenarse, pasa sola al paso siguiente.
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 
 const PASOS = [
   { titulo: "Entra con tu correo", descripcion: ["Te mandamos un código a tu correo nombreapellido@alumnado.esada.es para que verifiques tu cuenta."] },
@@ -14,7 +14,8 @@ const PASOS = [
 export default function CarruselPasos() {
   const [actual, setActual] = useState(0);
   const [cambiando, setCambiando] = useState(false);
-  const [pausado, setPausado] = useState(false);
+  const [pausado, setPausado] = useState(true); // empieza parado hasta que la sección se ve en pantalla
+  const seccion = useRef(null);
 
   // Cambia de paso con un pequeño fundido del texto
   function mostrar(indice) {
@@ -26,10 +27,14 @@ export default function CarruselPasos() {
     }, 250);
   }
 
+  // La barrita solo avanza mientras la sección se ve en pantalla (si no, se para donde esté).
   // Quien tiene activado «reducir movimiento» en su móvil u ordenador no ve animaciones
-  // ni cambios automáticos (el CSS quita la animación y por eso nunca termina)
+  // ni cambios automáticos (el CSS quita la animación y por eso nunca termina).
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) setPausado(true);
+    const sinMovimiento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const vigia = new IntersectionObserver(([e]) => setPausado(sinMovimiento || !e.isIntersecting), { threshold: 0.4 });
+    vigia.observe(seccion.current);
+    return () => vigia.disconnect();
   }, []);
 
   const paso = PASOS[actual];
@@ -38,8 +43,7 @@ export default function CarruselPasos() {
       className={`pasos${cambiando ? " is-cambiando" : ""}${pausado ? " is-pausado" : ""}`}
       aria-roledescription="carrusel"
       aria-label="Pasos de la reserva"
-      onMouseEnter={() => setPausado(true)}
-      onMouseLeave={() => setPausado(window.matchMedia("(prefers-reduced-motion: reduce)").matches)}
+      ref={seccion}
       onKeyDown={(e) => {
         if (e.key === "ArrowRight") mostrar(actual + 1);
         if (e.key === "ArrowLeft") mostrar(actual - 1);

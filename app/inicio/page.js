@@ -60,7 +60,6 @@ export default function Inicio() {
         <section className="como-reservar" id="como-funciona">
           <h2 className="como-reservar__titulo">¿Cómo reservar?</h2>
           <p className="como-reservar__subtitulo">Cinco sencillos pasos para completar la inscripción</p>
-          <img className="como-reservar__bolitas" src="/assets/svg/bolitas-indicador.svg" width="316" height="12" alt="" />
         </section>
 
         {/* Cómo funciona (carrusel de 5 pasos) */}
