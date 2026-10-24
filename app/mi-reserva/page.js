@@ -10,24 +10,88 @@ import PiePagina from "@/components/PiePagina";
 import { api } from "@/lib/borrador";
 import { useSesion } from "@/lib/useSesion";
 import { iconosDe } from "@/lib/fotos";
-import { EVENTO, MIN_SALA_NUEVA, MAX_PERSONAS, CORREO_VALIDO, CONTACTO } from "@/lib/config";
+import { eventoEn, MIN_SALA_NUEVA, MAX_PERSONAS, CORREO_VALIDO, CONTACTO } from "@/lib/config";
+import { useIdioma } from "@/components/Idioma";
+import { fechaHora } from "@/lib/idioma";
 
-const fechaHora = (d) =>
-  new Date(d).toLocaleString("es-ES", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" });
 
 // Número corto de la reserva para el título (las 6 primeras letras de su identificador)
 const numeroDe = (id) => String(id).replace(/-/g, "").slice(0, 6).toUpperCase();
 
-function Avisos() {
+const TEXTOS = {
+  es: {
+    avisoNueva: "Reserva creada. Hemos enviado un correo a cada integrante para que confirme su plaza, y a ti tu entrada.",
+    avisoConfirmado: "¡Plaza confirmada! Te hemos enviado la entrada por correo.",
+    avisoFallidos: (c) => `Reserva creada, pero no pudimos enviar el correo a: ${c}. Avísales de que entren en la web con su correo para confirmar.`,
+    preguntaGrupo: "¿Anular la reserva de TODO el grupo? Avisaremos por correo al resto. No se puede deshacer.",
+    preguntaPlaza: "¿Cancelar tu plaza? El resto del grupo mantiene la suya.",
+    correoMal: "El correo debe ser nombreapellido@alumnado.esada.es", repetido: "Ese correo ya está en el grupo.",
+    noCaben: `En vuestro turno ya no caben más personas (máximo ${MAX_PERSONAS}).`,
+    guardadoFallidos: (c) => `Cambios guardados, pero no pudimos enviar la invitación a: ${c}. Avísales de que entren en la web con su correo.`,
+    guardadoInvitados: "Cambios guardados. Hemos enviado la invitación a las personas nuevas: tienen 48 h para confirmar.", guardado: "Cambios guardados.",
+    cargando: "Cargando tu reserva…", nuevo: "Nuevo · recibirá la invitación al guardar", seQuitara: "Se quitará del grupo al guardar",
+    lider: "Líder", invitado: "Invitado", confirmado: "Confirmado", pendienteHasta: (f) => `Pendiente (hasta el ${f})`,
+    miReserva: "Mi reserva", numero: "Nº", tuReserva: "Tu reserva", qrAlt: "QR de tu entrada: enséñalo en la puerta",
+    sinQr: "Tu entrada (el código QR) aparecerá aquí cuando confirmes tu plaza desde el enlace de tu correo.",
+    pendiente: "Pendiente de confirmación", confirmada: "Confirmada", llegad: "llegad 15 min antes", soloErasmus: "Solo Erasmus",
+    cambiarHora: "Cambiar de hora", fragmento: "Tu fragmento secreto",
+    fragmentoAyuda: "Cada persona de vuestra sala tiene una parte distinta. Juntadlas en orden (I a VI) antes del día y decidle a la guía lo que habéis descubierto. Si se une más gente a vuestra sala, el reparto puede cambiar: aquí lo verás siempre al día.",
+    hermandad: "Vuestra hermandad", formacion: "Grupo en formación", sala: "Sala", personas: "personas",
+    editar: "Editar reserva", anular: "Anular reserva", cancelarPlaza: "Cancelar mi plaza", cancelarAsistencia: "Cancelar solo mi asistencia",
+    miEquipo: "Mi equipo", anadirIntegrante: "+ Añadir integrante", tu: "(tú)", noQuitar: "No quitar a", quitar: "Quitar a",
+    correoNuevo: "Correo de la persona que quieres añadir", anadir: "Añadir",
+    quedan: (n) => `Quedan ${n} ${n === 1 ? "plaza" : "plazas"} en vuestro turno. Mínimo ${MIN_SALA_NUEVA} y máximo ${MAX_PERSONAS} personas.`,
+    guardando: "Guardando…", guardar: "Guardar cambios", cancelarCambios: "Cancelar cambios",
+    cambioTexto: `Solo te mueves tú; tu grupo se queda en su turno. Puedes unirte a un grupo en formación con hueco (para abrir una sala libre hacen falta ${MIN_SALA_NUEVA} personas).`,
+    quedanN: (n) => `quedan ${n}`, salaLibre: "sala libre", completo: "completo", cerrar: "Cerrar",
+    antes: "Antes de venir…", puntualidad: "Puntualidad", puntualidadTexto: "Llegad 15 minutos antes. Si llegáis tarde, se descuenta del tiempo de la sala.",
+    accesibilidad: "Revisar accesibilidad", accesibilidadTexto: "Hay luces y efectos. Si tienes alguna necesidad de movilidad o sensibilidad a luz o sonido, escríbenos antes.",
+    dudas: "¿Dudas o problemas?", escribenos: "Escríbenos a", faq: "Preguntas frecuentes", salir: "Cerrar sesión",
+  },
+  en: {
+    avisoNueva: "Booking created. We've emailed each member so they can confirm their place, and sent you your ticket.",
+    avisoConfirmado: "Place confirmed! We've emailed you your ticket.",
+    avisoFallidos: (c) => `Booking created, but we couldn't send the email to: ${c}. Tell them to sign in to the website with their email to confirm.`,
+    preguntaGrupo: "Cancel the booking for the WHOLE group? We'll email the rest. This can't be undone.",
+    preguntaPlaza: "Cancel your place? The rest of the group keeps theirs.",
+    correoMal: "The email must be nameSurname@alumnado.esada.es", repetido: "That email is already in the group.",
+    noCaben: `No more people fit in your session (maximum ${MAX_PERSONAS}).`,
+    guardadoFallidos: (c) => `Changes saved, but we couldn't send the invitation to: ${c}. Tell them to sign in to the website with their email.`,
+    guardadoInvitados: "Changes saved. We've sent the invitation to the new people: they have 48 h to confirm.", guardado: "Changes saved.",
+    cargando: "Loading your booking…", nuevo: "New · will get the invitation when you save", seQuitara: "Will be removed from the group when you save",
+    lider: "Leader", invitado: "Guest", confirmado: "Confirmed", pendienteHasta: (f) => `Pending (until ${f})`,
+    miReserva: "My booking", numero: "No.", tuReserva: "Your booking", qrAlt: "Your ticket's QR: show it at the door",
+    sinQr: "Your ticket (the QR code) will appear here once you confirm your place from the link in your email.",
+    pendiente: "Pending confirmation", confirmada: "Confirmed", llegad: "arrive 15 min early", soloErasmus: "Erasmus only",
+    cambiarHora: "Change time", fragmento: "Your secret fragment",
+    fragmentoAyuda: "Each person in your room has a different part. Put them together in order (I to VI) before the day and tell the guide what you discovered. If more people join your room, the split may change: you'll always see it up to date here.",
+    hermandad: "Your sisterhood", formacion: "Group forming", sala: "Room", personas: "people",
+    editar: "Edit booking", anular: "Cancel booking", cancelarPlaza: "Cancel my place", cancelarAsistencia: "Cancel only my attendance",
+    miEquipo: "My team", anadirIntegrante: "+ Add member", tu: "(you)", noQuitar: "Don't remove", quitar: "Remove",
+    correoNuevo: "Email of the person you want to add", anadir: "Add",
+    quedan: (n) => `${n} ${n === 1 ? "place" : "places"} left in your session. Minimum ${MIN_SALA_NUEVA} and maximum ${MAX_PERSONAS} people.`,
+    guardando: "Saving…", guardar: "Save changes", cancelarCambios: "Cancel changes",
+    cambioTexto: `Only you move; your group stays in its session. You can join a forming group with space (opening a free room needs ${MIN_SALA_NUEVA} people).`,
+    quedanN: (n) => `${n} left`, salaLibre: "free room", completo: "full", cerrar: "Close",
+    antes: "Before you come…", puntualidad: "Punctuality", puntualidadTexto: "Arrive 15 minutes early. If you're late, it comes off your time in the room.",
+    accesibilidad: "Check accessibility", accesibilidadTexto: "There are lights and effects. If you have any mobility needs or sensitivity to light or sound, write to us beforehand.",
+    dudas: "Questions or problems?", escribenos: "Write to us at", faq: "Frequently asked questions", salir: "Sign out",
+  },
+};
+
+function Avisos({ t }) {
   const q = useSearchParams();
-  if (q.get("nueva")) return <p className="aviso-ok" role="status">Reserva creada. Hemos enviado un correo a cada integrante para que confirme su plaza, y a ti tu entrada.</p>;
-  if (q.get("confirmado")) return <p className="aviso-ok" role="status">¡Plaza confirmada! Te hemos enviado la entrada por correo.</p>;
-  if (q.get("fallidos")) return <p className="aviso-error" role="alert">Reserva creada, pero no pudimos enviar el correo a: {q.get("fallidos")}. Avísales de que entren en la web con su correo para confirmar.</p>;
+  if (q.get("nueva")) return <p className="aviso-ok" role="status">{t.avisoNueva}</p>;
+  if (q.get("confirmado")) return <p className="aviso-ok" role="status">{t.avisoConfirmado}</p>;
+  if (q.get("fallidos")) return <p className="aviso-error" role="alert">{t.avisoFallidos(q.get("fallidos"))}</p>;
   return null;
 }
 
 function MiReservaContenido() {
   const { email, error: errorSesion } = useSesion("mi-reserva");
+  const { idioma } = useIdioma();
+  const t = TEXTOS[idioma];
+  const evento = eventoEn(idioma);
   const router = useRouter();
   const [reserva, setReserva] = useState(null);
   const [error, setError] = useState("");
@@ -53,9 +117,7 @@ function MiReservaContenido() {
   }, [email, cargar]);
 
   async function cancelar(grupo) {
-    const pregunta = grupo
-      ? "¿Anular la reserva de TODO el grupo? Avisaremos por correo al resto. No se puede deshacer."
-      : "¿Cancelar tu plaza? El resto del grupo mantiene la suya.";
+    const pregunta = grupo ? t.preguntaGrupo : t.preguntaPlaza;
     if (!window.confirm(pregunta)) return;
     setOcupado(true);
     const r = await api("/api/mi-reserva/cancelar", { metodo: "POST", datos: { grupo } });
@@ -110,9 +172,9 @@ function MiReservaContenido() {
     const correo = campo.trim().toLowerCase();
     const enGrupo = reserva.miembros.some((m) => m.email === correo) && !quitar.includes(correo);
     let mensaje = "";
-    if (!CORREO_VALIDO.test(correo)) mensaje = "El correo debe ser nombreapellido@alumnado.esada.es";
-    else if (enGrupo || anadir.includes(correo)) mensaje = "Ese correo ya está en el grupo.";
-    else if (hueco <= 0) mensaje = `En vuestro turno ya no caben más personas (máximo ${MAX_PERSONAS}).`;
+    if (!CORREO_VALIDO.test(correo)) mensaje = t.correoMal;
+    else if (enGrupo || anadir.includes(correo)) mensaje = t.repetido;
+    else if (hueco <= 0) mensaje = t.noCaben;
     setError(mensaje);
     if (mensaje) return;
     setAnadir([...anadir, correo]);
@@ -124,9 +186,7 @@ function MiReservaContenido() {
     const r = await api("/api/mi-reserva/integrantes", { metodo: "POST", datos: { anadir, quitar } });
     setOcupado(false);
     if (!r.ok) return setError(r.mensaje);
-    setAviso(r.fallidos?.length
-      ? `Cambios guardados, pero no pudimos enviar la invitación a: ${r.fallidos.join(", ")}. Avísales de que entren en la web con su correo.`
-      : anadir.length ? "Cambios guardados. Hemos enviado la invitación a las personas nuevas: tienen 48 h para confirmar." : "Cambios guardados.");
+    setAviso(r.fallidos?.length ? t.guardadoFallidos(r.fallidos.join(", ")) : anadir.length ? t.guardadoInvitados : t.guardado);
     // Se vacía la lista de cambios: a partir de ahora manda lo que dice el servidor
     setEditando(false);
     setQuitar([]);
@@ -135,7 +195,7 @@ function MiReservaContenido() {
     cargar();
   }
 
-  if (!email || !reserva) return <Cargando error={errorSesion || error} texto="Cargando tu reserva…" />;
+  if (!email || !reserva) return <Cargando error={errorSesion || error} texto={t.cargando} />;
 
   const { turno, miembros, yo, lider } = reserva;
   const esLider = lider === yo.email;
@@ -148,10 +208,10 @@ function MiReservaContenido() {
   const hayCambios = quitar.length > 0 || anadir.length > 0;
 
   const estadoDe = (m) => {
-    if (m.nuevo) return "Nuevo · recibirá la invitación al guardar";
-    if (quitar.includes(m.email)) return "Se quitará del grupo al guardar";
-    const papel = m.email === lider ? "Líder" : "Invitado";
-    return m.confirmado ? `${papel} · Confirmado` : `${papel} · Pendiente (hasta el ${fechaHora(m.limite)})`;
+    if (m.nuevo) return t.nuevo;
+    if (quitar.includes(m.email)) return t.seQuitara;
+    const papel = m.email === lider ? t.lider : t.invitado;
+    return m.confirmado ? `${papel} · ${t.confirmado}` : `${papel} · ${t.pendienteHasta(fechaHora(m.limite, idioma))}`;
   };
 
   return (
@@ -159,39 +219,39 @@ function MiReservaContenido() {
       <NavReserva />
       <main className="mi-reserva">
         <header className="mi-reserva__cabecera">
-          <p className="mi-reserva__etiqueta">Mi reserva</p>
-          <h1 className="mi-reserva__titulo">Nº {numeroDe(reserva.id)}</h1>
+          <p className="mi-reserva__etiqueta">{t.miReserva}</p>
+          <h1 className="mi-reserva__titulo">{t.numero} {numeroDe(reserva.id)}</h1>
         </header>
 
         <div className="mi-reserva__avisos">
-          <Avisos />
+          <Avisos t={t} />
           {aviso && <p className="aviso-ok" role="status">{aviso}</p>}
         </div>
 
         <div className="mi-reserva__rejilla">
           {/* ---------- Tu reserva: entrada, estado, día y hora ---------- */}
           <section className="mr-tarjeta mr-entrada" aria-labelledby="entrada-titulo">
-            <h2 id="entrada-titulo" className="mr-tarjeta__titulo">Tu reserva</h2>
+            <h2 id="entrada-titulo" className="mr-tarjeta__titulo">{t.tuReserva}</h2>
             {yo.confirmado && reserva.qr ? (
-              <img className="mr-entrada__qr" src={reserva.qr} width="203" height="203" alt="QR de tu entrada: enséñalo en la puerta" />
+              <img className="mr-entrada__qr" src={reserva.qr} width="203" height="203" alt={t.qrAlt} />
             ) : (
-              <p className="mr-entrada__sin-qr">Tu entrada (el código QR) aparecerá aquí cuando confirmes tu plaza desde el enlace de tu correo.</p>
+              <p className="mr-entrada__sin-qr">{t.sinQr}</p>
             )}
-            <span className="mr-estado">{pendientes ? "Pendiente de confirmación" : "Confirmada"}</span>
-            <p className="mr-entrada__dato">{EVENTO.fechaTexto}</p>
+            <span className="mr-estado">{pendientes ? t.pendiente : t.confirmada}</span>
+            <p className="mr-entrada__dato">{evento.fechaTexto}</p>
             <p className="mr-entrada__dato">{turno.inicio}—{turno.fin}</p>
-            <p className="mr-entrada__nota">{EVENTO.lugar} · llegad 15 min antes{turno.erasmus ? " · Solo Erasmus" : ""}</p>
-            <button className="mr-enlace" type="button" onClick={abrirCambio} disabled={ocupado}>Cambiar de hora</button>
+            <p className="mr-entrada__nota">{evento.lugar} · {t.llegad}{turno.erasmus ? ` · ${t.soloErasmus}` : ""}</p>
+            <button className="mr-enlace" type="button" onClick={abrirCambio} disabled={ocupado}>{t.cambiarHora}</button>
 
             {yo.confirmado && reserva.fragmentos?.length > 0 && (
               <div className="fragmento">
-                <p className="fragmento__titulo">Tu fragmento secreto</p>
+                <p className="fragmento__titulo">{t.fragmento}</p>
                 <p className="fragmento__palabras">
                   {reserva.fragmentos.map((f) => (
                     <span key={f.numero} className="fragmento__palabra"><small>{f.numero}</small> {f.palabra}</span>
                   ))}
                 </p>
-                <p className="fragmento__ayuda">Cada persona de vuestra sala tiene una parte distinta. Juntadlas en orden (I a VI) antes del día y decidle a la guía lo que habéis descubierto. Si se une más gente a vuestra sala, el reparto puede cambiar: aquí lo verás siempre al día.</p>
+                <p className="fragmento__ayuda">{t.fragmentoAyuda}</p>
               </div>
             )}
           </section>
@@ -200,24 +260,24 @@ function MiReservaContenido() {
           <section className="mr-tarjeta mr-equipo" aria-labelledby="equipo-titulo">
             <div className="mr-equipo__sala">
               <img className="mr-equipo__icono" src={iconoEquipo} width="250" height="250" alt="" />
-              <p className="mr-equipo__nombre">{turno.equipo ? `“${turno.equipo}”` : "Vuestra hermandad"}</p>
-              <p className="mr-equipo__tipo">{turno.ocupadas < MIN_SALA_NUEVA ? "Grupo en formación" : "Sala"} · {turno.ocupadas}/{MAX_PERSONAS} personas</p>
+              <p className="mr-equipo__nombre">{turno.equipo ? `“${turno.equipo}”` : t.hermandad}</p>
+              <p className="mr-equipo__tipo">{turno.ocupadas < MIN_SALA_NUEVA ? t.formacion : t.sala} · {turno.ocupadas}/{MAX_PERSONAS} {t.personas}</p>
               {esLider && !editando && (
-                <button className="mr-boton mr-boton--lleno" type="button" onClick={empezarEdicion} disabled={ocupado}>Editar reserva</button>
+                <button className="mr-boton mr-boton--lleno" type="button" onClick={empezarEdicion} disabled={ocupado}>{t.editar}</button>
               )}
               {esLider ? (
-                <button className="mr-boton" type="button" onClick={() => cancelar(true)} disabled={ocupado}>Anular reserva</button>
+                <button className="mr-boton" type="button" onClick={() => cancelar(true)} disabled={ocupado}>{t.anular}</button>
               ) : (
-                <button className="mr-boton" type="button" onClick={() => cancelar(false)} disabled={ocupado}>Cancelar mi plaza</button>
+                <button className="mr-boton" type="button" onClick={() => cancelar(false)} disabled={ocupado}>{t.cancelarPlaza}</button>
               )}
-              {esLider && <button className="mr-enlace" type="button" onClick={() => cancelar(false)} disabled={ocupado}>Cancelar solo mi asistencia</button>}
+              {esLider && <button className="mr-enlace" type="button" onClick={() => cancelar(false)} disabled={ocupado}>{t.cancelarAsistencia}</button>}
             </div>
 
             <div className="mr-equipo__lista">
               <div className="mr-equipo__cabecera">
-                <h2 id="equipo-titulo" className="mr-tarjeta__titulo">Mi equipo</h2>
+                <h2 id="equipo-titulo" className="mr-tarjeta__titulo">{t.miEquipo}</h2>
                 {editando && hueco > 0 && !mostrarCampo && (
-                  <button className="mr-chip" type="button" onClick={() => setMostrarCampo(true)}>+ Añadir integrante</button>
+                  <button className="mr-chip" type="button" onClick={() => setMostrarCampo(true)}>{t.anadirIntegrante}</button>
                 )}
               </div>
 
@@ -228,15 +288,15 @@ function MiReservaContenido() {
                     <li key={m.email} className={`mr-miembro${quitado ? " is-quitado" : ""}${m.nuevo ? " is-nuevo" : ""}`}>
                       <img src={iconos[i]} width="51" height="51" alt="" />
                       <div className="mr-miembro__datos">
-                        <p className="mr-miembro__correo">{m.email}{m.email === yo.email ? " (tú)" : ""}</p>
+                        <p className="mr-miembro__correo">{m.email}{m.email === yo.email ? ` ${t.tu}` : ""}</p>
                         <p className="mr-miembro__estado">{estadoDe(m)}</p>
                       </div>
                       <div className="mr-miembro__acciones">
-                        {m.confirmado && !quitado && <span className="mr-icono mr-icono--si" role="img" aria-label="Confirmado" />}
+                        {m.confirmado && !quitado && <span className="mr-icono mr-icono--si" role="img" aria-label={t.confirmado} />}
                         {/* La ✕ solo aparece al editar, y nunca en la fila de la persona líder */}
                         {editando && m.email !== lider && (
                           <button type="button" className={`mr-icono mr-icono--quitar${quitado ? " is-deshacer" : ""}`}
-                            aria-label={quitado ? `No quitar a ${m.email}` : `Quitar a ${m.email}`}
+                            aria-label={quitado ? `${t.noQuitar} ${m.email}` : `${t.quitar} ${m.email}`}
                             onClick={() => (m.nuevo ? setAnadir(anadir.filter((c) => c !== m.email)) : alternarQuitar(m.email))} />
                         )}
                       </div>
@@ -247,23 +307,23 @@ function MiReservaContenido() {
 
               {editando && mostrarCampo && hueco > 0 && (
                 <form className="mr-anadir" onSubmit={anadirCorreo}>
-                  <label className="visually-hidden" htmlFor="nuevo-integrante">Correo de la persona que quieres añadir</label>
+                  <label className="visually-hidden" htmlFor="nuevo-integrante">{t.correoNuevo}</label>
                   <input className="campo" id="nuevo-integrante" type="email" placeholder="nombreapellido@alumnado.esada.es"
                     value={campo} onChange={(e) => setCampo(e.target.value)} autoFocus />
-                  <button className="mr-boton mr-boton--lleno" type="submit">Añadir</button>
+                  <button className="mr-boton mr-boton--lleno" type="submit">{t.anadir}</button>
                 </form>
               )}
 
               <p className="mr-equipo__plazas">
-                Quedan {Math.max(0, hueco)} {hueco === 1 ? "plaza" : "plazas"} en vuestro turno. Mínimo {MIN_SALA_NUEVA} y máximo {MAX_PERSONAS} personas.
+                {t.quedan(Math.max(0, hueco))}
               </p>
 
               {editando && (
                 <div className="mr-equipo__botones">
                   <button className="mr-boton mr-boton--lleno" type="button" onClick={guardar} disabled={ocupado || !hayCambios}>
-                    {ocupado ? "Guardando…" : "Guardar cambios"}
+                    {ocupado ? t.guardando : t.guardar}
                   </button>
-                  <button className="mr-boton mr-boton--claro" type="button" onClick={cancelarEdicion} disabled={ocupado}>Cancelar cambios</button>
+                  <button className="mr-boton mr-boton--claro" type="button" onClick={cancelarEdicion} disabled={ocupado}>{t.cancelarCambios}</button>
                 </div>
               )}
               <p className="error error--centro" role="alert">{error}</p>
@@ -273,54 +333,54 @@ function MiReservaContenido() {
           {/* ---------- Cambiar de hora (se abre desde «Tu reserva») ---------- */}
           {cambiando && (
             <section className="mr-tarjeta mr-cambio" aria-labelledby="cambio-titulo">
-              <h2 id="cambio-titulo" className="mr-tarjeta__titulo">Cambiar de hora</h2>
-              <p>Solo te mueves tú; tu grupo se queda en su turno. Puedes unirte a un grupo en formación con hueco (para abrir una sala libre hacen falta {MIN_SALA_NUEVA} personas).</p>
+              <h2 id="cambio-titulo" className="mr-tarjeta__titulo">{t.cambiarHora}</h2>
+              <p>{t.cambioTexto}</p>
               <ul className="cambio-hora__lista">
-                {cambiando.map((t) => {
-                  const posible = t.estado === "formacion" && t.hueco >= 1;
+                {cambiando.map((x) => {
+                  const posible = x.estado === "formacion" && x.hueco >= 1;
                   return (
-                    <li key={t.id}>
-                      <button type="button" className="chip" disabled={!posible || ocupado} onClick={() => moverA(t.id)}>
-                        {t.inicio}-{t.fin} · {t.estado === "formacion" ? `quedan ${t.hueco}` : t.estado === "libre" ? "sala libre" : "completo"}
+                    <li key={x.id}>
+                      <button type="button" className="chip" disabled={!posible || ocupado} onClick={() => moverA(x.id)}>
+                        {x.inicio}-{x.fin} · {x.estado === "formacion" ? t.quedanN(x.hueco) : x.estado === "libre" ? t.salaLibre : t.completo}
                       </button>
                     </li>
                   );
                 })}
               </ul>
-              <button type="button" className="mr-enlace" onClick={() => setCambiando(null)}>Cerrar</button>
+              <button type="button" className="mr-enlace" onClick={() => setCambiando(null)}>{t.cerrar}</button>
             </section>
           )}
 
           {/* ---------- Antes de venir… ---------- */}
           <section className="mr-tarjeta mr-antes" aria-labelledby="antes-titulo">
-            <h2 id="antes-titulo" className="mr-tarjeta__titulo">Antes de venir…</h2>
+            <h2 id="antes-titulo" className="mr-tarjeta__titulo">{t.antes}</h2>
             <ul className="mr-antes__lista">
               <li>
                 <img src="/assets/img/perfiles/aire-5.svg" width="51" height="51" alt="" />
                 <div>
-                  <p className="mr-antes__titulo">Puntualidad</p>
-                  <p>Llegad 15 minutos antes. Si llegáis tarde, se descuenta del tiempo de la sala.</p>
+                  <p className="mr-antes__titulo">{t.puntualidad}</p>
+                  <p>{t.puntualidadTexto}</p>
                 </div>
               </li>
               <li>
                 <img src="/assets/img/perfiles/agua-5.svg" width="51" height="51" alt="" />
                 <div>
-                  <p className="mr-antes__titulo">Revisar accesibilidad</p>
-                  <p>Hay luces y efectos. Si tienes alguna necesidad de movilidad o sensibilidad a luz o sonido, escríbenos antes.</p>
+                  <p className="mr-antes__titulo">{t.accesibilidad}</p>
+                  <p>{t.accesibilidadTexto}</p>
                 </div>
               </li>
               <li>
                 <img src="/assets/img/perfiles/eter-5.svg" width="51" height="51" alt="" />
                 <div>
-                  <p className="mr-antes__titulo">¿Dudas o problemas?</p>
-                  <p>Escríbenos a <a href={`mailto:${CONTACTO}`}>{CONTACTO}</a> · <Link href="/inicio#faq">Preguntas frecuentes</Link></p>
+                  <p className="mr-antes__titulo">{t.dudas}</p>
+                  <p>{t.escribenos} <a href={`mailto:${CONTACTO}`}>{CONTACTO}</a> · <Link href="/inicio#faq">{t.faq}</Link></p>
                 </div>
               </li>
             </ul>
           </section>
         </div>
 
-        <button className="mr-salir" type="button" onClick={salir}>Cerrar sesión</button>
+        <button className="mr-salir" type="button" onClick={salir}>{t.salir}</button>
       </main>
       <PiePagina />
     </>
@@ -329,7 +389,7 @@ function MiReservaContenido() {
 
 export default function MiReserva() {
   return (
-    <Suspense fallback={<Cargando texto="Cargando tu reserva…" />}>
+    <Suspense fallback={<Cargando />}>
       <MiReservaContenido />
     </Suspense>
   );

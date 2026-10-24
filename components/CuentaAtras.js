@@ -1,16 +1,19 @@
 "use client";
 // Reloj de la cuenta atrás: «FALTAN» y días:horas:minutos:segundos, con el nombre debajo de cada número.
 import { Fragment, useEffect, useState } from "react";
+import { useIdioma } from "./Idioma";
+
+const UNIDADES = { es: ["días", "horas", "min", "seg"], en: ["days", "hours", "min", "sec"] };
 
 const dosCifras = (n) => String(n).padStart(2, "0");
 
-function partes(restante) {
+function partes(restante, nombres) {
   const s = Math.max(0, Math.floor(restante / 1000));
   return [
-    [dosCifras(Math.floor(s / 86400)), "días"],
-    [dosCifras(Math.floor((s % 86400) / 3600)), "horas"],
-    [dosCifras(Math.floor((s % 3600) / 60)), "min"],
-    [dosCifras(s % 60), "seg"],
+    [dosCifras(Math.floor(s / 86400)), nombres[0]],
+    [dosCifras(Math.floor((s % 86400) / 3600)), nombres[1]],
+    [dosCifras(Math.floor((s % 3600) / 60)), nombres[2]],
+    [dosCifras(s % 60), nombres[3]],
   ];
 }
 
@@ -30,10 +33,11 @@ export default function CuentaAtras({ apertura }) {
     return () => clearInterval(intervalo);
   }, [objetivo]);
 
-  const grupos = partes(restante === null ? 0 : restante);
+  const { idioma } = useIdioma();
+  const grupos = partes(restante === null ? 0 : restante, UNIDADES[idioma]);
   return (
     <div className="cuenta__reloj">
-      <p className="cuenta__faltan">Faltan</p>
+      <p className="cuenta__faltan">{idioma === "en" ? "Opens in" : "Faltan"}</p>
       <p className="cuenta__tiempo" role="timer" aria-live="off">
         {grupos.map(([numero, nombre], i) => (
           <Fragment key={nombre}>

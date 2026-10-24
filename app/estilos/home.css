@@ -237,9 +237,23 @@ body:has(.header) {
 }
 
 /* ---------- ¿Cómo reservar? ---------- */
-/* La parte crema pasa a la roja con un degradado suave: así se ven a la vez el título y los pasos. */
+/* Al bajar, el fondo de «¿Cómo reservar?» y de los pasos pasa de crema a terracota (y el texto al revés).
+   --p lo calcula components/home/ComoReservar.js: 0 = crema, 1 = terracota. */
 .como-bloque {
+  --p: 0;
+  --como-fondo: color-mix(in srgb, var(--terracota) calc(var(--p) * 100%), var(--fondo-oscuro));
+  --pt: 0;
+  --como-texto: color-mix(in srgb, var(--fondo-oscuro) calc(var(--pt) * 100%), var(--terracota));
   position: relative;
+  background: var(--como-fondo);
+}
+
+/* Navegadores antiguos sin color-mix: directamente terracota */
+@supports not (color: color-mix(in srgb, red 50%, blue)) {
+  .como-bloque {
+    --como-fondo: var(--terracota);
+    --como-texto: var(--fondo-oscuro);
+  }
 }
 
 .como-reservar {
@@ -247,9 +261,8 @@ body:has(.header) {
   flex-direction: column;
   align-items: center;
   gap: 30px;
-  padding: 17px 16px 150px;
-  background: linear-gradient(to bottom, var(--fondo-oscuro) 0%, var(--fondo-oscuro) 50%, #ecd2c1 66%, #b06a5a 85%, var(--terracota) 100%);
-  color: var(--terracota);
+  padding: 17px 16px 70px;
+  color: var(--como-texto);
   text-align: center;
 }
 
@@ -267,9 +280,8 @@ body:has(.header) {
 /* ---------- Cómo funciona (carrusel) ---------- */
 .pasos {
   position: relative;
-  z-index: 1; /* por encima de la parte crema, para taparla al subir */
   height: 590px;
-  background: var(--terracota);
+  background: var(--como-fondo, var(--terracota));
   overflow: hidden;
 }
 
@@ -801,6 +813,62 @@ body:has(.header) {
   object-fit: cover;
 }
 
+/* Llamada final: el texto en el centro del paisaje, con un velo suave para que se lea bien */
+.cta::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 45% 60% at 50% 58%, rgba(41, 47, 32, 0.55), rgba(41, 47, 32, 0) 75%);
+  pointer-events: none;
+}
+
+.cta__contenido {
+  position: absolute;
+  inset: 70px 16px 30px;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--fondo);
+  text-align: center;
+  text-shadow: 0 2px 14px rgba(41, 47, 32, 0.5);
+}
+
+.cta__lirio {
+  width: 56px;
+  height: auto;
+  /* El lirio terracota se vuelve crema sobre el paisaje */
+  filter: brightness(0) invert(96%) sepia(8%) saturate(300%);
+}
+
+.cta__etiqueta {
+  margin-top: 14px;
+  font-family: var(--font-inter);
+  font-size: 13px;
+  letter-spacing: 0.2em;
+}
+
+.cta__titulo {
+  margin-top: 6px;
+  font-family: var(--font-script);
+  font-weight: 400;
+  font-size: 96px;
+  line-height: 1.05;
+}
+
+.cta__texto {
+  max-width: 520px;
+  margin-top: 8px;
+  font-family: var(--font-baskervville);
+  font-size: 22px;
+}
+
+.cta__boton {
+  margin-top: 22px;
+  text-shadow: none;
+}
+
 /* El encaje crema cuelga por encima del paisaje (y pisa un poco las preguntas) */
 .cta .encaje--arriba {
   top: -43px;
@@ -816,12 +884,13 @@ body:has(.header) {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 217px;
-  height: 84px;
+  /* Más fino: 52 px de alto y letra más pequeña */
+  gap: 120px;
+  height: 52px;
   padding: 0 16px;
   background: var(--verde-oscuro);
   font-family: var(--font-inter);
-  font-size: 16px;
+  font-size: 13px;
   color: var(--fondo-oscuro);
   white-space: nowrap;
 }
@@ -835,7 +904,7 @@ body:has(.header) {
    ========================================================== */
 @media (max-width: 1439px) {
   .footer {
-    gap: 6vw;
+    gap: 5vw;
   }
 }
 
@@ -964,9 +1033,9 @@ body:has(.header) {
 
   .footer {
     flex-wrap: wrap;
-    gap: 12px 40px;
+    gap: 8px 28px;
     height: auto;
-    padding: 24px;
+    padding: 16px;
     white-space: normal;
   }
 }
@@ -977,9 +1046,6 @@ body:has(.header) {
     padding-right: 16px;
   }
 
-  .como-reservar {
-    padding-bottom: 110px;
-  }
 
   .header .logo {
     width: 150px;
@@ -1075,6 +1141,11 @@ body:has(.header) {
     font-size: 22px;
   }
 
+  .header__nav .idioma {
+    margin-top: 16px;
+    align-self: center;
+  }
+
   .hero {
     height: 640px;
   }
@@ -1166,6 +1237,14 @@ body:has(.header) {
   }
 
   .cta {
-    height: 260px;
+    height: 460px;
+  }
+
+  .cta__titulo {
+    font-size: 60px;
+  }
+
+  .cta__texto {
+    font-size: 17px;
   }
 }

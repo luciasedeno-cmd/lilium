@@ -3,15 +3,19 @@ import "./estilos/home.css";
 import "./estilos/reserva.css";
 import "./estilos/cuenta-atras.css";
 import "./estilos/extra.css";
+import { IdiomaProvider } from "@/components/Idioma";
+import { idiomaActual } from "@/lib/idiomaServidor";
 
 export const metadata = {
   title: "Lilium · Escape Room ESADA",
   description: "Lilium, el escape room de ESADA: cinco guías, un destino.",
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  // El idioma elegido (ES / EN) se recuerda en el navegador y se aplica a toda la web
+  const idioma = await idiomaActual();
   return (
-    <html lang="es">
+    <html lang={idioma}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
@@ -22,7 +26,7 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
-        {children}
+        <IdiomaProvider inicial={idioma}>{children}</IdiomaProvider>
       </body>
     </html>
   );

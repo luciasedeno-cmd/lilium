@@ -106,3 +106,21 @@ body:has(.cuenta) {
     font-size: 11px;
   }
 }
+
+/* Selector ES / EN arriba a la derecha, en crema sobre el cuadro */
+.cuenta__idioma {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+.cuenta__idioma .idioma button {
+  border-color: rgba(255, 250, 242, 0.8);
+  background: rgba(41, 47, 32, 0.3);
+  color: var(--fondo);
+}
+
+.cuenta__idioma .idioma button[aria-pressed="true"] {
+  background: var(--fondo);
+  color: var(--verde-oscuro);
+}

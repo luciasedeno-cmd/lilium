@@ -18,6 +18,8 @@
 - Orden de las páginas: 1) `/acceso` (confirmar el correo, ocupa justo la pantalla, sin scroll) → 2) `/inicio` (Home) → 3) reserva en 3 pasos. Quien ya tiene reserva (como líder o dentro de un grupo) va a `/mi-reserva` al entrar.
 - Pop-up Erasmus (`components/ErasmusBanner.js`): solo en `/inicio` y solo la primera vez en ese navegador (se guarda en localStorage). Fondos: `public/assets/img/erasmus-encaje.webp` (ordenador) y `erasmus-encaje-movil.webp` (móvil).
 - Home: cabecera fina (72 px); «¿Cómo reservar?» pasa a la sección roja de los pasos con un degradado (ya no se tapan); preguntas frecuentes con altura fija y respuesta que se despliega suave (no mueve la página).
+- **Idioma ES / EN** (`components/Idioma.js`, cookie `lilium_idioma`): cada página tiene sus textos en un objeto `TEXTOS = { es: {...}, en: {...} }`. En componentes de cliente `useIdioma()` / `useTextos(TEXTOS)`; en páginas del servidor `await idiomaActual()` (`lib/idiomaServidor.js`). Los mensajes del servidor se traducen en el navegador con `lib/mensajesEn.js`. Los correos siguen solo en español.
+- «¿Cómo reservar?» (`components/home/ComoReservar.js`): al bajar, el fondo pasa de crema a terracota y el texto al revés (variables `--p` y `--pt`).
 - Cabecera de los pasos (`components/PasoCabecera.js`): 3 puntos animados + «PASO N DE 3»; los puntos anteriores llevan atrás. Pie común: `components/PiePagina.js`.
 - `/mi-reserva` (Figma «PAG RESERVA - INTEGRANTES B»): «Tu reserva» (QR, fragmento, cambiar de hora), «Mi equipo» (la líder pulsa «Editar reserva» para quitar ✕ o añadir integrantes y «Guardar cambios» → `/api/mi-reserva/integrantes`) y «Antes de venir…».
 - `middleware.js`: además, sin sesión, `/inicio`, `/reserva/*` y `/mi-reserva` llevan a `/acceso`.

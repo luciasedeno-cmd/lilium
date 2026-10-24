@@ -3,12 +3,15 @@
 // y en el móvil tiene un menú desplegable (icono de tres rayas que se convierte en ✕)
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import SelectorIdioma from "@/components/SelectorIdioma";
+import { useTextos } from "@/components/Idioma";
 
-const ENLACES = [
-  { id: "paraiso", texto: "El retiro" },
-  { id: "como-funciona", texto: "Cómo funciona" },
-  { id: "faq", texto: "FaQ" },
-];
+const ENLACES = ["paraiso", "como-funciona", "faq"];
+
+const TEXTOS = {
+  es: { paraiso: "El retiro", "como-funciona": "Cómo funciona", faq: "FaQ", reservar: "Reserva ahora", abrir: "Abrir menú", cerrar: "Cerrar menú", apartados: "Apartados de la página", inicio: "Lilium, inicio" },
+  en: { paraiso: "The retreat", "como-funciona": "How it works", faq: "FAQ", reservar: "Book now", abrir: "Open menu", cerrar: "Close menu", apartados: "Page sections", inicio: "Lilium, home" },
+};
 
 export default function HomeHeader() {
   const [abierto, setAbierto] = useState(false);
@@ -16,6 +19,7 @@ export default function HomeHeader() {
   const [activo, setActivo] = useState(null); // apartado que se está viendo ahora
   const cabecera = useRef(null);
   const cerrar = () => setAbierto(false);
+  const t = useTextos(TEXTOS);
 
   // Sombra al bajar y apartado activo
   useEffect(() => {
@@ -28,7 +32,7 @@ export default function HomeHeader() {
       (entradas) => entradas.forEach((e) => e.isIntersecting && setActivo(e.target.id)),
       { rootMargin: "-45% 0px -50% 0px" }
     );
-    ENLACES.forEach(({ id }) => {
+    ENLACES.forEach((id) => {
       const seccion = document.getElementById(id);
       if (seccion) vigia.observe(seccion);
     });
@@ -58,21 +62,22 @@ export default function HomeHeader() {
 
   return (
     <header ref={cabecera} className={`header${abierto ? " is-open" : ""}${bajado ? " is-bajado" : ""}`}>
-      <Link className="logo" href="/inicio" aria-label="Lilium, inicio" onClick={cerrar}>
+      <Link className="logo" href="/inicio" aria-label={t.inicio} onClick={cerrar}>
         <img src="/assets/img/logo-lilium.png" alt="Lilium" />
       </Link>
       <button className="header__menu" type="button" aria-expanded={abierto} aria-controls="menu"
-        aria-label={abierto ? "Cerrar menú" : "Abrir menú"} onClick={() => setAbierto(!abierto)}>
+        aria-label={abierto ? t.cerrar : t.abrir} onClick={() => setAbierto(!abierto)}>
         <span className="header__rayas" aria-hidden="true"><span /><span /><span /></span>
       </button>
-      <nav className="header__nav" id="menu" aria-label="Apartados de la página">
-        {ENLACES.map(({ id, texto }) => (
+      <nav className="header__nav" id="menu" aria-label={t.apartados}>
+        {ENLACES.map((id) => (
           <a key={id} href={`#${id}`} onClick={cerrar} className={activo === id ? "is-activo" : undefined}
             aria-current={activo === id ? "location" : undefined}>
-            {texto}
+            {t[id]}
           </a>
         ))}
-        <Link className="boton-reserva" href="/reserva/integrantes" onClick={cerrar}>Reserva ahora</Link>
+        <Link className="boton-reserva" href="/reserva/integrantes" onClick={cerrar}>{t.reservar}</Link>
+        <SelectorIdioma />
       </nav>
     </header>
   );

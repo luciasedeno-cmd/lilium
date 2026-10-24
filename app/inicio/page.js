@@ -1,7 +1,9 @@
-// Home de Lilium
+// Home de Lilium (textos en español e inglés, según el idioma elegido arriba)
 import Link from "next/link";
-import { EVENTO } from "@/lib/config";
+import { eventoEn } from "@/lib/config";
+import { idiomaActual } from "@/lib/idiomaServidor";
 import HomeHeader from "@/components/home/HomeHeader";
+import ComoReservar from "@/components/home/ComoReservar";
 import CarruselPasos from "@/components/home/CarruselPasos";
 import Faq from "@/components/home/Faq";
 import ErasmusBanner from "@/components/ErasmusBanner";
@@ -13,25 +15,80 @@ export const metadata = {
   description: "Lilium, el escape room de ESADA: cinco guías, un destino.",
 };
 
-const CUADROS = [
-  { img: "ritual-correo.png", alt: "Mujer escribiendo una carta", titulo: "Correo de ESADA", texto: "Todas las personas del grupo necesitan su correo nombreapellido@alumnado.esada.es." },
-  { img: "ritual-personas.png", alt: "Grupo de personas reunidas", titulo: "De 3 a 6 personas", texto: "Hacen falta 3 para abrir una sala nueva. Máximo 6 por turno" },
-  { img: "ritual-confirmar.png", alt: "Retrato de una dama con abanico", titulo: "Confirmar en 48 h", texto: "Cada integrante confirma desde su correo. Llegad 15 minutos antes de vuestra hora" },
-];
+const TEXTOS = {
+  es: {
+    lineas: ["Cinco guías", "Un destino"],
+    reservar: "Reserva ahora",
+    retratoAlt: "Retrato de una joven de la hermandad",
+    historiaTitulo: "¿Qué es Lilium?",
+    historia: [
+      "Dicen que algunos caminos están destinados a cruzarse. El de ellas lo hizo sin aviso: cinco desconocidas que se reconocieron al instante. A la luz de las velas unieron sus energías y nació Lilium.",
+      "Un libro antiguo y una noche de luna llena lo cambiaron todo. Ahora ha llegado el momento de abrir el círculo.",
+      "Este retiro es para ti, para soltar el cansancio de tantas entregas y liberar lo que pesa. Solo tienes que entrar: ellas se encargan del resto.",
+    ],
+    ritualTitulo: "¿Qué necesita el ritual?",
+    cuadros: [
+      { alt: "Mujer escribiendo una carta", titulo: "Correo de ESADA", texto: "Todas las personas del grupo necesitan su correo nombreapellido@alumnado.esada.es." },
+      { alt: "Grupo de personas reunidas", titulo: "De 3 a 6 personas", texto: "Hacen falta 3 para abrir una sala nueva. Máximo 6 por turno" },
+      { alt: "Retrato de una dama con abanico", titulo: "Confirmar en 48 h", texto: "Cada integrante confirma desde su correo. Llegad 15 minutos antes de vuestra hora" },
+    ],
+    mapaAlt: "Mapa antiguo",
+    cuando: "Cuándo",
+    cuandoNota: "Un único día · experiencias de 45 minutos",
+    donde: "Dónde",
+    erasmusTitulo: "¿Erasmus?",
+    erasmusTexto: "Hay turnos solo Erasmus y toda la experiencia está disponible en inglés.",
+    finalEtiqueta: "EL PRADO TE ESPERA",
+    finalTitulo: "¿Te atreves a cruzar?",
+    finalTexto: "Las plazas son pocas y el círculo solo se abre un día. Reúne a tu hermandad y elige vuestra hora.",
+  },
+  en: {
+    lineas: ["Five guides", "One destiny"],
+    reservar: "Book now",
+    retratoAlt: "Portrait of a young woman of the sisterhood",
+    historiaTitulo: "What is Lilium?",
+    historia: [
+      "They say some paths are meant to cross. Theirs did without warning: five strangers who recognised each other at once. By candlelight they joined their energies, and Lilium was born.",
+      "An old book and a full-moon night changed everything. Now the time has come to open the circle.",
+      "This retreat is for you: to shake off the weariness of so many deadlines and let go of what weighs you down. All you have to do is step inside; they will take care of the rest.",
+    ],
+    ritualTitulo: "What does the ritual need?",
+    cuadros: [
+      { alt: "Woman writing a letter", titulo: "ESADA email", texto: "Everyone in the group needs their nameSurname@alumnado.esada.es email." },
+      { alt: "Group of people gathered together", titulo: "3 to 6 people", texto: "You need 3 to open a new room. Maximum 6 per session" },
+      { alt: "Portrait of a lady with a fan", titulo: "Confirm within 48 h", texto: "Each member confirms from their email. Arrive 15 minutes before your time" },
+    ],
+    mapaAlt: "Old map",
+    cuando: "When",
+    cuandoNota: "One single day · 45-minute experiences",
+    donde: "Where",
+    erasmusTitulo: "Erasmus?",
+    erasmusTexto: "There are Erasmus-only sessions and the whole experience is available in English.",
+    finalEtiqueta: "THE MEADOW AWAITS",
+    finalTitulo: "Dare to cross?",
+    finalTexto: "Places are few and the circle opens for just one day. Gather your sisterhood and choose your time.",
+  },
+};
 
-export default function Inicio() {
+const IMAGENES = ["ritual-correo.png", "ritual-personas.png", "ritual-confirmar.png"];
+
+export default async function Inicio() {
+  const idioma = await idiomaActual();
+  const t = TEXTOS[idioma];
+  const evento = eventoEn(idioma);
+
   return (
     <>
       <HomeHeader />
 
       <main>
-        {/* Home */}
+        {/* Portada */}
         <section className="hero">
           <h1 className="hero__titulo">
-            <span className="hero__linea hero__linea--1">Cinco guías</span>
-            <span className="hero__linea hero__linea--2">Un destino</span>
+            <span className="hero__linea hero__linea--1">{t.lineas[0]}</span>
+            <span className="hero__linea hero__linea--2">{t.lineas[1]}</span>
           </h1>
-          <Link className="boton-reserva hero__boton" href="/reserva/integrantes">Reserva ahora</Link>
+          <Link className="boton-reserva hero__boton" href="/reserva/integrantes">{t.reservar}</Link>
         </section>
 
         {/* Historia: ¿Qué es Lilium? */}
@@ -41,15 +98,13 @@ export default function Inicio() {
           <div className="historia__contenido">
             <div className="retrato">
               <img className="retrato__marco" src="/assets/img/marco-retrato.png" alt="" />
-              <img className="retrato__foto" src="/assets/img/retrato.png" width="348" height="509" alt="Retrato de una joven de la hermandad" />
+              <img className="retrato__foto" src="/assets/img/retrato.png" width="348" height="509" alt={t.retratoAlt} />
             </div>
 
             <div className="historia__texto">
-              <h2 className="historia__titulo">¿Qué es Lilium?</h2>
+              <h2 className="historia__titulo">{t.historiaTitulo}</h2>
               <div className="historia__parrafos">
-                <p>Dicen que algunos caminos están destinados a cruzarse. El de ellas lo hizo sin aviso: cinco desconocidas que se reconocieron al instante. A la luz de las velas unieron sus energías y nació Lilium.</p>
-                <p>Un libro antiguo y una noche de luna llena lo cambiaron todo. Ahora ha llegado el momento de abrir el círculo.</p>
-                <p>Este retiro es para ti, para soltar el cansancio de tantas entregas y liberar lo que pesa. Solo tienes que entrar: ellas se encargan del resto.</p>
+                {t.historia.map((p) => <p key={p}>{p}</p>)}
               </div>
             </div>
           </div>
@@ -57,25 +112,19 @@ export default function Inicio() {
           <img className="encaje encaje--abajo" src="/assets/svg/banner-encaje-reserva.svg" width="1612" height="176" alt="" />
         </section>
 
-        {/* ¿Cómo reservar? + carrusel: la parte crema se queda quieta y la roja sube tapándola */}
-        <div className="como-bloque">
-        <section className="como-reservar" id="como-funciona">
-          <h2 className="como-reservar__titulo">¿Cómo reservar?</h2>
-          <p className="como-reservar__subtitulo">Cinco sencillos pasos para completar la inscripción</p>
-        </section>
-
-        {/* Cómo funciona (carrusel de 5 pasos) */}
-        <CarruselPasos />
-        </div>
+        {/* ¿Cómo reservar? + carrusel de los 5 pasos: al bajar, el fondo pasa de crema a terracota */}
+        <ComoReservar>
+          <CarruselPasos />
+        </ComoReservar>
 
         {/* ¿Qué necesita el ritual? */}
         <section className="ritual">
-          <h2 className="ritual__titulo">¿Qué necesita el ritual?</h2>
+          <h2 className="ritual__titulo">{t.ritualTitulo}</h2>
           <div className="ritual__cuadros">
-            {CUADROS.map((c, i) => (
-              <article className={`cuadro cuadro--${i + 1}`} key={c.img}>
+            {t.cuadros.map((c, i) => (
+              <article className={`cuadro cuadro--${i + 1}`} key={IMAGENES[i]}>
                 <div className="polaroid">
-                  <img src={`/assets/img/${c.img}`} alt={c.alt} />
+                  <img src={`/assets/img/${IMAGENES[i]}`} alt={c.alt} />
                 </div>
                 <div className="cuadro__texto">
                   <h3>{c.titulo}</h3>
@@ -89,23 +138,23 @@ export default function Inicio() {
 
         {/* Cuándo y dónde */}
         <section className="ubicacion">
-          <img className="ubicacion__mapa" src="/assets/img/mapa-ancho.webp" width="1440" height="551" alt="Mapa antiguo" />
+          <img className="ubicacion__mapa" src="/assets/img/mapa-ancho.webp" width="1440" height="551" alt={t.mapaAlt} />
           <div className="ubicacion__dato ubicacion__dato--cuando">
-            <h2><img src="/assets/svg/pin.svg" width="28" height="28" alt="" />Cuándo</h2>
-            <p>{EVENTO.fechaTexto}</p>
-            <p><i>Un único día · experiencias de 45 minutos</i></p>
+            <h2><img src="/assets/svg/pin.svg" width="28" height="28" alt="" />{t.cuando}</h2>
+            <p>{evento.fechaTexto}</p>
+            <p><i>{t.cuandoNota}</i></p>
           </div>
           <div className="ubicacion__dato ubicacion__dato--donde">
-            <h2><img src="/assets/svg/pin.svg" width="28" height="28" alt="" />Dónde</h2>
-            <p>{EVENTO.lugar}</p>
+            <h2><img src="/assets/svg/pin.svg" width="28" height="28" alt="" />{t.donde}</h2>
+            <p>{evento.lugar}</p>
           </div>
         </section>
 
         {/* ¿Erasmus? (fondo: el arco con estatuas) */}
         <section className="erasmus" id="erasmus">
           <img className="erasmus__lirio" src="/assets/img/icono-lirio.png" width="99" height="79" alt="" />
-          <h2 className="erasmus__titulo">¿Erasmus?</h2>
-          <p className="erasmus__texto">Hay turnos solo Erasmus y toda la experiencia está disponible en inglés.</p>
+          <h2 className="erasmus__titulo">{t.erasmusTitulo}</h2>
+          <p className="erasmus__texto">{t.erasmusTexto}</p>
           <BotonErasmus />
           <img className="encaje encaje--abajo" src="/assets/svg/banner-encaje-terracota.svg" width="1612" height="176" alt="" />
         </section>
@@ -113,10 +162,17 @@ export default function Inicio() {
         {/* Preguntas frecuentes */}
         <Faq />
 
-        {/* Imagen final: paisaje con el encaje crema colgando por arriba */}
-        <section className="cta" aria-hidden="true">
+        {/* Llamada final sobre el paisaje: invita a reservar */}
+        <section className="cta" aria-labelledby="cta-titulo">
           <img className="encaje encaje--arriba" src="/assets/svg/banner-encaje.svg" width="1612" height="176" alt="" />
           <img className="cta__paisaje" src="/assets/img/final-paisaje.webp" width="1440" height="494" alt="" />
+          <div className="cta__contenido">
+            <img className="cta__lirio" src="/assets/img/icono-lirio.png" width="99" height="79" alt="" />
+            <p className="cta__etiqueta">{t.finalEtiqueta}</p>
+            <h2 className="cta__titulo" id="cta-titulo">{t.finalTitulo}</h2>
+            <p className="cta__texto">{t.finalTexto}</p>
+            <Link className="boton-reserva cta__boton" href="/reserva/integrantes">{t.reservar}</Link>
+          </div>
         </section>
       </main>
 

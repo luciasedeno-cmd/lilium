@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { guardarBorrador } from "@/lib/borrador";
+import { useIdioma } from "./Idioma";
 
 // Se guarda en el navegador (localStorage, como una nota que se queda en ese ordenador o móvil)
 // para no volver a enseñarlo aunque se cierre la web y se vuelva otro día
@@ -12,6 +13,7 @@ export default function ErasmusBanner() {
   const [abierto, setAbierto] = useState(false);
   const router = useRouter();
   const dialogo = useRef(null);
+  const { idioma, cambiar } = useIdioma();
 
   useEffect(() => {
     let visto = false;
@@ -50,8 +52,8 @@ export default function ErasmusBanner() {
         <h2 id="erasmus-pop-titulo">Erasmus student?</h2>
         <p>Some sessions are just for Erasmus students, with guides who speak English. Coming alone? We’ll put you in a group!</p>
         <div className="erasmus-pop__botones">
-          <button type="button" className="erasmus-pop__boton is-lleno" onClick={() => { document.documentElement.lang = "en"; setAbierto(false); }}>
-            Switch to English
+          <button type="button" className="erasmus-pop__boton is-lleno" onClick={() => { cambiar("en"); setAbierto(false); }}>
+            {idioma === "en" ? "Continue in English" : "Switch to English"}
           </button>
           <button type="button" className="erasmus-pop__boton" onClick={verTurnos} data-autofocus>
             See Erasmus turns

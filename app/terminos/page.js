@@ -3,10 +3,11 @@
 import Link from "next/link";
 import NavReserva from "@/components/NavReserva";
 import { EVENTO, CONTACTO, MIN_SALA_NUEVA, MAX_PERSONAS, HORAS_CONFIRMACION } from "@/lib/config";
+import { idiomaActual } from "@/lib/idiomaServidor";
 
 export const metadata = { title: "Términos y Condiciones · Lilium" };
 
-export default function Terminos() {
+function TerminosEs() {
   return (
     <>
       <NavReserva />
@@ -62,4 +63,68 @@ export default function Terminos() {
       </main>
     </>
   );
+}
+
+// Versión en inglés (la misma información)
+function TerminosEn() {
+  return (
+    <>
+      <NavReserva />
+      <main>
+        <article className="columna terminos">
+          <p className="etiqueta">LEGAL</p>
+          <h1 className="titular">Terms and Conditions</h1>
+
+          <section aria-labelledby="t-aviso" className="terminos__aviso">
+            <h2 id="t-aviso">Lights and effects warning</h2>
+            <p>Lilium is an immersive experience. Inside the room there may be:</p>
+            <ul>
+              <li>Flashing or strobe lights and sudden changes of light.</li>
+              <li>Moments of dimness or darkness.</li>
+              <li>Loud or sudden sounds.</li>
+              <li>Artificial smoke or fog.</li>
+              <li>Small spaces and props on the floor.</li>
+            </ul>
+            <p>If you have photosensitivity, epilepsy, claustrophobia or any other sensitivity, write to us beforehand at <a href={`mailto:${CONTACTO}`}>{CONTACTO}</a> and we'll adapt what we can.</p>
+          </section>
+
+          <section aria-labelledby="t-reservas">
+            <h2 id="t-reservas">Bookings</h2>
+            <ul>
+              <li>Only ESADA students can book, using their university email (@alumnado.esada.es).</li>
+              <li>Each session is for a group of {MIN_SALA_NUEVA} to {MAX_PERSONAS} people. With fewer than {MIN_SALA_NUEVA}, we'll put you in a group that is being formed.</li>
+              <li>Each email can only be in one booking.</li>
+              <li>Each member has {HORAS_CONFIRMACION} hours to confirm their place from the link in their email. Anyone who doesn't confirm in time loses their place.</li>
+              <li>You can change your time or cancel from “My booking”. If you made the booking, you can also cancel it for the whole group.</li>
+            </ul>
+          </section>
+
+          <section aria-labelledby="t-dia">
+            <h2 id="t-dia">On the day</h2>
+            <ul>
+              <li>{EVENTO.en.fechaTexto}, at {EVENTO.en.lugar}.</li>
+              <li>Arrive 15 minutes before your time. If you're late, the playing time isn't extended.</li>
+              <li>Show your digital ticket (the QR code) at the door.</li>
+              <li>Follow the guide's instructions at all times.</li>
+              <li>Treat the set and props with care: you never need to force anything to solve the game.</li>
+              <li>The organisers are not responsible for lost personal belongings.</li>
+            </ul>
+          </section>
+
+          <section aria-labelledby="t-datos">
+            <h2 id="t-datos">Your data</h2>
+            <p>We only use your email to manage your booking and send you Lilium's notices (access code, confirmation, ticket and reminders). We don't share it with anyone and will delete it when the event is over.</p>
+          </section>
+
+          <p className="terminos__contacto">Questions? Write to us at <a href={`mailto:${CONTACTO}`}>{CONTACTO}</a>.</p>
+          <p><Link href="/inicio">← Back to home</Link></p>
+        </article>
+      </main>
+    </>
+  );
+}
+
+// Se enseña la versión del idioma elegido arriba (ES / EN)
+export default async function Terminos() {
+  return (await idiomaActual()) === "en" ? <TerminosEn /> : <TerminosEs />;
 }
