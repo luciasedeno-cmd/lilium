@@ -1,9 +1,11 @@
-// POST /api/acceso/admin · { email, clave } → entrada de administración (botón «Admin» de la cuenta atrás)
+// POST /api/acceso/admin · { email, clave } → página del equipo (botón «Admin» de la cuenta atrás)
 // Solo lilium@esada.es, con la contraseña guardada en Vercel como ADMIN_CLAVE (nunca en el código).
+// Si es correcta, el navegador recibe la «llave de pruebas» para ver la web antes de la apertura.
 import { createHash, timingSafeEqual } from "node:crypto";
 import { ADMIN_CORREO, normalizarCorreo } from "@/lib/config";
-import { iniciarSesion, comprobarLlaveSesion } from "@/lib/sesion";
-import { tieneReserva } from "@/lib/reservas";
+import { cookies } from "next/headers";
+import { comprobarLlaveSesion } from "@/lib/sesion";
+import { COOKIE_PREVIA, DIAS_PREVIA, crearLlavePrevia } from "@/lib/previa";
 import { ok, error, manejar, leerJson } from "@/lib/respuestas";
 
 // Freno contra quien pruebe contraseñas sin parar: tras 10 fallos, 15 minutos de bloqueo
@@ -37,6 +39,13 @@ export const POST = manejar(async (req) => {
 
   fallos.n = 0;
   comprobarLlaveSesion();
-  await iniciarSesion(correo);
-  return ok({ email: correo, tieneReserva: await tieneReserva(correo) });
+  const almacen = await cookies();
+  almacen.set(COOKIE_PREVIA, await crearLlavePrevia(), {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: DIAS_PREVIA * 24 * 3600,
+  });
+  return ok();
 });

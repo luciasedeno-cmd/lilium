@@ -19,9 +19,9 @@
 - Pop-up Erasmus (`components/ErasmusBanner.js`): solo en `/inicio` y solo la primera vez en ese navegador (se guarda en localStorage). Fondos: `public/assets/img/erasmus-encaje.webp` (ordenador) y `erasmus-encaje-movil.webp` (móvil).
 - Cabecera de los pasos (`components/PasoCabecera.js`): 3 puntos animados + «PASO N DE 3»; los puntos anteriores llevan atrás. Pie común: `components/PiePagina.js`.
 - `/mi-reserva` (Figma «PAG RESERVA - INTEGRANTES B»): «Tu reserva» (QR, fragmento, cambiar de hora), «Mi equipo» (la líder pulsa «Editar reserva» para quitar ✕ o añadir integrantes y «Guardar cambios» → `/api/mi-reserva/integrantes`) y «Antes de venir…».
-- `middleware.js`: sin sesión, `/inicio`, `/reserva/*` y `/mi-reserva` llevan a `/acceso`.
+- `middleware.js`: además, sin sesión, `/inicio`, `/reserva/*` y `/mi-reserva` llevan a `/acceso`.
 - `app/page.js`: portada con la cuenta atrás hasta el 30 de octubre (Figma «CUENTA REGRESIVA»: cuadro a pantalla completa, «FALTAN» y horas:minutos:segundos, con las horas totales); al llegar la fecha redirige a `/acceso`.
-- Botón «Admin» de la cuenta atrás → `/admin` (`app/api/acceso/admin`): `lilium@esada.es` + contraseña de la variable `ADMIN_CLAVE` (solo en Vercel, nunca en el código). Esa cuenta puede reservar antes de la apertura; sus integrantes siguen siendo @alumnado.esada.es.
+- **Web cerrada hasta el 30 de octubre** (`middleware.js` + `lib/previa.js`): sin la «llave de pruebas» solo se ven la cuenta atrás, `/admin` y los enlaces de los correos (`/confirmar`, `/entrada`); todo lo demás vuelve a `/` y la API responde 403. El botón «Admin» de la cuenta atrás → `/admin`: `lilium@esada.es` + contraseña de `ADMIN_CLAVE` (solo en Vercel, nunca en el código) da la llave (cookie `lilium_previa`, 30 días). Con la llave, cualquier correo @alumnado.esada.es puede entrar y reservar para probar. Desde la apertura la puerta desaparece sola.
 - `/acceso` con la sesión abierta no salta: muestra «Ya estás dentro» con «Continuar» y «Entrar con otro correo».
 - `app/inicio`, `app/acceso`, `app/reserva/{integrantes,hora,confirmacion}`, `app/mi-reserva`: páginas de la web.
 - `app/confirmar/[token]`: enlace del correo para confirmar la plaza. `app/entrada/[token]`: lo que abre el QR de la entrada.

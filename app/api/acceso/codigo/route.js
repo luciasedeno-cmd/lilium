@@ -3,6 +3,7 @@ import { CORREO_VALIDO, DOMINIO, normalizarCorreo, reservasAbiertas } from "@/li
 import { nuevoCodigo } from "@/lib/codigos";
 import { correoCodigo } from "@/lib/correo";
 import { ok, error, manejar, leerJson } from "@/lib/respuestas";
+import { conLlavePrevia } from "@/lib/previaServidor";
 
 export const POST = manejar(async (req) => {
   const { email } = await leerJson(req);
@@ -10,7 +11,7 @@ export const POST = manejar(async (req) => {
   if (!CORREO_VALIDO.test(correo)) {
     return error(`Usa tu correo institucional: nombreapellido@${DOMINIO}`);
   }
-  if (!reservasAbiertas(correo)) return error("Las reservas abren el 30 de octubre.", 403);
+  if (!reservasAbiertas(correo) && !(await conLlavePrevia())) return error("Las reservas abren el 30 de octubre.", 403);
 
   const res = await nuevoCodigo(correo);
   if (!res.ok) return error(`Espera ${res.espera} s para pedir otro código.`, 429);

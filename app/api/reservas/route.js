@@ -4,6 +4,7 @@ import { crearReserva, limiteDe, fragmentosDe } from "@/lib/reservas";
 import { correoInvitacion, correoEntrada, urlSitio } from "@/lib/correo";
 import { reservasAbiertas, MIN_SALA_NUEVA, MAX_PERSONAS, DOMINIO } from "@/lib/config";
 import { ok, error, manejar, leerJson } from "@/lib/respuestas";
+import { conLlavePrevia } from "@/lib/previaServidor";
 
 const MENSAJES = {
   correo: (r) => `${r.email} no es un correo válido (nombreapellido@${DOMINIO}).`,
@@ -18,7 +19,7 @@ const MENSAJES = {
 export const POST = manejar(async (req) => {
   const lider = await correoDeSesion();
   if (!lider) return error("Tu sesión ha caducado. Vuelve a entrar con tu correo.", 401);
-  if (!reservasAbiertas(lider)) return error("Las reservas abren el 30 de octubre.", 403);
+  if (!reservasAbiertas(lider) && !(await conLlavePrevia())) return error("Las reservas abren el 30 de octubre.", 403);
 
   const { otros = [], turnoId, equipo, aceptaTerminos } = await leerJson(req);
   if (!Array.isArray(otros)) return error("Datos no válidos.");

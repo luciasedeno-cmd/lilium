@@ -20,7 +20,7 @@ export default function Portada() {
       {/* Título para buscadores y lectores de pantalla (no se ve) */}
       <h1 className="visually-hidden">Lilium · Las reservas abren el viernes 30 de octubre</h1>
       <CuentaAtras apertura={APERTURA.toISOString()} />
-      {/* Entrada del equipo para probar las reservas antes de la apertura (pide contraseña) */}
+      {/* Entrada del equipo: hasta el día 30 es la única forma de ver el resto de la web (pide contraseña) */}
       <Link className="cuenta__admin" href="/admin">Admin</Link>
     </main>
   );

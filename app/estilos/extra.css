@@ -1120,3 +1120,63 @@ main.mi-reserva {
     font-size: 14px;
   }
 }
+
+/* ==========================================================
+   Página previa del equipo (/admin): el cuadro de fondo y la tarjeta crema de acceso
+   ========================================================== */
+html:has(.previa),
+body:has(.previa) {
+  height: 100%;
+  overflow: hidden;
+}
+
+main.previa {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  height: 100svh;
+  padding: 16px;
+  background: var(--verde-oscuro) url("/assets/img/hero-retiro.webp") center / cover no-repeat;
+}
+
+.previa__tarjeta {
+  width: 560px;
+  max-height: calc(100svh - 32px);
+  margin: 0;
+  overflow-y: auto;
+}
+
+.previa__logo {
+  width: 150px;
+  height: auto;
+  align-self: center;
+  margin: -8px 0 -14px;
+}
+
+.previa__tarjeta .acceso__titulo {
+  font-size: 64px;
+  line-height: 1.1;
+}
+
+.previa__tarjeta .acceso__intro {
+  font-size: 20px;
+}
+
+.previa__volver {
+  align-self: center;
+  font-family: var(--font-inter);
+  font-size: 14px;
+  color: var(--terracota);
+  text-decoration: underline;
+}
+
+@media (max-width: 760px) {
+  .previa__tarjeta .acceso__titulo {
+    font-size: 46px;
+  }
+
+  .previa__tarjeta .acceso__intro {
+    font-size: 17px;
+  }
+}
