@@ -27,11 +27,18 @@ body:has(.hero) {
   -webkit-backdrop-filter: blur(10px) saturate(1.2);
   backdrop-filter: blur(10px) saturate(1.2);
   color: var(--verde-oscuro);
-  transition: transform 0.35s ease, background-color 0.35s, color 0.35s, border-color 0.35s;
+  transition: transform 0.35s ease, background-color 0.35s, color 0.35s, border-color 0.35s, backdrop-filter 0.35s;
 }
 
 .header.is-oculta {
   transform: translateY(-100%);
+}
+
+
+/* Sobre una imagen, una sombra muy suave ayuda a leer el texto crema */
+.header.is-transparente.is-oscuro .header__nav > a:not(.boton-reserva),
+.header.is-transparente.is-oscuro .idioma button {
+  text-shadow: 0 1px 8px rgba(41, 47, 32, 0.45);
 }
 
 /* Sobre fondos oscuros: texto y logo en crema */
@@ -63,10 +70,14 @@ body:has(.hero) {
   background: var(--fondo);
 }
 
-/* Hueco del tamaño de la barra, en las páginas que no empiezan con una imagen a pantalla completa */
-.header-hueco {
-  flex: none;
-  height: 72px;
+/* Sobre la sección principal: sin fondo, sin borde y sin desenfoque (100 % transparente).
+   Va después del modo oscuro para que gane siempre. */
+.header.is-transparente,
+.header.is-transparente.is-oscuro {
+  background: transparent;
+  border-bottom-color: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

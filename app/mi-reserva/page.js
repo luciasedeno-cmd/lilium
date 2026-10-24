@@ -217,8 +217,8 @@ function MiReservaContenido() {
   return (
     <>
       <NavReserva />
-      <main className="mi-reserva">
-        <header className="mi-reserva__cabecera">
+      <main className="mi-reserva" data-fondo="oscuro">
+        <header className="mi-reserva__cabecera" data-principal>
           <p className="mi-reserva__etiqueta">{t.miReserva}</p>
           <h1 className="mi-reserva__titulo">{t.numero} {numeroDe(reserva.id)}</h1>
         </header>

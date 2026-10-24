@@ -1,6 +1,8 @@
 "use client";
 // Barra de navegación de TODA la web (Home, acceso, reserva, mi reserva, términos…).
-// - Casi transparente: deja ver lo que hay detrás, con un leve desenfoque.
+// - Va SIEMPRE por encima de la página (la primera sección empieza debajo de ella, desde arriba del todo).
+// - 100 % transparente mientras está sobre la sección principal (la marcada con data-principal, o el
+//   principio de la página); al pasarla, se vuelve un cristal de color con un leve desenfoque.
 // - Detecta si lo que hay detrás es oscuro o claro y cambia el color del texto para que siempre se lea.
 // - Se esconde al bajar por la página y vuelve a aparecer al subir.
 // - En la Home subraya el apartado que se está viendo; en el móvil tiene un menú desplegable (☰ → ✕).
@@ -44,6 +46,7 @@ export default function HomeHeader() {
   const [abierto, setAbierto] = useState(false);
   const [oculta, setOculta] = useState(false); // escondida al bajar
   const [oscuro, setOscuro] = useState(false); // ¿fondo oscuro detrás?
+  const [transparente, setTransparente] = useState(true); // ¿sobre la sección principal?
   const [activo, setActivo] = useState(null); // apartado de la Home que se está viendo
   const cabecera = useRef(null);
   const cerrar = () => setAbierto(false);
@@ -60,7 +63,12 @@ export default function HomeHeader() {
       else if (y > anterior + 6) setOculta(true);
       else if (y < anterior - 6) setOculta(false);
       anterior = y;
-      if (cabecera.current) setOscuro(fondoOscuro(cabecera.current));
+      if (!cabecera.current) return;
+      setOscuro(fondoOscuro(cabecera.current));
+      // Transparente hasta que el final de la sección principal pasa por debajo de la barra
+      const principal = document.querySelector("[data-principal]");
+      const alto = cabecera.current.offsetHeight;
+      setTransparente(principal ? principal.getBoundingClientRect().bottom > alto : y < 10);
     }
     const alMover = () => {
       if (!pendiente) {
@@ -111,11 +119,11 @@ export default function HomeHeader() {
     };
   }, [abierto]);
 
-  const clases = ["header", abierto && "is-open", oculta && !abierto && "is-oculta", oscuro && !abierto && "is-oscuro"].filter(Boolean).join(" ");
+  const clases = ["header", abierto && "is-open", oculta && !abierto && "is-oculta", oscuro && !abierto && "is-oscuro",
+    transparente && !abierto && "is-transparente"].filter(Boolean).join(" ");
 
   return (
-    <>
-      <header ref={cabecera} className={clases}>
+    <header ref={cabecera} className={clases}>
         <Link className="logo" href="/inicio" aria-label={t.inicio} onClick={cerrar}>
           <img src="/assets/img/logo-lilium.png" alt="Lilium" />
         </Link>
@@ -133,9 +141,6 @@ export default function HomeHeader() {
           <Link className="boton-reserva" href="/reserva/integrantes" onClick={cerrar}>{t.reservar}</Link>
           <SelectorIdioma />
         </nav>
-      </header>
-      {/* Fuera de la Home la barra va por encima de la página: este hueco evita que tape el contenido */}
-      {!enHome && <div className="header-hueco" aria-hidden="true" />}
-    </>
+    </header>
   );
 }

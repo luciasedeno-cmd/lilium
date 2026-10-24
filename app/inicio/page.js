@@ -83,7 +83,7 @@ export default async function Inicio() {
 
       <main>
         {/* Portada */}
-        <section className="hero" data-fondo="oscuro">
+        <section className="hero" data-fondo="oscuro" data-principal>
           <h1 className="hero__titulo">
             <span className="hero__linea hero__linea--1">{t.lineas[0]}</span>
             <span className="hero__linea hero__linea--2">{t.lineas[1]}</span>

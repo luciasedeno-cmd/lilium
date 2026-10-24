@@ -7,7 +7,8 @@
 /* Márgenes de las páginas de reserva. En Next.js todos los estilos se comparten entre páginas,
    así que se excluye la Home (la que tiene .hero) para que sus secciones lleguen de borde a borde. */
 main:not(:has(.hero)) {
-  padding: 0 16px 120px;
+  /* 72 px arriba: la barra de navegación va por encima, transparente */
+  padding: 72px 16px 120px;
 }
 
 /* ---------- Cabecera de paso: 3 puntos + "PASO N DE 3" ---------- */

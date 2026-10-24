@@ -339,7 +339,7 @@ body:has(.pagina-acceso) {
   min-height: 0;
   align-items: center;
   justify-content: center;
-  padding: 0 16px 16px;
+  padding: 72px 16px 16px; /* la barra va encima */
 }
 
 .pagina-acceso .acceso {
@@ -573,7 +573,7 @@ body:has(.pagina-acceso) {
    ========================================================== */
 main.mi-reserva {
   min-height: 1165px;
-  padding: 59px 16px 76px;
+  padding: 131px 16px 76px; /* 72 px de la barra (que va encima del cuadro) + 59 px del diseño */
   background: var(--verde-oscuro) url("/assets/img/fondo-mi-reserva.webp") center top / cover no-repeat;
   color: var(--terracota);
 }
@@ -1092,7 +1092,7 @@ main.mi-reserva {
 @media (max-width: 760px) {
   main.mi-reserva {
     min-height: 0;
-    padding-top: 36px;
+    padding-top: 108px;
   }
 
   .mi-reserva__titulo {
