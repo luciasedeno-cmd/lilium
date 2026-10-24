@@ -83,7 +83,7 @@ export default async function Inicio() {
 
       <main>
         {/* Portada */}
-        <section className="hero">
+        <section className="hero" data-fondo="oscuro">
           <h1 className="hero__titulo">
             <span className="hero__linea hero__linea--1">{t.lineas[0]}</span>
             <span className="hero__linea hero__linea--2">{t.lineas[1]}</span>
@@ -109,7 +109,8 @@ export default async function Inicio() {
             </div>
           </div>
 
-          <img className="encaje encaje--abajo" src="/assets/svg/banner-encaje-reserva.svg" width="1612" height="176" alt="" />
+          {/* Encaje del color de «¿Cómo reservar?»: cambia de crema a terracota junto con la sección */}
+          <div className="encaje encaje--abajo encaje--como" aria-hidden="true" />
         </section>
 
         {/* ¿Cómo reservar? + carrusel de los 5 pasos: al bajar, el fondo pasa de crema a terracota */}
@@ -137,7 +138,7 @@ export default async function Inicio() {
         </section>
 
         {/* Cuándo y dónde */}
-        <section className="ubicacion">
+        <section className="ubicacion" data-fondo="claro">
           <img className="ubicacion__mapa" src="/assets/img/mapa-ancho.webp" width="1440" height="551" alt={t.mapaAlt} />
           <div className="ubicacion__dato ubicacion__dato--cuando">
             <h2><img src="/assets/svg/pin.svg" width="28" height="28" alt="" />{t.cuando}</h2>
@@ -151,7 +152,7 @@ export default async function Inicio() {
         </section>
 
         {/* ¿Erasmus? (fondo: el arco con estatuas) */}
-        <section className="erasmus" id="erasmus">
+        <section className="erasmus" id="erasmus" data-fondo="oscuro">
           <img className="erasmus__lirio" src="/assets/img/icono-lirio.png" width="99" height="79" alt="" />
           <h2 className="erasmus__titulo">{t.erasmusTitulo}</h2>
           <p className="erasmus__texto">{t.erasmusTexto}</p>
@@ -163,7 +164,7 @@ export default async function Inicio() {
         <Faq />
 
         {/* Llamada final sobre el paisaje: invita a reservar */}
-        <section className="cta" aria-labelledby="cta-titulo">
+        <section className="cta" aria-labelledby="cta-titulo" data-fondo="claro">
           <img className="encaje encaje--arriba" src="/assets/svg/banner-encaje.svg" width="1612" height="176" alt="" />
           <img className="cta__paisaje" src="/assets/img/final-paisaje.webp" width="1440" height="494" alt="" />
           <div className="cta__contenido">

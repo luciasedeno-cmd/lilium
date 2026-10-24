@@ -4,23 +4,75 @@
    centran con calc(50% - 720px + x) para pantallas anchas.
    ========================================================== */
 
-body:has(.header) {
+body:has(.hero) {
   background: var(--fondo-oscuro);
 }
 
 /* ---------- Header ---------- */
+/* La misma barra en toda la web: fija arriba, casi transparente y con un leve desenfoque.
+   Cambia de color según el fondo de detrás (.is-oscuro) y se esconde al bajar (.is-oculta). */
 .header {
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 20;
+  left: 0;
+  right: 0;
+  z-index: 50;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  /* Más fina que en el diseño original: 72 px de alto y márgenes laterales cortos */
   height: 72px;
   padding: 0 max(24px, calc(50% - 680px));
+  background: rgba(255, 250, 242, 0.28);
+  border-bottom: 1px solid rgba(41, 47, 32, 0.08);
+  -webkit-backdrop-filter: blur(10px) saturate(1.2);
+  backdrop-filter: blur(10px) saturate(1.2);
+  color: var(--verde-oscuro);
+  transition: transform 0.35s ease, background-color 0.35s, color 0.35s, border-color 0.35s;
+}
+
+.header.is-oculta {
+  transform: translateY(-100%);
+}
+
+/* Sobre fondos oscuros: texto y logo en crema */
+.header.is-oscuro {
+  background: rgba(41, 47, 32, 0.22);
+  border-bottom-color: rgba(255, 250, 242, 0.12);
+  color: var(--fondo);
+}
+
+.header .logo img {
+  transition: filter 0.35s;
+}
+
+.header.is-oscuro .logo img {
+  filter: invert(96%) sepia(6%) saturate(250%) brightness(1.05); /* el logo negro pasa a crema */
+}
+
+.header.is-oscuro .idioma button {
+  border-color: rgba(255, 250, 242, 0.85);
+  color: var(--fondo);
+}
+
+.header.is-oscuro .idioma button[aria-pressed="true"] {
   background: var(--fondo);
-  transition: box-shadow 0.3s;
+  color: var(--verde-oscuro);
+}
+
+.header.is-oscuro .header__rayas span {
+  background: var(--fondo);
+}
+
+/* Hueco del tamaño de la barra, en las páginas que no empiezan con una imagen a pantalla completa */
+.header-hueco {
+  flex: none;
+  height: 72px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header {
+    transition: none;
+  }
 }
 
 /* Al bajar por la página, una sombra suave separa la cabecera del contenido */
@@ -43,9 +95,6 @@ body:has(.header) {
   font-size: 18px;
 }
 
-.header.is-bajado {
-  box-shadow: 0 1px 0 rgba(41, 47, 32, 0.08), 0 6px 18px rgba(41, 47, 32, 0.08);
-}
 
 /* Al pulsar un enlace del menú, el apartado no queda escondido bajo la cabecera */
 #paraiso,
@@ -60,7 +109,7 @@ body:has(.header) {
   gap: 40px;
   font-family: var(--font-baskerville);
   font-size: 19px;
-  color: var(--verde-oscuro);
+  color: inherit;
 }
 
 .header__nav > a:not(.boton-reserva) {
@@ -75,7 +124,7 @@ body:has(.header) {
   background-size: 100% 1px;
 }
 
-.header__nav > a.is-activo {
+.header:not(.is-oscuro) .header__nav > a.is-activo {
   color: var(--terracota);
 }
 
@@ -91,9 +140,18 @@ body:has(.header) {
 }
 
 /* ---------- Hero ---------- */
+/* Ocupa justo la pantalla (la barra va por encima, transparente) */
 .hero {
   position: relative;
-  height: 924px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(40px, 8vh, 80px);
+  height: 100vh;
+  height: 100svh;
+  min-height: 560px;
+  padding-top: 40px;
   background: url("/assets/img/hero-retiro.webp") center / cover no-repeat;
 }
 
@@ -113,10 +171,8 @@ body:has(.header) {
 }
 
 .hero__titulo {
-  position: absolute;
-  top: 248px;
-  left: 0;
-  right: 0;
+  position: relative;
+  width: 100%;
   font-family: var(--font-script);
   font-size: 200px;
   line-height: 155px;
@@ -138,10 +194,7 @@ body:has(.header) {
 }
 
 .hero__boton {
-  position: absolute;
-  top: 630px;
-  left: 50%;
-  transform: translateX(-50%);
+  position: relative;
 }
 
 /* ---------- Encajes ---------- */
@@ -167,17 +220,25 @@ body:has(.header) {
 }
 
 /* ---------- Historia ---------- */
+/* Ocupa justo la pantalla: el retrato se encoge en pantallas bajas para que todo quepa */
 .historia {
   position: relative;
   z-index: 1;
-  padding: 157px 0 196px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 120px 0 140px;
   background: var(--verde-oscuro);
   overflow-x: clip;
 }
 
 .historia__contenido {
   display: flex;
+  align-items: center;
   gap: 94px;
+  width: 100%;
   max-width: 1440px;
   margin: 0 auto;
   padding-left: 114px;
@@ -189,8 +250,9 @@ body:has(.header) {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 509px;
-  height: 709px;
+  height: min(709px, calc(100svh - 280px));
+  min-height: 380px;
+  aspect-ratio: 509 / 709;
 }
 
 .retrato__marco {
@@ -203,12 +265,14 @@ body:has(.header) {
 
 .retrato__foto {
   position: relative;
-  width: 348px;
-  height: 509px;
+  width: 68.4%;
+  height: auto;
+  aspect-ratio: 348 / 509;
+  object-fit: cover;
 }
 
 .historia__texto {
-  padding-top: 136px;
+  padding-top: 0;
   min-width: 0;
 }
 
@@ -239,18 +303,29 @@ body:has(.header) {
 /* ---------- ¿Cómo reservar? ---------- */
 /* Al bajar, el fondo de «¿Cómo reservar?» y de los pasos pasa de crema a terracota (y el texto al revés).
    --p lo calcula components/home/ComoReservar.js: 0 = crema, 1 = terracota. */
-.como-bloque {
+:root {
   --p: 0;
-  --como-fondo: color-mix(in srgb, var(--terracota) calc(var(--p) * 100%), var(--fondo-oscuro));
   --pt: 0;
+  --como-fondo: color-mix(in srgb, var(--terracota) calc(var(--p) * 100%), var(--fondo-oscuro));
   --como-texto: color-mix(in srgb, var(--fondo-oscuro) calc(var(--pt) * 100%), var(--terracota));
+}
+
+.como-bloque {
   position: relative;
   background: var(--como-fondo);
 }
 
+/* El encaje que cuelga sobre «¿Cómo reservar?» se pinta con el mismo color que la sección
+   (se usa el dibujo como «molde» y se rellena con --como-fondo) */
+.encaje--como {
+  background: var(--como-fondo);
+  -webkit-mask: url("/assets/svg/banner-encaje-reserva.svg") center / 100% 100% no-repeat;
+  mask: url("/assets/svg/banner-encaje-reserva.svg") center / 100% 100% no-repeat;
+}
+
 /* Navegadores antiguos sin color-mix: directamente terracota */
 @supports not (color: color-mix(in srgb, red 50%, blue)) {
-  .como-bloque {
+  :root {
     --como-fondo: var(--terracota);
     --como-texto: var(--fondo-oscuro);
   }
@@ -1109,6 +1184,7 @@ body:has(.header) {
     gap: 0;
     padding: 8px 16px 24px;
     background: var(--fondo);
+    color: var(--verde-oscuro);
     border-top: 1px solid rgba(41, 47, 32, 0.1);
     box-shadow: 0 12px 24px rgba(41, 47, 32, 0.14);
     font-size: 22px;
@@ -1146,34 +1222,21 @@ body:has(.header) {
     align-self: center;
   }
 
-  .hero {
-    height: 640px;
-  }
-
   .hero__titulo {
-    top: 170px;
     font-size: 72px;
   }
 
   .hero__linea--1 { transform: translateX(-6vw); }
   .hero__linea--2 { transform: translateX(5vw); }
 
-  .hero__boton {
-    top: 440px;
-  }
 
   .historia {
     padding: 120px 0 200px;
   }
 
   .retrato {
-    width: 300px;
     height: 418px;
-  }
-
-  .retrato__foto {
-    width: 205px;
-    height: 300px;
+    min-height: 0;
   }
 
   .historia__titulo {

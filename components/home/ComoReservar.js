@@ -21,9 +21,11 @@ export default function ComoReservar({ children }) {
       const arriba = bloque.current.getBoundingClientRect().top / window.innerHeight;
       // Empieza cuando la sección está al 70 % de la pantalla y termina al llegar al 30 %
       const p = Math.min(1, Math.max(0, (0.7 - arriba) / 0.4));
-      bloque.current.style.setProperty("--p", p.toFixed(3));
+      // Se guarda en la raíz de la página para que también lo use el encaje de la sección de arriba
+      const raiz = document.documentElement.style;
+      raiz.setProperty("--p", p.toFixed(3));
       // El texto cambia más tarde y más rápido que el fondo, para que siempre se lea bien
-      bloque.current.style.setProperty("--pt", Math.min(1, Math.max(0, (p - 0.4) / 0.2)).toFixed(3));
+      raiz.setProperty("--pt", Math.min(1, Math.max(0, (p - 0.4) / 0.2)).toFixed(3));
     }
     const alBajar = () => {
       if (!pendiente) {
@@ -35,6 +37,8 @@ export default function ComoReservar({ children }) {
     window.addEventListener("scroll", alBajar, { passive: true });
     window.addEventListener("resize", alBajar);
     return () => {
+      document.documentElement.style.removeProperty("--p");
+      document.documentElement.style.removeProperty("--pt");
       window.removeEventListener("scroll", alBajar);
       window.removeEventListener("resize", alBajar);
     };

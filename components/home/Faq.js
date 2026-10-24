@@ -38,7 +38,7 @@ export default function Faq() {
   const t = TEXTOS[idioma];
 
   return (
-    <section className="faq" id="faq">
+    <section className="faq" id="faq" data-fondo="oscuro">
       <div className="faq__bloque">
         <p className="faq__etiqueta"><img src="/assets/svg/punto.svg" width="7" height="7" alt="" />{t.etiqueta}</p>
         <h2 className="faq__titulo">{t.titulo}</h2>

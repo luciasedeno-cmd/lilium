@@ -1,8 +1,12 @@
 "use client";
-// Header de la Home: se queda arriba al bajar, subraya el apartado que se está viendo
-// y en el móvil tiene un menú desplegable (icono de tres rayas que se convierte en ✕)
+// Barra de navegación de TODA la web (Home, acceso, reserva, mi reserva, términos…).
+// - Casi transparente: deja ver lo que hay detrás, con un leve desenfoque.
+// - Detecta si lo que hay detrás es oscuro o claro y cambia el color del texto para que siempre se lea.
+// - Se esconde al bajar por la página y vuelve a aparecer al subir.
+// - En la Home subraya el apartado que se está viendo; en el móvil tiene un menú desplegable (☰ → ✕).
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import SelectorIdioma from "@/components/SelectorIdioma";
 import { useTextos } from "@/components/Idioma";
 
@@ -13,21 +17,71 @@ const TEXTOS = {
   en: { paraiso: "The retreat", "como-funciona": "How it works", faq: "FAQ", reservar: "Book now", abrir: "Open menu", cerrar: "Close menu", apartados: "Page sections", inicio: "Lilium, home" },
 };
 
+/** Lee un color de CSS («rgb(…)», «rgba(…)» o «color(srgb …)») → [r, g, b, opacidad] de 0 a 1 */
+function leerColor(texto) {
+  const n = (texto.match(/[\d.]+/g) || []).map(Number);
+  if (texto.startsWith("color(")) return [n[0], n[1], n[2], n[3] ?? 1];
+  return [n[0] / 255, n[1] / 255, n[2] / 255, n[3] ?? 1];
+}
+
+/**
+ * ¿Lo que hay justo debajo de la barra es oscuro? Mira el elemento de esa zona y sube por sus «padres»
+ * hasta encontrar un fondo: una sección marcada con data-fondo="oscuro|claro" o un color de fondo.
+ */
+function fondoOscuro(barra) {
+  const y = barra.getBoundingClientRect().height / 2;
+  const debajo = document.elementsFromPoint(window.innerWidth / 2, y).find((el) => !barra.contains(el));
+  for (let el = debajo; el && el !== document.documentElement; el = el.parentElement) {
+    if (el.dataset?.fondo) return el.dataset.fondo === "oscuro";
+    const [r, g, b, a] = leerColor(getComputedStyle(el).backgroundColor);
+    if (a > 0.5) return 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.5; // brillo del color
+  }
+  return false;
+}
+
 export default function HomeHeader() {
+  const enHome = usePathname() === "/inicio";
   const [abierto, setAbierto] = useState(false);
-  const [bajado, setBajado] = useState(false); // ¿se ha bajado por la página? (para poner la sombra)
-  const [activo, setActivo] = useState(null); // apartado que se está viendo ahora
+  const [oculta, setOculta] = useState(false); // escondida al bajar
+  const [oscuro, setOscuro] = useState(false); // ¿fondo oscuro detrás?
+  const [activo, setActivo] = useState(null); // apartado de la Home que se está viendo
   const cabecera = useRef(null);
   const cerrar = () => setAbierto(false);
   const t = useTextos(TEXTOS);
 
-  // Sombra al bajar y apartado activo
+  // Al bajar se esconde, al subir aparece; y se revisa el fondo de detrás
   useEffect(() => {
-    const alBajar = () => setBajado(window.scrollY > 10);
-    alBajar();
-    window.addEventListener("scroll", alBajar, { passive: true });
+    let anterior = window.scrollY;
+    let pendiente = false;
+    function revisar() {
+      pendiente = false;
+      const y = window.scrollY;
+      if (y < 80) setOculta(false);
+      else if (y > anterior + 6) setOculta(true);
+      else if (y < anterior - 6) setOculta(false);
+      anterior = y;
+      if (cabecera.current) setOscuro(fondoOscuro(cabecera.current));
+    }
+    const alMover = () => {
+      if (!pendiente) {
+        pendiente = true;
+        requestAnimationFrame(revisar);
+      }
+    };
+    revisar();
+    window.addEventListener("scroll", alMover, { passive: true });
+    window.addEventListener("resize", alMover);
+    const otraVez = setTimeout(revisar, 600); // cuando ya han cargado las imágenes
+    return () => {
+      window.removeEventListener("scroll", alMover);
+      window.removeEventListener("resize", alMover);
+      clearTimeout(otraVez);
+    };
+  }, []);
 
-    // Un apartado cuenta como «activo» cuando cruza la franja central de la pantalla
+  // Apartado activo (solo en la Home): el que cruza la franja central de la pantalla
+  useEffect(() => {
+    if (!enHome) return;
     const vigia = new IntersectionObserver(
       (entradas) => entradas.forEach((e) => e.isIntersecting && setActivo(e.target.id)),
       { rootMargin: "-45% 0px -50% 0px" }
@@ -36,16 +90,13 @@ export default function HomeHeader() {
       const seccion = document.getElementById(id);
       if (seccion) vigia.observe(seccion);
     });
-    // Arriba del todo (en la portada) no hay ningún apartado activo
     const enPortada = () => window.scrollY < 200 && setActivo(null);
     window.addEventListener("scroll", enPortada, { passive: true });
-
     return () => {
-      window.removeEventListener("scroll", alBajar);
-      window.removeEventListener("scroll", enPortada);
       vigia.disconnect();
+      window.removeEventListener("scroll", enPortada);
     };
-  }, []);
+  }, [enHome]);
 
   // Menú del móvil: se cierra con la tecla Esc o tocando fuera
   useEffect(() => {
@@ -60,25 +111,31 @@ export default function HomeHeader() {
     };
   }, [abierto]);
 
+  const clases = ["header", abierto && "is-open", oculta && !abierto && "is-oculta", oscuro && !abierto && "is-oscuro"].filter(Boolean).join(" ");
+
   return (
-    <header ref={cabecera} className={`header${abierto ? " is-open" : ""}${bajado ? " is-bajado" : ""}`}>
-      <Link className="logo" href="/inicio" aria-label={t.inicio} onClick={cerrar}>
-        <img src="/assets/img/logo-lilium.png" alt="Lilium" />
-      </Link>
-      <button className="header__menu" type="button" aria-expanded={abierto} aria-controls="menu"
-        aria-label={abierto ? t.cerrar : t.abrir} onClick={() => setAbierto(!abierto)}>
-        <span className="header__rayas" aria-hidden="true"><span /><span /><span /></span>
-      </button>
-      <nav className="header__nav" id="menu" aria-label={t.apartados}>
-        {ENLACES.map((id) => (
-          <a key={id} href={`#${id}`} onClick={cerrar} className={activo === id ? "is-activo" : undefined}
-            aria-current={activo === id ? "location" : undefined}>
-            {t[id]}
-          </a>
-        ))}
-        <Link className="boton-reserva" href="/reserva/integrantes" onClick={cerrar}>{t.reservar}</Link>
-        <SelectorIdioma />
-      </nav>
-    </header>
+    <>
+      <header ref={cabecera} className={clases}>
+        <Link className="logo" href="/inicio" aria-label={t.inicio} onClick={cerrar}>
+          <img src="/assets/img/logo-lilium.png" alt="Lilium" />
+        </Link>
+        <button className="header__menu" type="button" aria-expanded={abierto} aria-controls="menu"
+          aria-label={abierto ? t.cerrar : t.abrir} onClick={() => setAbierto(!abierto)}>
+          <span className="header__rayas" aria-hidden="true"><span /><span /><span /></span>
+        </button>
+        <nav className="header__nav" id="menu" aria-label={t.apartados}>
+          {ENLACES.map((id) => (
+            <a key={id} href={enHome ? `#${id}` : `/inicio#${id}`} onClick={cerrar} className={activo === id ? "is-activo" : undefined}
+              aria-current={activo === id ? "location" : undefined}>
+              {t[id]}
+            </a>
+          ))}
+          <Link className="boton-reserva" href="/reserva/integrantes" onClick={cerrar}>{t.reservar}</Link>
+          <SelectorIdioma />
+        </nav>
+      </header>
+      {/* Fuera de la Home la barra va por encima de la página: este hueco evita que tape el contenido */}
+      {!enHome && <div className="header-hueco" aria-hidden="true" />}
+    </>
   );
 }
