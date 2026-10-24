@@ -16,13 +16,33 @@ body:has(.header) {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 100px;
-  padding: 0 calc(50% - 720px + 168px) 0 calc(50% - 720px + 14px);
+  /* Más fina que en el diseño original: 72 px de alto y márgenes laterales cortos */
+  height: 72px;
+  padding: 0 max(24px, calc(50% - 680px));
   background: var(--fondo);
   transition: box-shadow 0.3s;
 }
 
 /* Al bajar por la página, una sombra suave separa la cabecera del contenido */
+/* Logo y botón de la cabecera, más pequeños */
+.header .logo {
+  width: 150px;
+  height: 72px;
+}
+
+.header .logo img {
+  left: 0;
+  top: -6px;
+  width: 140px;
+  height: 84px;
+}
+
+.header__nav .boton-reserva {
+  padding: 8px 20px;
+  border-radius: 6px;
+  font-size: 18px;
+}
+
 .header.is-bajado {
   box-shadow: 0 1px 0 rgba(41, 47, 32, 0.08), 0 6px 18px rgba(41, 47, 32, 0.08);
 }
@@ -31,15 +51,15 @@ body:has(.header) {
 #paraiso,
 #como-funciona,
 #faq {
-  scroll-margin-top: 100px;
+  scroll-margin-top: 72px;
 }
 
 .header__nav {
   display: flex;
   align-items: center;
-  gap: 64px;
+  gap: 40px;
   font-family: var(--font-baskerville);
-  font-size: 24px;
+  font-size: 19px;
   color: var(--verde-oscuro);
 }
 
@@ -217,20 +237,18 @@ body:has(.header) {
 }
 
 /* ---------- ¿Cómo reservar? ---------- */
-/* La parte crema se queda pegada bajo la cabecera mientras la roja (.pasos) sube por encima y la tapa. */
+/* La parte crema pasa a la roja con un degradado suave: así se ven a la vez el título y los pasos. */
 .como-bloque {
   position: relative;
 }
 
 .como-reservar {
-  position: sticky;
-  top: 100px; /* alto de la cabecera */
-  z-index: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 30px;
-  padding: 17px 16px 70px;
+  padding: 17px 16px 150px;
+  background: linear-gradient(to bottom, var(--fondo-oscuro) 0%, var(--fondo-oscuro) 50%, #ecd2c1 66%, #b06a5a 85%, var(--terracota) 100%);
   color: var(--terracota);
   text-align: center;
 }
@@ -632,8 +650,9 @@ body:has(.header) {
 /* ---------- Preguntas frecuentes ---------- */
 .faq {
   position: relative;
-  /* Crece con el número de preguntas (mínimo, la altura del diseño) */
-  min-height: 754px;
+  /* Altura con sitio para la pregunta abierta más larga: así abrir/cerrar no mueve el resto de la página */
+  min-height: 830px;
+  overflow-anchor: none;
   padding: 93px 0 80px;
   background:
     linear-gradient(134.83deg, rgba(41, 47, 32, 0.31) 12.318%, rgba(255, 245, 230, 0.31) 29.818%, rgba(115, 47, 35, 0.31) 50.965%),
@@ -675,49 +694,64 @@ body:has(.header) {
 .faq__lista {
   display: flex;
   flex-direction: column;
-  gap: 17px;
+  gap: 8px;
 }
 
+/* Cada pregunta mantiene siempre el mismo margen: al abrirse solo se despliega la respuesta
+   (sin cambios bruscos de tamaño, para que nada «salte») */
 .faq__item {
   display: flex;
   flex-direction: column;
-  gap: 17px;
+  gap: 8px;
 }
 
 .faq__caja {
-  padding: 0 9.5px;
-  transition: background-color 0.25s;
+  padding: 8px 12px;
+  border-radius: 3px;
+  background: rgba(255, 250, 242, 0);
+  transition: background-color 0.35s ease;
 }
 
-.faq__item.is-open {
-  gap: 1px;
+.faq__caja:hover {
+  background: rgba(255, 250, 242, 0.12);
 }
 
 .faq__item.is-open .faq__caja {
-  min-height: 93px;
-  padding: 8px 13px;
-  background: rgba(255, 250, 242, 0.47);
+  background: rgba(255, 250, 242, 0.22);
 }
 
 .faq__pregunta {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   width: 100%;
   gap: 16px;
   font-family: var(--font-baskervville);
   font-size: 16px;
   color: var(--fondo);
   text-align: left;
+  cursor: pointer;
 }
 
+/* El «+» gira hasta formar una «×» al abrir */
 .faq__signo {
+  flex: none;
   font-family: var(--font-inter);
+  font-size: 18px;
+  line-height: 1;
+  transition: transform 0.35s ease;
 }
 
+.faq__item.is-open .faq__signo {
+  transform: rotate(45deg);
+}
+
+/* La respuesta se despliega y aparece poco a poco */
 .faq__respuesta {
   display: grid;
   grid-template-rows: 0fr;
-  transition: grid-template-rows 0.25s;
+  opacity: 0;
+  transition: grid-template-rows 0.4s ease, opacity 0.3s ease;
 }
 
 .faq__respuesta p {
@@ -725,12 +759,28 @@ body:has(.header) {
   max-width: 448px;
   font-family: var(--font-inter);
   font-size: 13px;
+  line-height: 1.45;
   color: #fff;
+}
+
+/* El espacio de arriba va dentro del texto para que también se despliegue suave */
+.faq__respuesta p::before {
+  content: "";
+  display: block;
+  height: 8px;
 }
 
 .faq__item.is-open .faq__respuesta {
   grid-template-rows: 1fr;
-  margin-top: 10px;
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .faq__respuesta,
+  .faq__signo,
+  .faq__caja {
+    transition: none;
+  }
 }
 
 .faq__linea {
@@ -791,12 +841,12 @@ body:has(.header) {
 
 @media (max-width: 1200px) {
   .header {
-    padding: 0 24px 0 0;
+    padding: 0 24px;
   }
 
   .header__nav {
-    gap: 32px;
-    font-size: 20px;
+    gap: 28px;
+    font-size: 18px;
   }
 
   .hero__titulo {
@@ -900,6 +950,7 @@ body:has(.header) {
 
   .faq {
     height: auto;
+    min-height: 880px;
     padding: 80px 24px;
   }
 
@@ -927,7 +978,7 @@ body:has(.header) {
   }
 
   .como-reservar {
-    top: 72px; /* alto de la cabecera en el móvil */
+    padding-bottom: 110px;
   }
 
   .header .logo {
@@ -945,7 +996,7 @@ body:has(.header) {
   #paraiso,
   #como-funciona,
   #faq {
-    scroll-margin-top: 72px;
+    scroll-margin-top: 64px;
   }
 
   /* Botón de tres rayas que se convierte en ✕ al abrir el menú */
