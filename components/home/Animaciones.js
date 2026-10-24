@@ -10,6 +10,11 @@
 //    (con un número mayor que 1, por ejemplo 1.15, se va encogiendo hasta su tamaño).
 //  · data-salida (en la portada): guarda en --salida cuánto se ha bajado (0 arriba, 1 al pasarla) para que
 //    el título se aleje y se desvanezca.
+//  · data-subir (en los encajes de unión entre secciones): guarda en --sub de 0 a 1 cuánto ha entrado en
+//    pantalla el borde entre las dos secciones, para que el encaje «suba» y tape el corte poco a poco.
+//
+// Ojo: lo que ya ha aparecido se marca con el atributo data-visible (no con una clase), porque React
+// rehace las clases cuando algo cambia (por ejemplo, al abrir una pregunta) y la marca se perdería.
 //
 // Para que no afecte al rendimiento:
 //  · solo se mueven propiedades que el navegador anima sin redibujar la página (opacidad y desplazamientos);
@@ -21,15 +26,16 @@ import { useEffect } from "react";
 export default function Animaciones() {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // Móviles antiguos sin estas herramientas: sin animaciones, pero todo visible y en su sitio
+    if (!("IntersectionObserver" in window) || !("ResizeObserver" in window)) return;
     const raiz = document.documentElement;
-    raiz.classList.add("anim");
 
     // 1) Aparecer al entrar en pantalla (una sola vez)
     const observador = new IntersectionObserver(
       (entradas) => {
         for (const e of entradas) {
           if (e.isIntersecting) {
-            e.target.classList.add("is-visible");
+            e.target.setAttribute("data-visible", "");
             observador.unobserve(e.target);
           }
         }
@@ -42,6 +48,7 @@ export default function Animaciones() {
     const parallax = [...document.querySelectorAll("[data-parallax]")].map((el) => ({ el, f: parseFloat(el.dataset.parallax) || 0 }));
     const escalas = [...document.querySelectorAll("[data-escala]")].map((el) => ({ el, desde: parseFloat(el.dataset.escala) || 1 }));
     const salida = document.querySelector("[data-salida]");
+    const uniones = [...document.querySelectorAll("[data-subir]")].map((el) => ({ el }));
     let alto = window.innerHeight;
     let suave = 1; // en el móvil el parallax es más suave
 
@@ -62,6 +69,11 @@ export default function Animaciones() {
         s.arriba = r.top + y + (r.height - h) / 2;
       }
       if (salida) salida.alto = salida.offsetHeight;
+      for (const u of uniones) {
+        u.el.style.setProperty("--sub", "1");
+        // El dibujo del encaje deja 33 px vacíos abajo: el borde real entre secciones está ahí
+        u.borde = u.el.getBoundingClientRect().bottom + y - 33;
+      }
       pintar();
     }
 
@@ -80,6 +92,11 @@ export default function Animaciones() {
         s.el.style.scale = (s.desde + (1 - s.desde) * avance).toFixed(4);
       }
       if (salida) salida.style.setProperty("--salida", Math.min(1, y / (salida.alto || alto)).toFixed(3));
+      for (const u of uniones) {
+        // 0 cuando el borde asoma por abajo de la pantalla; 1 cuando ya ha subido casi media pantalla
+        const sub = Math.min(1, Math.max(0, (y + alto - u.borde) / (alto * 0.45)));
+        u.el.style.setProperty("--sub", sub.toFixed(3));
+      }
     }
 
     let pendiente = false;
@@ -91,6 +108,8 @@ export default function Animaciones() {
     };
 
     medir();
+    // Solo ahora (cuando todo está preparado) se esconden los elementos que van a aparecer
+    raiz.classList.add("anim");
     // Cuando cargan las imágenes o cambia el tamaño de la ventana, la página cambia de alto: se vuelve a medir
     const vigilante = new ResizeObserver(() => requestAnimationFrame(medir));
     vigilante.observe(document.body);

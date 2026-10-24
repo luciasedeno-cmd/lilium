@@ -10,6 +10,7 @@ import ErasmusBanner from "@/components/ErasmusBanner";
 import BotonErasmus from "@/components/home/BotonErasmus";
 import PiePagina from "@/components/PiePagina";
 import Animaciones from "@/components/home/Animaciones";
+import RetratoOjos from "@/components/home/RetratoOjos";
 
 export const metadata = {
   title: "Lilium · Escape Room ESADA",
@@ -96,12 +97,14 @@ export default async function Inicio() {
 
         {/* Historia: ¿Qué es Lilium? */}
         <section className="historia" id="paraiso">
-          <img className="encaje encaje--arriba" src="/assets/svg/banner-encaje.svg" width="1612" height="176" alt="" />
+          {/* Unión con la portada: un encaje verde que sube sobre el cuadro al bajar (sin línea entre las dos) */}
+          <div className="union union--verde" data-subir aria-hidden="true" />
 
           <div className="historia__contenido">
             <div className="retrato" data-revelar="izquierda" data-parallax="-0.06">
               <img className="retrato__marco" src="/assets/img/marco-retrato.png" alt="" />
-              <img className="retrato__foto" src="/assets/img/retrato.png" width="348" height="509" alt={t.retratoAlt} />
+              {/* Los ojos siguen al ratón (o miran hacia donde se toca en el móvil) */}
+              <RetratoOjos alt={t.retratoAlt} />
             </div>
 
             <div className="historia__texto">
@@ -115,7 +118,7 @@ export default async function Inicio() {
           </div>
 
           {/* Encaje del color de «¿Cómo reservar?»: cambia de crema a terracota junto con la sección */}
-          <div className="encaje encaje--abajo encaje--como" aria-hidden="true" />
+          <div className="encaje encaje--abajo encaje--como" data-subir aria-hidden="true" />
         </section>
 
         {/* ¿Cómo reservar? + carrusel de los 5 pasos: al bajar, el fondo pasa de crema a terracota */}
@@ -125,6 +128,8 @@ export default async function Inicio() {
 
         {/* ¿Qué necesita el ritual? */}
         <section className="ritual">
+          {/* Unión con «¿Cómo reservar?»: el encaje del color del ritual sube y tapa el corte */}
+          <div className="union union--crudo" data-subir aria-hidden="true" />
           <h2 className="ritual__titulo" data-revelar="escala">{t.ritualTitulo}</h2>
           <div className="ritual__cuadros">
             {t.cuadros.map((c, i) => (
@@ -164,6 +169,8 @@ export default async function Inicio() {
 
         {/* ¿Erasmus? (fondo: el arco con estatuas) */}
         <section className="erasmus" id="erasmus" data-fondo="oscuro">
+          {/* Unión con el mapa */}
+          <div className="union union--terracota" data-subir aria-hidden="true" />
           <img className="erasmus__lirio" src="/assets/img/icono-lirio.png" width="99" height="79" alt="" data-revelar="girar" />
           <h2 className="erasmus__titulo" data-revelar="escala" style={{ "--retardo": "0.1s" }}>{t.erasmusTitulo}</h2>
           <p className="erasmus__texto" data-revelar="arriba" style={{ "--retardo": "0.2s" }}>{t.erasmusTexto}</p>
@@ -192,6 +199,8 @@ export default async function Inicio() {
               <Link className="boton-reserva cta__boton" href="/reserva/integrantes">{t.reservar}</Link>
             </div>
           </div>
+          {/* Unión con el pie de página (verde) */}
+          <div className="union union--pie" aria-hidden="true" />
         </section>
       </main>
 

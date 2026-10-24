@@ -257,6 +257,45 @@ body:has(.hero) {
   bottom: -33px;
 }
 
+/* Encajes de unión: van en lo alto de una sección, con su mismo color, y tapan el corte con la de arriba.
+   Al bajar, «suben» desde dentro de su sección (--sub de 0 a 1, lo calcula Animaciones.js).
+   Quedan por debajo del contenido de su sección (z-index -1) pero encima de la sección anterior. */
+.union {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% - 33px);
+  z-index: -1;
+  width: max(1612px, 110vw);
+  height: 176px;
+  max-width: none;
+  transform: translateX(-50%);
+  translate: 0 calc((1 - var(--sub, 1)) * 100%);
+  background: var(--union-color);
+  -webkit-mask: url("/assets/svg/banner-encaje-reserva.svg") center / 100% 100% no-repeat;
+  mask: url("/assets/svg/banner-encaje-reserva.svg") center / 100% 100% no-repeat;
+  pointer-events: none;
+}
+
+.union--verde { --union-color: var(--verde-oscuro); }
+.union--crudo { --union-color: var(--crudo); }
+.union--terracota { --union-color: var(--terracota); }
+
+/* Al final de la Home el encaje verde del pie sube sobre el paisaje (siempre visible) */
+.union--pie {
+  --union-color: var(--verde-oscuro);
+  top: auto;
+  bottom: -33px;
+  z-index: 2;
+  translate: none;
+}
+
+/* El encaje del color de «¿Cómo reservar?» también crece hacia arriba al bajar
+   (se estira desde su borde de abajo, así nunca tapa el título de la sección) */
+.encaje--como {
+  transform-origin: 50% 100%;
+  scale: 1 calc(0.2 + var(--sub, 1) * 0.8);
+}
+
 /* ---------- Historia ---------- */
 /* Ocupa justo la pantalla: el retrato se encoge en pantallas bajas para que todo quepa */
 .historia {
@@ -306,8 +345,37 @@ body:has(.hero) {
   width: 68.4%;
   height: auto;
   aspect-ratio: 348 / 509;
-  object-fit: cover;
 }
+
+.retrato__base {
+  width: 100%;
+  height: 100%;
+}
+
+/* Ojos que siguen al ratón (components/home/RetratoOjos.js).
+   Cada .ojo es el hueco del ojo (posición en % del retrato de 696 × 1018 px) con los bordes difuminados;
+   dentro, el iris se desplaza según --ox y --oy (de -1 a 1): hasta 7 px a los lados y 3 px arriba/abajo
+   (medidos en el retrato original). */
+.ojo {
+  position: absolute;
+  height: 2.26%;
+  -webkit-mask: radial-gradient(closest-side, #000 72%, transparent 100%);
+  mask: radial-gradient(closest-side, #000 72%, transparent 100%);
+  pointer-events: none;
+}
+
+.ojo--izq { left: 35.63%; top: 27.6%; width: 7.61%; }
+.ojo--der { left: 51.72%; top: 28.68%; width: 8.05%; }
+
+.ojo img {
+  position: absolute;
+  max-width: none;
+  translate: calc(var(--ox, 0) * 22%) calc(var(--oy, 0) * 9.5%);
+  transition: translate 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.ojo--izq img { left: 32.08%; top: -17.39%; width: 60.38%; height: 139.1%; }
+.ojo--der img { left: 32.14%; top: -21.74%; width: 58.93%; height: 143.48%; }
 
 .historia__texto {
   padding-top: 0;
@@ -1492,7 +1560,7 @@ body:has(.hero) {
 .anim [data-revelar="escala"] { transform: scale(0.88); }
 .anim [data-revelar="girar"] { transform: rotate(-40deg) scale(0.5); }
 
-.anim [data-revelar].is-visible {
+.anim [data-revelar][data-visible] {
   opacity: 1;
   transform: none;
 }
@@ -1502,7 +1570,7 @@ body:has(.hero) {
   transition: transform 1.2s cubic-bezier(0.2, 0.7, 0.2, 1) calc(var(--retardo, 0s) + 0.1s);
 }
 
-.anim .cuadro[data-revelar]:not(.is-visible) .polaroid {
+.anim .cuadro[data-revelar]:not([data-visible]) .polaroid {
   transform: rotate(-14deg) scale(0.85);
 }
 
