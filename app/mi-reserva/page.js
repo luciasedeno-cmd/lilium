@@ -6,7 +6,7 @@ import NavReserva from "@/components/NavReserva";
 import Cargando from "@/components/Cargando";
 import { api } from "@/lib/borrador";
 import { useSesion } from "@/lib/useSesion";
-import { fotoDe } from "@/lib/fotos";
+import { iconosDe } from "@/lib/fotos";
 import { EVENTO, MIN_SALA_NUEVA } from "@/lib/config";
 
 const Separador = () => <img className="separador" src="/assets/svg/linea-discontinua.svg" width="720" height="1" alt="" />;
@@ -79,6 +79,7 @@ function MiReservaContenido() {
   const { turno, miembros, yo, lider } = reserva;
   const esLider = lider === yo.email;
   const pendientes = miembros.filter((m) => !m.confirmado).length;
+  const iconos = iconosDe(miembros.map((m) => m.email)); // icono de perfil de cada persona
 
   return (
     <>
@@ -114,14 +115,14 @@ function MiReservaContenido() {
             <div className="equipo__cabecera">
               <h2 id="equipo-titulo">Integrantes</h2>
               <div className="avatares">
-                {miembros.map((m, i) => <img key={m.email} src={fotoDe(i)} width="51" height="51" alt="" />)}
+                {miembros.map((m, i) => <img key={m.email} src={iconos[i]} width="51" height="51" alt="" />)}
               </div>
             </div>
             <ul className="equipo__lista">
               {miembros.map((m, i) => (
                 <li key={m.email}>
                   <div className="miembro">
-                    <img src={fotoDe(i)} width="51" height="51" alt="" />
+                    <img src={iconos[i]} width="51" height="51" alt="" />
                     <div>
                       <p className="miembro__correo">{m.email}{m.email === yo.email ? " (tú)" : ""}</p>
                       <p className="miembro__estado">

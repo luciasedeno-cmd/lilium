@@ -7,7 +7,7 @@ import Cargando from "@/components/Cargando";
 import PasoCabecera from "@/components/PasoCabecera";
 import { leerBorrador, guardarBorrador } from "@/lib/borrador";
 import { useSesion } from "@/lib/useSesion";
-import { fotoDe } from "@/lib/fotos";
+import { iconosDe } from "@/lib/fotos";
 
 const CORREO_VALIDO = /^[a-z0-9._-]+@alumnado\.esada\.es$/i;
 const MAX_PERSONAS = 6;
@@ -27,6 +27,7 @@ export default function Integrantes() {
   };
 
   const total = integrantes.length + 1;
+  const iconos = iconosDe([lider, ...integrantes]); // icono de perfil de cada persona (el primero es el líder)
   const vacios = total < MIN_SALA_NUEVA ? MIN_SALA_NUEVA - total : total < MAX_PERSONAS ? 1 : 0;
 
   function anadir(e) {
@@ -58,9 +59,9 @@ export default function Integrantes() {
         <div className="grupo-resumen">
           <div className="grupo-resumen__fondo" />
           <div className="grupo-resumen__huecos">
-            <img src="/assets/img/avatar-lider.png" width="94" height="94" alt="" style={{ left: 10 }} />
+            <img src={iconos[0]} width="94" height="94" alt="" style={{ left: 10 }} />
             {integrantes.map((c, i) => (
-              <img key={c} src={fotoDe(i + 1)} width="94" height="94" alt="" style={{ left: 10 + 74 * (i + 1) }} />
+              <img key={c} src={iconos[i + 1]} width="94" height="94" alt="" style={{ left: 10 + 74 * (i + 1) }} />
             ))}
             {Array.from({ length: vacios }, (_, i) => (
               <img key={`hueco-${i}`} className="hueco" src="/assets/svg/hueco-integrante.svg" width="114" height="114" alt="" style={{ left: 74 * (total + i) }} />
@@ -72,7 +73,7 @@ export default function Integrantes() {
         <section className="integrantes" aria-label="Integrantes del grupo">
           <ul className="integrantes__lista">
             <li className="integrante">
-              <img src="/assets/img/avatar-lider.png" width="94" height="94" alt="" />
+              <img src={iconos[0]} width="94" height="94" alt="" />
               <div className="integrante__datos">
                 <p className="integrante__nombre">Tú (líder)</p>
                 <p className="integrante__correo">{lider}</p>
@@ -80,7 +81,7 @@ export default function Integrantes() {
             </li>
             {integrantes.map((correo, i) => (
               <li className="integrante" key={correo}>
-                <img src={fotoDe(i + 1)} width="94" height="94" alt="" />
+                <img src={iconos[i + 1]} width="94" height="94" alt="" />
                 <div className="integrante__datos">
                   <p className="integrante__nombre">Integrante {i + 2}</p>
                   <p className="integrante__correo">{correo}</p>

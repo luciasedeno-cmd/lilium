@@ -8,7 +8,7 @@ import AceptarTerminos from "@/components/AceptarTerminos";
 import PasoCabecera from "@/components/PasoCabecera";
 import { leerBorrador, borrarBorrador, api } from "@/lib/borrador";
 import { useSesion } from "@/lib/useSesion";
-import { fotoDe } from "@/lib/fotos";
+import { iconosDe } from "@/lib/fotos";
 import { EVENTO, HORAS_CONFIRMACION } from "@/lib/config";
 
 const Separador = () => <img className="separador" src="/assets/svg/linea-discontinua.svg" width="720" height="1" alt="" />;
@@ -37,6 +37,7 @@ export default function Confirmacion() {
   if (!lider || !borrador || !turno) return <Cargando error={errorSesion || error} />;
 
   const miembros = [lider, ...(borrador.integrantes || [])];
+  const iconos = iconosDe(miembros); // icono de perfil de cada persona
   const nueva = turno.estado === "libre";
   const equipo = nueva ? (borrador.equipo || "").trim() || "Sin nombre (podéis ponerlo luego)" : turno.equipo || "—";
 
@@ -87,7 +88,7 @@ export default function Confirmacion() {
             <div className="equipo__cabecera">
               <h2 id="equipo-titulo">Integrantes ({miembros.length})</h2>
               <div className="avatares">
-                {miembros.map((m, i) => <img key={m} src={fotoDe(i)} width="51" height="51" alt="" />)}
+                {miembros.map((m, i) => <img key={m} src={iconos[i]} width="51" height="51" alt="" />)}
               </div>
             </div>
             <ul className="equipo__lista">
@@ -95,7 +96,7 @@ export default function Confirmacion() {
                 <Fragment key={m}>
                   <li>
                     <div className="miembro">
-                      <img src={fotoDe(i)} width="51" height="51" alt="" />
+                      <img src={iconos[i]} width="51" height="51" alt="" />
                       <div>
                         <p className="miembro__correo">{m}</p>
                         <p className="miembro__estado">{i === 0 ? "Líder · Confirmado automáticamente" : "Recibirá correo de confirmación"}</p>

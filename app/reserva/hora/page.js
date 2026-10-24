@@ -8,7 +8,7 @@ import Cargando from "@/components/Cargando";
 import PasoCabecera from "@/components/PasoCabecera";
 import { leerBorrador, guardarBorrador, api } from "@/lib/borrador";
 import { useSesion } from "@/lib/useSesion";
-import { fotoDe } from "@/lib/fotos";
+import { iconosDe } from "@/lib/fotos";
 import { EVENTO, MIN_SALA_NUEVA, MAX_PERSONAS } from "@/lib/config";
 
 /** ¿Puede este grupo elegir el turno? Devuelve null si sí, o el motivo si no. */
@@ -47,7 +47,8 @@ function Sala({ turno, total, escogida, onElegir, onEsperar }) {
               <img src="/assets/svg/hueco-mas.svg" width="51" height="51" alt="" />
             </>
           ) : (
-            Array.from({ length: turno.ocupadas }, (_, i) => <img key={i} src={fotoDe(i)} width="51" height="51" alt="" />)
+            // De otros grupos no se enseñan los correos: los iconos salen del número de turno
+            iconosDe(Array.from({ length: turno.ocupadas }, (_, i) => `turno-${turno.id}-${i}`)).map((src, i) => <img key={i} src={src} width="51" height="51" alt="" />)
           )}
         </div>
         <p className="sala__plazas">

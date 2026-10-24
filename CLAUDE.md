@@ -26,6 +26,7 @@
 - `db/esquema.sql`: tablas y turnos del día. Se aplica con `npm run db:migrar`.
 - `db/borrar-reservas.sql`: vacía todas las reservas (los turnos se quedan).
 - `db/cambiar-turnos.sql`: para cambiar los turnos desde el SQL Editor de Supabase (borra las reservas que haya).
+- Iconos de perfil (`public/assets/img/perfiles/`, 10 símbolos × 6 colores): `lib/fotos.js` → `iconosDe(correos)` da a cada persona uno «al azar» fijo según su correo, sin repetir símbolo ni color dentro del grupo.
 - `public/assets/`: imágenes y SVG. `public/prototipo.html`: prototipo antiguo de una sola página (solo referencia).
 - `.github/workflows/recordatorios.yml`: llama cada hora a `/api/cron` (plazo de 48 h y recordatorios).
 - Diseño de referencia en Figma: https://www.figma.com/design/b0Z4AyQb7eFU08qjStTuFz/Lilium-Figma?node-id=1-6
