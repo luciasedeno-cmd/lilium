@@ -21,11 +21,11 @@ export const POST = manejar(async (req) => {
   if (!lider) return error("Tu sesión ha caducado. Vuelve a entrar con tu correo.", 401);
   if (!reservasAbiertas(lider) && !(await conLlavePrevia())) return error("Las reservas abren el 30 de octubre.", 403);
 
-  const { otros = [], turnoId, equipo, aceptaTerminos } = await leerJson(req);
+  const { otros = [], turnoId, equipo, notas, aceptaTerminos } = await leerJson(req);
   if (!Array.isArray(otros)) return error("Datos no válidos.");
   if (aceptaTerminos !== true) return error("Para reservar tienes que aceptar los Términos y Condiciones.");
 
-  const res = await crearReserva({ lider, otros, turnoId: Number(turnoId), equipo });
+  const res = await crearReserva({ lider, otros, turnoId: Number(turnoId), equipo, notas });
   if (!res.ok) return error(MENSAJES[res.error](res), 409, { motivo: res.error });
 
   // Correos: invitación a cada integrante y entrada al líder (ya confirmado).

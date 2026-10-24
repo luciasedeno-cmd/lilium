@@ -3,6 +3,7 @@ import "./estilos/home.css";
 import "./estilos/reserva.css";
 import "./estilos/cuenta-atras.css";
 import "./estilos/extra.css";
+import "./estilos/lilium-ds.css";
 import { IdiomaProvider } from "@/components/Idioma";
 import { idiomaActual } from "@/lib/idiomaServidor";
 

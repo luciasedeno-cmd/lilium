@@ -13,7 +13,7 @@ Resumen para quien siga con la web. Los detalles técnicos están en `CLAUDE.md`
 2. **Web cerrada hasta el 30 de octubre**: sin la «llave de pruebas» todo vuelve a la cuenta atrás. «Admin» → `/admin` → `lilium@esada.es` + contraseña de `ADMIN_CLAVE` da la llave (30 días) para probar.
 3. **Acceso** (`/acceso`): correo @alumnado.esada.es + código de 6 cifras. Si ya hay sesión, muestra «Ya estás dentro».
 4. **Inicio** (`/inicio`): portada, historia, «¿Cómo reservar?» (cambia de crema a terracota al bajar), carrusel de 5 pasos, ritual, cuándo/dónde, Erasmus, preguntas frecuentes y llamada final. Pop-up Erasmus solo la primera vez.
-5. **Reserva en 3 pasos**: integrantes (como en Figma, con retratos) → hora (filtros y tarjetas) → confirmación (billete + integrantes, aceptar Términos).
+5. **Reserva en 3 pasos**: integrantes (como en Figma, con retratos) → hora (filtros y tarjetas) → revisión de la sala (como en Figma «PAG RESERVA - REVISION»: datos de la sala, fecha y llegada, equipo, anotaciones y tarjeta «Resumen» con las casillas de Términos y normas).
 6. **Mi reserva** (`/mi-reserva`): QR de la entrada, fragmento secreto, cambiar de hora, cancelar; la líder puede **editar el grupo** (añadir / quitar).
 7. Enlaces de los correos: `/confirmar/[token]` (confirmar plaza) y `/entrada/[token]` (lo que abre el QR en la puerta).
 

@@ -1803,3 +1803,317 @@ main.paso > :nth-child(n + 5) { animation-delay: 0.24s; }
     font-size: 36px;
   }
 }
+
+/* ==========================================================
+   Paso 3 · Revisión de la sala (Figma «PAG RESERVA - REVISION»)
+   Usa los tokens y componentes de lilium-ds.css.
+   ========================================================== */
+.rev {
+  color: var(--ink);
+}
+
+.rev__encabezado {
+  margin-top: var(--space-6);
+  text-align: center;
+}
+
+.rev__titulo {
+  font-family: var(--font-script-ds);
+  font-weight: 400;
+  font-size: clamp(56px, 8.9vw, 128px);
+  line-height: 1.1;
+}
+
+/* Antetítulo «CONFIRMACIÓN» (eyebrow del sistema: serif 22 regular, mayúsculas) */
+.rev__etiqueta {
+  margin-top: var(--space-2);
+  font: 400 22px/28px var(--font-serif);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Tres columnas: emblema 250 | detalle | resumen 426 */
+.rev__rejilla {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 530px) 426px;
+  justify-content: center;
+  align-items: start;
+  gap: var(--space-12);
+  width: 1324px;
+  max-width: 100%;
+  margin: var(--space-12) auto 0;
+}
+
+/* ----- Emblema del equipo ----- */
+.rev-emblema {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: center;
+}
+
+.rev-emblema__circulo {
+  display: grid;
+  place-items: center;
+  width: 250px;
+  height: 250px;
+  border-radius: var(--radius-full);
+  background: var(--team);
+  color: var(--brand-forest);
+  font: 400 110px/1 var(--font-script-ds);
+}
+
+.rev-emblema__nombre {
+  margin: var(--space-3) 0 var(--space-2);
+  font: 600 20px/28px var(--font-sans);
+}
+
+.rev-emblema .ll-btn {
+  width: 210px;
+}
+
+/* ----- Detalle ----- */
+.rev-detalle {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+}
+
+/* Título de sección (heading-lg del sistema: serif 32, mayúsculas) */
+.rev-seccion {
+  margin-bottom: var(--space-3);
+  font: 400 32px/40px var(--font-serif);
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+.rev-sala__nombre {
+  font: 600 20px/28px var(--font-sans);
+}
+
+.rev-sala__sinopsis {
+  max-width: 60ch;
+  margin-top: var(--space-1);
+  font: 400 14px/20px var(--font-sans);
+  color: var(--ink-muted);
+}
+
+.rev-sala__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.rev-sala__badges .ll-badge {
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.rev-sala__mas {
+  display: inline-block;
+  margin-top: var(--space-3);
+  font: 300 13px/20px var(--font-sans);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Fila de llegada resaltada (en burdeos: el sistema no usa el naranja para texto) */
+.rev-filas__llegada.ll-row {
+  margin: 0 calc(var(--space-3) * -1);
+  padding-left: var(--space-3);
+  padding-right: var(--space-3);
+  border-bottom-color: transparent;
+  border-radius: var(--radius-sm);
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+.rev-equipo {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ✓ y ✕ más pequeños (32 px) dentro de las filas */
+.rev-icono.ll-icon-btn {
+  width: 32px;
+  height: 32px;
+}
+
+.rev-notas {
+  width: 100%;
+  min-height: 96px;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--ink);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  font: 400 16px/24px var(--font-sans);
+  color: var(--ink);
+  resize: vertical;
+}
+
+.rev-notas::placeholder {
+  color: var(--ink-muted);
+}
+
+.rev-notas:focus {
+  outline: 2px solid var(--ink);
+  outline-offset: 1px;
+}
+
+/* ----- Resumen burdeos (se queda a la vista al bajar) ----- */
+.rev-resumen {
+  position: sticky;
+  top: 96px;
+  padding: var(--space-8);
+  border-radius: var(--radius-lg);
+  background: var(--primary);
+  box-shadow: var(--shadow-card);
+  color: var(--on-primary);
+}
+
+.rev-resumen__titulo {
+  font: 400 32px/40px var(--font-serif);
+  text-transform: uppercase;
+}
+
+.rev-resumen__filas {
+  margin: var(--space-4) 0 var(--space-6);
+}
+
+.rev-resumen__filas div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-3) 0;
+  border-bottom: 1px dashed rgba(255, 251, 242, 0.7);
+  font: 400 14px/20px var(--font-sans);
+}
+
+.rev-resumen__filas dt {
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.rev-resumen__filas dd {
+  text-align: right;
+}
+
+.rev-casilla {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+  font: 500 14px/20px var(--font-sans);
+  cursor: pointer;
+}
+
+.rev-casilla input {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  accent-color: var(--cream-50);
+  cursor: pointer;
+}
+
+.rev-casilla a {
+  text-decoration: underline;
+}
+
+/* Botón claro sobre el resumen burdeos */
+.rev-resumen__boton.ll-btn {
+  margin-top: var(--space-6);
+  border-color: var(--on-primary);
+  background: var(--on-primary);
+  color: var(--ink);
+}
+
+.rev-resumen__boton.ll-btn:hover {
+  background: var(--surface);
+}
+
+.rev-resumen__boton[aria-disabled="true"] {
+  opacity: 0.6;
+}
+
+.rev-resumen__error {
+  min-height: 20px;
+  margin-top: var(--space-2);
+  font: 600 14px/20px var(--font-sans);
+}
+
+.rev-resumen__error a {
+  text-decoration: underline;
+}
+
+.rev-resumen__despues {
+  margin-top: var(--space-6);
+  font: 600 14px/20px var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.rev-resumen__pasos {
+  margin: var(--space-3) 0 0;
+  padding-left: var(--space-6);
+  font: 500 13px/19px var(--font-sans);
+}
+
+.rev-resumen__pasos li + li {
+  margin-top: var(--space-2);
+}
+
+/* Pantallas medianas: el emblema se pone arriba, en fila */
+@media (max-width: 1340px) {
+  .rev__rejilla {
+    grid-template-columns: minmax(0, 1fr) 380px;
+    width: 980px;
+  }
+
+  .rev-emblema {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-4);
+  }
+
+  .rev-emblema__circulo {
+    width: 96px;
+    height: 96px;
+    font-size: 48px;
+  }
+
+  .rev-emblema__nombre {
+    margin: 0 var(--space-4) 0 0;
+  }
+
+  .rev-emblema .ll-btn {
+    width: auto;
+  }
+}
+
+/* Móvil: una sola columna */
+@media (max-width: 860px) {
+  .rev__rejilla {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-8);
+  }
+
+  .rev-resumen {
+    position: static;
+    padding: var(--space-6);
+  }
+
+  .rev-seccion,
+  .rev-resumen__titulo {
+    font-size: 26px;
+    line-height: 34px;
+  }
+}

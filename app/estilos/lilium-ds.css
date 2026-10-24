@@ -1,0 +1,154 @@
+/* ==========================================================
+   Lilium · Sistema de diseño «Lilium DEFINITIVO»
+   (el original está en claude.ai: artifact «Lilium-DEFINITIVO»).
+   Colores, medidas y componentes (clases .ll-…) para usar en las páginas.
+   ========================================================== */
+:root {
+  /* Paleta definitiva */
+  --brand-forest: #292f20;
+  --brand-sage: #9e9b83;
+  --brand-orange: #d15e23;
+  --brand-apricot: #f4b076;
+  --brand-burgundy: #732f23;
+  --brand-pink: #f792bf;
+  --cream-50: #fffbf2;
+  --cream-100: #fef5e6;
+  --burgundy-500: #8a5247;
+  --burgundy-800: #5c2419;
+
+  /* Usos (tokens semánticos) */
+  --bg: var(--cream-50);
+  --surface: var(--cream-100);
+  --ink: var(--brand-burgundy);
+  --ink-muted: var(--burgundy-500);
+  --primary: var(--brand-burgundy);
+  --primary-hover: var(--burgundy-800);
+  --on-primary: var(--cream-50);
+  --success: var(--brand-forest);
+  --accent: var(--brand-orange);
+  --footer-bg: var(--brand-forest);
+  --unavailable: var(--brand-sage);
+  --team: var(--brand-pink);
+
+  /* Tipografías */
+  --font-script-ds: "Luxurious Script", "Snell Roundhand", cursive;
+  --font-serif: "Baskervville", "Libre Baskerville", Georgia, serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+
+  /* Espacios (rejilla de 4 px), radios, sombra y tamaños */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-24: 96px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+  --shadow-card: 0 8px 24px rgba(115, 47, 36, 0.1);
+  --control-lg: 56px;
+  --control-md: 44px;
+  --avatar-md: 48px;
+  --container-narrow: 720px;
+  --container-wide: 1200px;
+}
+
+/* ---------- Button ---------- */
+.ll-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border: 1px solid var(--ink);
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.ll-btn--lg { min-height: var(--control-lg); padding: 0 var(--space-8); font-size: 18px; line-height: 24px; }
+.ll-btn--md { min-height: var(--control-md); padding: 0 var(--space-6); font-size: 14px; line-height: 20px; }
+.ll-btn--full { width: 100%; }
+.ll-btn--primary { border-color: var(--primary); background: var(--primary); color: var(--on-primary); }
+.ll-btn--primary:hover { border-color: var(--primary-hover); background: var(--primary-hover); }
+.ll-btn--secondary { background: transparent; color: var(--ink); }
+.ll-btn--secondary:hover { background: var(--surface); }
+.ll-btn:focus-visible,
+.ll-icon-btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.ll-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ---------- IconButton (✓ confirmado, ✕ quitar, + añadir) ---------- */
+.ll-icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: var(--control-md);
+  height: var(--control-md);
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+}
+
+.ll-icon-btn--add { background: var(--accent); color: var(--on-primary); }
+.ll-icon-btn--confirm { background: var(--success); color: var(--on-primary); cursor: default; }
+.ll-icon-btn--remove { border-color: var(--ink); background: transparent; color: var(--ink); }
+.ll-icon-btn--remove:hover { background: var(--surface); }
+
+/* ---------- Badge ---------- */
+.ll-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--ink);
+  border-radius: var(--radius-sm);
+  font: 400 14px/20px var(--font-sans);
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+/* ---------- DataRows (filas etiqueta–valor con guiones) ---------- */
+.ll-rows { margin: 0; padding: 0; }
+
+.ll-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4) 0;
+  border-bottom: 1px dashed var(--ink);
+}
+
+.ll-row:last-child { border-bottom: 0; }
+.ll-row dt { margin: 0; font: 400 16px/24px var(--font-sans); }
+.ll-row dd { margin: 0; font: 600 16px/24px var(--font-sans); text-align: right; }
+
+/* ---------- Avatar y MemberRow ---------- */
+.ll-avatar {
+  flex: none;
+  width: var(--avatar-md);
+  height: var(--avatar-md);
+  border-radius: var(--radius-full);
+  object-fit: cover;
+}
+
+.ll-member {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) 0;
+  border-bottom: 1px dashed var(--ink);
+}
+
+.ll-member__text { flex: 1; min-width: 0; }
+.ll-member__email { font: 600 16px/24px var(--font-sans); overflow-wrap: anywhere; }
+.ll-member__meta { font: 400 14px/20px var(--font-sans); color: var(--ink-muted); }
+.ll-member__actions { display: flex; gap: var(--space-2); }
