@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import NavReserva from "@/components/NavReserva";
 import Cargando from "@/components/Cargando";
 import PiePagina from "@/components/PiePagina";
+import { IconoCheck, IconoCruz } from "@/components/Iconos";
 import { api } from "@/lib/borrador";
 import { useSesion } from "@/lib/useSesion";
 import { iconosDe } from "@/lib/fotos";
@@ -292,12 +293,14 @@ function MiReservaContenido() {
                         <p className="mr-miembro__estado">{estadoDe(m)}</p>
                       </div>
                       <div className="mr-miembro__acciones">
-                        {m.confirmado && !quitado && <span className="mr-icono mr-icono--si" role="img" aria-label={t.confirmado} />}
+                        {m.confirmado && !quitado && <span className="mr-icono mr-icono--si" role="img" aria-label={t.confirmado}><IconoCheck /></span>}
                         {/* La ✕ solo aparece al editar, y nunca en la fila de la persona líder */}
                         {editando && m.email !== lider && (
                           <button type="button" className={`mr-icono mr-icono--quitar${quitado ? " is-deshacer" : ""}`}
                             aria-label={quitado ? `${t.noQuitar} ${m.email}` : `${t.quitar} ${m.email}`}
-                            onClick={() => (m.nuevo ? setAnadir(anadir.filter((c) => c !== m.email)) : alternarQuitar(m.email))} />
+                            onClick={() => (m.nuevo ? setAnadir(anadir.filter((c) => c !== m.email)) : alternarQuitar(m.email))}>
+                            <IconoCruz />
+                          </button>
                         )}
                       </div>
                     </li>

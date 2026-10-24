@@ -12,6 +12,7 @@ import { iconosDe } from "@/lib/fotos";
 import { eventoEn, HORAS_CONFIRMACION } from "@/lib/config";
 import { useIdioma } from "@/components/Idioma";
 import PiePagina from "@/components/PiePagina";
+import RetratosPaso from "@/components/RetratosPaso";
 
 const TEXTOS = {
   es: {
@@ -82,7 +83,8 @@ export default function Confirmacion() {
   return (
     <>
       <NavReserva />
-      <main>
+      <main className="paso">
+        <RetratosPaso />
         <PasoCabecera paso={3} />
 
         <div className="columna">

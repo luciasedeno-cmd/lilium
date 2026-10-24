@@ -915,3 +915,362 @@ main:has(.paso-cabecera) .boton {
     white-space: nowrap;
   }
 }
+
+/* ==========================================================
+   Pasos de la reserva: retratos decorativos y entrada suave
+   ========================================================== */
+main.paso {
+  position: relative;
+  overflow-x: clip;
+  min-height: calc(100svh - 52px); /* el pie queda abajo aunque haya poco contenido */
+}
+
+/* El contenido aparece subiendo un poco, uno detrás de otro */
+main.paso > :not(.retratos-paso) {
+  animation: paso-aparece 0.6s ease-out both;
+}
+
+main.paso > :nth-child(3) { animation-delay: 0.08s; }
+main.paso > :nth-child(4) { animation-delay: 0.16s; }
+main.paso > :nth-child(n + 5) { animation-delay: 0.24s; }
+
+@keyframes paso-aparece {
+  from { opacity: 0; transform: translateY(14px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  main.paso > :not(.retratos-paso) {
+    animation: none;
+  }
+}
+
+/* Dos retratos ovalados a los lados (como en Figma); se balancean muy despacio */
+.retratos-paso {
+  position: absolute;
+  inset: 0;
+  max-width: 1440px;
+  margin: 0 auto;
+  pointer-events: none;
+}
+
+.retrato-paso {
+  position: absolute;
+  display: block;
+  animation: retrato-flota 7s ease-in-out infinite alternate;
+}
+
+.retrato-paso--izq {
+  left: 58px;
+  top: 144px;
+  width: 218px;
+  height: 275px;
+}
+
+.retrato-paso__marco {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.retrato-paso__foto {
+  position: absolute;
+  left: 18%;
+  top: 11%;
+  width: 64%;
+  height: 78%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.retrato-paso--der {
+  right: 101px;
+  top: 499px;
+  width: 145px;
+  height: 191px;
+  animation-delay: -3s;
+}
+
+@keyframes retrato-flota {
+  from { transform: translateY(0) rotate(-1.5deg); }
+  to { transform: translateY(-10px) rotate(1.5deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .retrato-paso {
+    animation: none;
+  }
+}
+
+@media (max-width: 1180px) {
+  .retratos-paso {
+    display: none;
+  }
+}
+
+/* ==========================================================
+   Paso 1 · Integrantes (Figma «PAG RESERVA - INTEGRANTES» y «… A»)
+   ========================================================== */
+.paso--integrantes .integrantes-intro {
+  margin-top: 66px;
+}
+
+.paso--integrantes .titular {
+  font-size: clamp(52px, 8.9vw, 128px);
+  line-height: 1.1;
+}
+
+.paso--integrantes .integrantes-intro p {
+  max-width: 642px;
+  margin-top: 18px;
+  font-family: var(--font-baskervville);
+  font-size: 20px;
+}
+
+/* Grupo (aparece al añadir a la primera persona) */
+.int-grupo {
+  width: 716px;
+  max-width: 100%;
+  margin: 48px auto 0;
+}
+
+.int-grupo__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--terracota);
+}
+
+.int-lider {
+  display: flex;
+  align-items: center;
+  gap: 27px;
+  min-width: 0;
+  color: var(--terracota);
+}
+
+.int-lider img {
+  width: 94px;
+  height: 94px;
+  flex: none;
+}
+
+.int-lider__nombre {
+  font-family: var(--font-baskervville);
+  font-size: 24px;
+}
+
+.int-lider__correo {
+  margin-top: 8px;
+  font-size: 16px;
+  overflow-wrap: anywhere;
+}
+
+.int-grupo__contador {
+  flex: none;
+  font-family: var(--font-script);
+  font-size: 44px;
+  color: var(--terracota);
+}
+
+.int-grupo__contador b {
+  font-size: 64px;
+  font-weight: 400;
+}
+
+.int-grupo__contador span {
+  font-family: var(--font-inter);
+  font-size: 13px;
+}
+
+.int-lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.int-fila {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px dashed rgba(115, 47, 35, 0.45);
+  color: var(--terracota);
+  animation: paso-aparece 0.35s ease-out;
+}
+
+.int-fila img {
+  width: 46px;
+  height: 46px;
+  flex: none;
+}
+
+.int-fila__correo {
+  flex: 1;
+  min-width: 0;
+  font-size: 18px;
+  overflow-wrap: anywhere;
+}
+
+/* ✕ naranja de 46 px para quitar a alguien (dibujo centrado) */
+.int-quitar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border-radius: 50%;
+  background: var(--naranja);
+  color: var(--fondo);
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.int-quitar:hover,
+.int-quitar:focus-visible {
+  transform: scale(1.08);
+}
+
+/* Hueco del correo + botón «+» (617 × 70 y 63 px en el diseño) */
+.int-form {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 23px;
+  width: 703px;
+  max-width: 100%;
+  margin: 40px auto 0;
+}
+
+.int-form__campo.campo {
+  flex: 1;
+  height: 70px;
+  padding: 0 18px;
+  border-radius: 14px;
+  font-size: 20px;
+  transition: box-shadow 0.2s;
+}
+
+.int-form__campo.campo:focus {
+  box-shadow: 0 0 0 3px rgba(209, 94, 35, 0.18);
+}
+
+.int-form__mas {
+  color: var(--fondo);
+}
+
+.int-form__mas:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.int-error {
+  width: 703px;
+  max-width: 100%;
+  min-height: 22px;
+  margin: 8px auto 0;
+  padding-left: 18px;
+}
+
+.paso--integrantes .integrantes-continuar {
+  margin-top: 26px;
+}
+
+/* Aviso naranja de debajo del botón */
+.int-aviso {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 860px;
+  max-width: 100%;
+  margin: 22px auto 0;
+  font-family: var(--font-inter);
+  font-weight: 600;
+  font-size: 17px;
+  color: var(--naranja);
+  text-align: center;
+}
+
+.int-aviso b {
+  font-weight: 700;
+}
+
+@media (max-width: 760px) {
+  .paso--integrantes .integrantes-intro {
+    margin-top: 40px;
+  }
+
+  .paso--integrantes .integrantes-intro p {
+    font-size: 17px;
+  }
+
+  .int-lider {
+    gap: 14px;
+  }
+
+  .int-lider img {
+    width: 60px;
+    height: 60px;
+  }
+
+  .int-lider__nombre {
+    font-size: 20px;
+  }
+
+  .int-lider__correo {
+    font-size: 14px;
+  }
+
+  .int-grupo__contador b {
+    font-size: 44px;
+  }
+
+  .int-fila__correo {
+    font-size: 15px;
+  }
+
+  .int-form {
+    gap: 12px;
+  }
+
+  .int-form__campo.campo {
+    height: 56px;
+    font-size: 16px;
+  }
+
+  .int-aviso {
+    font-size: 15px;
+  }
+}
+
+/* Paso 2: el título es muy ancho, así que los retratos van más abajo y algo más pequeños */
+.paso--hora .retrato-paso--izq {
+  top: 560px;
+  left: 40px;
+  transform-origin: left top;
+  scale: 0.8;
+}
+
+.paso--hora .retrato-paso--der {
+  top: 960px;
+  right: 60px;
+}
+
+@media (max-width: 1380px) {
+  .paso--hora .retratos-paso {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  /* Botones de los pasos en el móvil: el texto cabe en una línea */
+  main:has(.paso-cabecera) .boton {
+    height: 54px;
+    padding: 0 12px;
+    font-size: 15px;
+  }
+}

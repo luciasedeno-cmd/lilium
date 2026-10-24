@@ -12,6 +12,7 @@ import { iconosDe } from "@/lib/fotos";
 import { eventoEn, MIN_SALA_NUEVA, MAX_PERSONAS } from "@/lib/config";
 import { useIdioma } from "@/components/Idioma";
 import PiePagina from "@/components/PiePagina";
+import RetratosPaso from "@/components/RetratosPaso";
 
 const TEXTOS = {
   es: {
@@ -165,7 +166,8 @@ export default function Hora() {
   return (
     <>
       <NavReserva />
-      <main>
+      <main className="paso paso--hora">
+        <RetratosPaso />
         <PasoCabecera paso={2} />
 
         <div className="columna">

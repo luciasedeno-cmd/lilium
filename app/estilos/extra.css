@@ -881,51 +881,32 @@ main.mi-reserva {
   padding-right: 4px;
 }
 
-/* Iconos redondos de 27 px: ✓ confirmado (verde) y ✕ quitar (naranja) */
+/* Iconos redondos de 27 px: ✓ confirmado (verde) y ✕ quitar (naranja). El dibujo va centrado con flex. */
 .mr-icono {
-  position: relative;
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
   width: 27px;
   height: 27px;
+  padding: 0;
   border-radius: 50%;
+  color: var(--fondo);
+}
+
+.mr-icono svg {
+  display: block;
 }
 
 .mr-icono--si {
   background: var(--verde-oscuro);
 }
 
-.mr-icono--si::after {
-  content: "";
-  position: absolute;
-  left: 8px;
-  top: 7px;
-  width: 11px;
-  height: 6px;
-  border-left: 2px solid var(--fondo);
-  border-bottom: 2px solid var(--fondo);
-  transform: rotate(-45deg);
-}
-
 .mr-icono--quitar {
+  border: 1.5px solid var(--naranja);
   background: var(--naranja);
   cursor: pointer;
-  transition: transform 0.15s;
-}
-
-.mr-icono--quitar::before,
-.mr-icono--quitar::after {
-  content: "";
-  position: absolute;
-  left: 7px;
-  top: 12.5px;
-  width: 13px;
-  height: 2px;
-  background: var(--fondo);
-  transform: rotate(45deg);
-}
-
-.mr-icono--quitar::after {
-  transform: rotate(-45deg);
+  transition: transform 0.15s, background-color 0.2s, color 0.2s;
 }
 
 .mr-icono--quitar:hover,
@@ -933,15 +914,10 @@ main.mi-reserva {
   transform: scale(1.12);
 }
 
-/* Al marcarla, la ✕ pasa a ser un botón vacío para «deshacer» */
+/* Al marcarla, la ✕ pasa a ser un círculo vacío para «deshacer» */
 .mr-icono--quitar.is-deshacer {
-  border: 1.5px solid var(--naranja);
   background: var(--fondo);
-}
-
-.mr-icono--quitar.is-deshacer::before,
-.mr-icono--quitar.is-deshacer::after {
-  background: var(--naranja);
+  color: var(--naranja);
 }
 
 .mr-anadir {
