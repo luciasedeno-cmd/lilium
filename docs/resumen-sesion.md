@@ -30,6 +30,7 @@ Resumen para quien siga con la web. Los detalles técnicos están en `CLAUDE.md`
 - **Barra de navegación única** en toda la web: transparente sobre la sección principal, cristal de color al bajar, cambia de color según el fondo y se esconde al bajar.
 - **Idioma ES / EN** funcional en toda la web (los correos siguen solo en español).
 - Pie fino, portada e historia a pantalla completa, preguntas frecuentes que se abren sin saltos.
+- **«¿Cómo reservar?»** ocupa una pantalla; en cada paso cambia el color de fondo y la mano hace algo distinto (clavel, ramo, reloj, carta sellada, llave). Las manos 2–5 se crearon con la IA de Figma (están también en el archivo de Figma).
 - **Home animada**: entrada de la portada, elementos que aparecen al bajar, parallax suave (portada, retrato, cuadros del ritual, preguntas, paisaje final) y salida de la portada que se funde con la historia. Correcciones: textos del ritual en verde (se leían mal), datos de «Cuándo / Dónde» sobre tarjetas de papel con punto terracota, y título de las preguntas en letra de mano como el resto.
 
 ## Cosas pendientes o para revisar

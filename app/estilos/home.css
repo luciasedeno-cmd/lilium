@@ -339,17 +339,32 @@ body:has(.hero) {
 }
 
 /* ---------- ¿Cómo reservar? ---------- */
-/* Al bajar, el fondo de «¿Cómo reservar?» y de los pasos pasa de crema a terracota (y el texto al revés).
-   --p lo calcula components/home/ComoReservar.js: 0 = crema, 1 = terracota. */
+/* Al bajar, el fondo de «¿Cómo reservar?» y de los pasos pasa de crema al color del paso (y el texto al revés).
+   --p lo calcula components/home/ComoReservar.js: 0 = crema, 1 = color del paso.
+   --paso-color lo pone components/home/CarruselPasos.js (un color por paso). Se registra como color
+   para que el navegador pueda pasar de uno a otro poco a poco. */
+@property --paso-color {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #732f23;
+}
+
 :root {
   --p: 0;
   --pt: 0;
-  --como-fondo: color-mix(in srgb, var(--terracota) calc(var(--p) * 100%), var(--fondo-oscuro));
+  --paso-color: var(--terracota);
+  --como-fondo: color-mix(in srgb, var(--paso-color) calc(var(--p) * 100%), var(--fondo-oscuro));
+  transition: --paso-color 0.9s ease;
   --como-texto: color-mix(in srgb, var(--fondo-oscuro) calc(var(--pt) * 100%), var(--terracota));
 }
 
+/* «¿Cómo reservar?» + los pasos ocupan justo una pantalla */
 .como-bloque {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100svh;
   background: var(--como-fondo);
 }
 
@@ -373,8 +388,8 @@ body:has(.hero) {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 30px;
-  padding: 17px 16px 70px;
+  gap: 14px;
+  padding: 24px 16px 0;
   color: var(--como-texto);
   text-align: center;
 }
@@ -391,39 +406,58 @@ body:has(.hero) {
 }
 
 /* ---------- Cómo funciona (carrusel) ---------- */
+/* Dos columnas: la mano (que sale desde abajo del todo) y el texto del paso.
+   Ocupa el resto de la pantalla que deja el título. */
 .pasos {
   position: relative;
-  height: 590px;
-  background: var(--como-fondo, var(--terracota));
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: 1fr;
+  align-items: center;
+  column-gap: 64px;
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 24px;
   overflow: hidden;
 }
 
 .pasos__imagen {
-  position: absolute;
-  left: calc(50% - 720px + 9px);
-  top: 11px;
-  width: 575px;
-  height: 579px;
-  overflow: hidden;
+  position: relative;
+  align-self: end;
+  height: clamp(320px, calc(100svh - 230px), 680px);
 }
 
-.pasos__imagen img {
+/* Las 5 manos, una encima de otra. La del paso actual sube desde abajo y se endereza;
+   la anterior se va hundiendo mientras se desvanece. Siempre se ven enteras (no se recortan). */
+.pasos__mano {
   position: absolute;
-  left: 9.39%;
-  top: -4.06%;
-  width: 85.04%;
-  height: 103.99%;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   max-width: none;
+  object-fit: contain;
+  object-position: center bottom;
+  opacity: 0;
+  transform: translateY(70px) rotate(-5deg) scale(0.96);
+  transform-origin: 50% 100%;
+  transition: opacity 0.5s ease, transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.pasos__mano.is-activa {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0.2s;
 }
 
 .pasos__texto {
-  position: absolute;
-  left: calc(50% - 720px + 562px);
-  top: 123px;
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 34px;
-  width: 575px;
+  gap: 28px;
+  max-width: 575px;
+  padding: 24px 0;
   color: var(--fondo-oscuro);
 }
 
@@ -521,6 +555,14 @@ body:has(.hero) {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  :root {
+    transition: none;
+  }
+
+  .pasos__mano {
+    transition: none;
+  }
+
   .pasos__relleno,
   .pasos__reloj,
   .pasos__punto.is-actual::before {
@@ -1106,28 +1148,7 @@ body:has(.hero) {
 
 
   .pasos {
-    height: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 40px 24px 60px;
-  }
-
-  .pasos__imagen {
-    position: relative;
-    left: auto;
-    top: auto;
-    width: min(575px, 100%);
-    aspect-ratio: 575 / 579;
-    height: auto;
-  }
-
-  .pasos__texto {
-    position: relative;
-    left: auto;
-    top: auto;
-    width: min(575px, 100%);
-    margin-top: 32px;
+    column-gap: 32px;
   }
 
   .ritual {
@@ -1351,6 +1372,27 @@ body:has(.hero) {
   .pasos__numero,
   .pasos__titulo {
     font-size: 28px;
+  }
+
+  /* En el móvil, una sola columna: el texto del paso arriba y la mano abajo, saliendo del borde */
+  .pasos {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    padding: 0 20px;
+  }
+
+  .pasos__texto {
+    gap: 16px;
+    padding: 20px 0 8px;
+  }
+
+  /* La mano ocupa todo el hueco que queda debajo del texto (sin pasarse de 460 px) */
+  .pasos__imagen {
+    order: 2;
+    align-self: stretch;
+    height: auto;
+    min-height: 240px;
+    max-height: 460px;
   }
 
   .cuadro {

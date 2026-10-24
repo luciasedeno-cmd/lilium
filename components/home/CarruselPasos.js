@@ -1,8 +1,19 @@
 "use client";
 // Carrusel «Cómo funciona»: los 5 pasos de la reserva (variantes del componente de Figma)
 // La barrita se va rellenando hasta el siguiente punto; al llenarse, pasa sola al paso siguiente.
+// En cada paso la mano hace algo distinto y el fondo de toda la sección cambia de color
+// (el color se guarda en --paso-color, en la raíz de la página, para que lo use también el encaje de arriba).
 import { Fragment, useEffect, useRef, useState } from "react";
 import { useIdioma } from "@/components/Idioma";
+
+// Imagen y color de fondo de cada paso (colores de la paleta de Lilium; el texto crema se lee en todos)
+const ESCENAS = [
+  { imagen: "mano-1.webp", color: "#732f23", alt: { es: "Mano sosteniendo un clavel", en: "Hand holding a carnation" } },
+  { imagen: "mano-2.webp", color: "#8a5247", alt: { es: "Mano sosteniendo un ramo de cinco claveles", en: "Hand holding a bouquet of five carnations" } },
+  { imagen: "mano-3.webp", color: "#4f5341", alt: { es: "Mano sosteniendo un reloj de bolsillo", en: "Hand holding a pocket watch" } },
+  { imagen: "mano-4.webp", color: "#5c2419", alt: { es: "Mano entregando una carta sellada con lacre", en: "Hand handing over a letter sealed with wax" } },
+  { imagen: "mano-5.webp", color: "#6f705c", alt: { es: "Mano sosteniendo una llave antigua con un clavel", en: "Hand holding an antique key with a carnation" } },
+];
 
 const PASOS = {
   es: [
@@ -49,6 +60,12 @@ export default function CarruselPasos() {
     return () => vigia.disconnect();
   }, []);
 
+  // El fondo de la sección toma el color del paso actual (el cambio es suave: ver --paso-color en home.css)
+  useEffect(() => {
+    document.documentElement.style.setProperty("--paso-color", ESCENAS[actual].color);
+  }, [actual]);
+  useEffect(() => () => document.documentElement.style.removeProperty("--paso-color"), []);
+
   const paso = lista[actual];
   return (
     <section
@@ -61,8 +78,17 @@ export default function CarruselPasos() {
         if (e.key === "ArrowLeft") mostrar(actual - 1);
       }}
     >
+      {/* Las 5 manos están una encima de otra: solo se ve la del paso actual, que sube desde abajo */}
       <div className="pasos__imagen" data-revelar="izquierda">
-        <img src="/assets/img/como-funciona-mano.png" alt={idioma === "en" ? "Hand holding a carnation" : "Mano sosteniendo un clavel"} />
+        {ESCENAS.map((e, i) => (
+          <img
+            key={e.imagen}
+            className={`pasos__mano${i === actual ? " is-activa" : ""}`}
+            src={`/assets/img/pasos/${e.imagen}`}
+            alt={i === actual ? e.alt[idioma] : ""}
+            aria-hidden={i === actual ? undefined : true}
+          />
+        ))}
       </div>
 
       <div className="pasos__texto" aria-live="polite" data-revelar="derecha" style={{ "--retardo": "0.15s" }}>
