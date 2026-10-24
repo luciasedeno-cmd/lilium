@@ -15,7 +15,8 @@ Resumen para quien siga con la web. Los detalles técnicos están en `CLAUDE.md`
 4. **Inicio** (`/inicio`): portada, historia, «¿Cómo reservar?» (cambia de crema a terracota al bajar), carrusel de 5 pasos, ritual, cuándo/dónde, Erasmus, preguntas frecuentes y llamada final. Pop-up Erasmus solo la primera vez.
 5. **Reserva en 3 pasos**: integrantes (como en Figma, con retratos) → hora (filtros y tarjetas) → revisión de la sala (como en Figma «PAG RESERVA - REVISION»: datos de la sala, fecha y llegada, equipo, anotaciones y tarjeta «Resumen» con las casillas de Términos y normas).
 6. **Mi reserva** (`/mi-reserva`): QR de la entrada, fragmento secreto, cambiar de hora, cancelar; la líder puede **editar el grupo** (añadir / quitar).
-7. Enlaces de los correos: `/confirmar/[token]` (confirmar plaza) y `/entrada/[token]` (lo que abre el QR en la puerta).
+7. **Cuestionario** (`/cuestionario`): encuesta anónima para después de la experiencia. No hay botón en la web: se comparte el enlace o un QR. Las respuestas se ven en Supabase → Table Editor → `cuestionario`.
+8. Enlaces de los correos: `/confirmar/[token]` (confirmar plaza) y `/entrada/[token]` (lo que abre el QR en la puerta).
 
 ## Reglas de las reservas
 - De 3 a 6 personas por turno; con 1 o 2 solo se puede entrar en un grupo en formación.

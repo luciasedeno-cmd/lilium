@@ -4,6 +4,7 @@ import "./estilos/reserva.css";
 import "./estilos/cuenta-atras.css";
 import "./estilos/extra.css";
 import "./estilos/lilium-ds.css";
+import "./estilos/cuestionario.css";
 import { IdiomaProvider } from "@/components/Idioma";
 import { idiomaActual } from "@/lib/idiomaServidor";
 

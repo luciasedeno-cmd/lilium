@@ -1,0 +1,232 @@
+/* ==========================================================
+   Lilium · Cuestionario (/cuestionario)
+   Usa los colores y medidas del sistema de diseño «Lilium DEFINITIVO» (lilium-ds.css).
+   ========================================================== */
+main.cues {
+  background: var(--bg);
+  color: var(--ink);
+  padding: 72px var(--space-4) var(--space-24);
+}
+
+.cues__encabezado {
+  margin-top: var(--space-12);
+  text-align: center;
+}
+
+.cues__titulo {
+  font-family: var(--font-script-ds);
+  font-weight: 400;
+  font-size: clamp(56px, 8.9vw, 112px);
+  line-height: 1.1;
+}
+
+.cues__etiqueta {
+  margin-top: var(--space-2);
+  font: 400 22px/28px var(--font-serif);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.cues__formulario,
+.cues-gracias {
+  max-width: var(--container-narrow);
+  margin: var(--space-12) auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.cues__intro,
+.cues-gracias p {
+  font: 400 18px/28px var(--font-sans);
+  color: var(--ink-muted);
+  text-align: center;
+}
+
+/* Cada pregunta es una tarjeta */
+.cues-pregunta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  margin: 0;
+  padding: var(--space-6) var(--space-8) var(--space-8);
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  transition: border-color 0.2s ease;
+}
+
+.cues-pregunta.is-respondida {
+  border-color: var(--ink);
+}
+
+.cues-pregunta__titulo {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding: 0;
+  font: 400 24px/32px var(--font-serif);
+}
+
+/* En los fieldset, la leyenda necesita un poco de aire debajo */
+fieldset.cues-pregunta > legend {
+  float: left;
+  width: 100%;
+  margin-bottom: var(--space-2);
+}
+
+fieldset.cues-pregunta > legend + * {
+  clear: both;
+}
+
+.cues-pregunta__numero {
+  flex: none;
+  font: 500 14px/20px var(--font-sans);
+  letter-spacing: 0.04em;
+  color: var(--ink-muted);
+}
+
+.cues-pregunta__numero::after {
+  content: ".";
+}
+
+/* ---------- Flores (1 a 5) ---------- */
+.cues-flores {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.cues-flor {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--control-lg);
+  height: var(--control-lg);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+}
+
+.cues-flor input,
+.cues-escala__opcion input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.cues-flor__svg {
+  width: 44px;
+  height: 44px;
+  fill: transparent;
+  stroke: var(--ink);
+  stroke-width: 1.4;
+  transition: fill 0.15s ease, transform 0.2s ease;
+}
+
+.cues-flor__centro {
+  fill: var(--bg);
+}
+
+.cues-flor.is-llena .cues-flor__svg {
+  fill: var(--team);
+}
+
+.cues-flor.is-llena .cues-flor__centro {
+  fill: var(--brand-apricot);
+}
+
+.cues-flor:hover .cues-flor__svg,
+.cues-flor:has(input:checked) .cues-flor__svg {
+  transform: scale(1.1) rotate(12deg);
+}
+
+.cues-flor:has(input:focus-visible),
+.cues-escala__opcion:has(input:focus-visible) {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+/* ---------- Escala (0 a 5) ---------- */
+.cues-escala {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--space-2);
+}
+
+.cues-escala__opcion {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.cues-escala__numero {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: var(--control-lg);
+  border: 1px solid var(--ink);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  font: 500 18px/24px var(--font-sans);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.cues-escala__opcion:hover .cues-escala__numero {
+  background: var(--cream-100);
+}
+
+.cues-escala__opcion.is-elegida .cues-escala__numero {
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+.cues-escala__palabra {
+  min-height: 16px;
+  font: 500 12px/16px var(--font-sans);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--ink-muted);
+}
+
+/* ---------- Comentario y envío ---------- */
+.cues-comentario .cues-pregunta__titulo {
+  font-size: 20px;
+}
+
+.cues__enviar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.cues__mensaje {
+  min-height: 24px;
+  font: 400 16px/24px var(--font-sans);
+  text-align: center;
+}
+
+.cues-gracias__botones {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+/* ---------- Móvil ---------- */
+@media (max-width: 600px) {
+  .cues__encabezado { margin-top: var(--space-6); }
+  .cues-pregunta { padding: var(--space-6) var(--space-4); }
+  .cues-pregunta__titulo { font-size: 20px; line-height: 28px; }
+  .cues-flores { justify-content: space-between; gap: 0; }
+  .cues-flor__svg { width: 40px; height: 40px; }
+  .cues-escala { gap: var(--space-1); }
+  .cues-escala__numero { height: var(--control-md); }
+  .cues-escala__palabra { font-size: 10px; letter-spacing: 0; }
+}

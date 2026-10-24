@@ -61,6 +61,23 @@ alter table miembros enable row level security;
 alter table codigos  enable row level security;
 alter table lista_espera enable row level security;
 
+-- Respuestas del cuestionario de después de la experiencia (/cuestionario). Son anónimas.
+-- Flores de 1 a 5 (general, ambientacion, originalidad, inmersion); escalas de 0 a 5 (dificultad: 0 muy fácil, 5 muy difícil;
+-- duracion: 0 muy corta, 3 genial, 5 muy larga).
+create table if not exists cuestionario (
+  id            serial primary key,
+  creada        timestamptz not null default now(),
+  general       smallint not null,
+  ambientacion  smallint not null,
+  dificultad    smallint not null,
+  originalidad  smallint not null,
+  inmersion     smallint not null,
+  duracion      smallint not null,
+  comentario    text,
+  idioma        text
+);
+alter table cuestionario enable row level security;
+
 -- Turnos del día (edítalos aquí o desde el panel de Supabase). Solo se insertan si la tabla está vacía.
 -- Cada turno dura una hora: 45 minutos de experiencia + 15 de cortesía para recolocar la sala.
 insert into turnos (inicio, fin, erasmus)
