@@ -12,7 +12,7 @@ import { iconosDe } from "@/lib/fotos";
 import { eventoEn, MIN_SALA_NUEVA, MAX_PERSONAS } from "@/lib/config";
 import { useIdioma } from "@/components/Idioma";
 import PiePagina from "@/components/PiePagina";
-import RetratosPaso from "@/components/RetratosPaso";
+import { IconoCheck } from "@/components/Iconos";
 
 const TEXTOS = {
   es: {
@@ -25,6 +25,8 @@ const TEXTOS = {
     mostramos: "Te mostramos los grupos en formación con hueco para vosotros.", editar: "Editar",
     soloMostrando: "Mostrando solo turnos Erasmus.", verTodos: "Ver todos los turnos", cargando: "Cargando turnos…", disponibles: "Turnos disponibles",
     primeros: "¡Sois los primeros en este turno! Poned nombre al equipo (opcional)", ejemplo: "Ej.: Las Hijas del Solsticio", continuar: "Continuar y confirmar →",
+    filtros: "Filtrar turnos", fTodos: "Todos", fHueco: "Con hueco para vosotros", fErasmus: "Solo Erasmus",
+    ninguno: "No hay turnos con este filtro. Prueba con «Todos».", de: "de", libres: "libres", elegido: "Turno elegido",
   },
   en: {
     completo: "This session is full.", minimo: `You need at least ${MIN_SALA_NUEVA} people to open a free room.`, sinHueco: "There isn't room for your whole group in this session.",
@@ -36,6 +38,8 @@ const TEXTOS = {
     mostramos: "We're showing you the forming groups with space for you.", editar: "Edit",
     soloMostrando: "Showing Erasmus sessions only.", verTodos: "See all sessions", cargando: "Loading sessions…", disponibles: "Available sessions",
     primeros: "You're the first in this session! Name your team (optional)", ejemplo: "E.g.: The Daughters of the Solstice", continuar: "Continue and confirm →",
+    filtros: "Filter sessions", fTodos: "All", fHueco: "With space for you", fErasmus: "Erasmus only",
+    ninguno: "No sessions match this filter. Try “All”.", de: "of", libres: "free", elegido: "Chosen session",
   },
 };
 
@@ -51,51 +55,50 @@ function Sala({ turno, total, escogida, onElegir, onEsperar }) {
   const t = TEXTOS[useIdioma().idioma];
   const bloqueo = motivoBloqueo(turno, total, t);
   const libre = turno.estado === "libre";
+  const llena = turno.estado === "completo";
   // Turno lleno (o sin hueco para todo el grupo): se puede pedir aviso si se libera una plaza
   const sinHueco = bloqueo && !(libre && total < MIN_SALA_NUEVA);
   const clases = ["sala", escogida && "is-escogida", bloqueo && (libre ? "is-bloqueada" : "is-llena")].filter(Boolean).join(" ");
   const elegir = () => onElegir(turno, bloqueo);
+  // De otros grupos no se enseñan los correos: los iconos salen del número de turno
+  const iconos = iconosDe(Array.from({ length: turno.ocupadas }, (_, i) => `turno-${turno.id}-${i}`));
+  const estado = libre ? "libre" : llena ? "llena" : "formacion";
 
   // La tarjeta es el «botón» de elegir; el aviso de lista de espera va fuera de ella para poder pulsarlo aunque esté llena
   return (
     <li className="sala-envoltorio" role="none">
-    <div className={clases} role="radio" aria-checked={escogida} aria-disabled={bloqueo ? "true" : undefined} tabIndex={0}
-      onClick={elegir} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); elegir(); } }}>
-      <p className="sala__hora">{turno.inicio}-{turno.fin}</p>
-      <p className="sala__nombre">{turno.equipo ? `“${turno.equipo}”` : ""}</p>
-      <div className="sala__chips">
-        <span className="chip">{libre ? t.libre : turno.estado === "completo" ? t.llena : t.formacion}</span>
-        {turno.erasmus && <span className="chip"><img src="/assets/svg/icono-mundo.svg" width="15" height="15" alt="" />{t.soloErasmus}</span>}
-      </div>
-      <div className="sala__pie">
-        <div className="avatares">
-          {libre ? (
-            <>
-              <img src="/assets/img/hueco-vacio.png" width="51" height="51" alt="" />
-              <img src="/assets/img/hueco-vacio.png" width="51" height="51" alt="" />
-              <img src="/assets/svg/hueco-mas.svg" width="51" height="51" alt="" />
-            </>
+      <div className={clases} role="radio" aria-checked={escogida} aria-disabled={bloqueo ? "true" : undefined} tabIndex={0}
+        onClick={elegir} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); elegir(); } }}>
+        <div className="sala__cabeza">
+          <p className="sala__hora">{turno.inicio}<span className="sala__guion">–</span>{turno.fin}</p>
+          {bloqueo ? (
+            <img className="sala__candado" src="/assets/svg/icono-candado.svg" width="22" height="26" alt={bloqueo} />
           ) : (
-            // De otros grupos no se enseñan los correos: los iconos salen del número de turno
-            iconosDe(Array.from({ length: turno.ocupadas }, (_, i) => `turno-${turno.id}-${i}`)).map((src, i) => <img key={i} src={src} width="51" height="51" alt="" />)
+            <span className="sala__marca" aria-hidden="true">{escogida && <IconoCheck />}</span>
           )}
         </div>
-        <p className="sala__plazas">
-          {libre ? t.plazas(MAX_PERSONAS, 0) : turno.hueco === 0 ? t.sinPlazas(turno.ocupadas) : t.plazas(turno.hueco, turno.ocupadas)}
-        </p>
-        {turno.estado !== "completo" && (
-          <span className="chip">{t.perfecto} {libre ? `${MIN_SALA_NUEVA}-${MAX_PERSONAS}` : turno.hueco === 1 ? "1" : `1-${turno.hueco}`}</span>
+
+        <div className="sala__chips">
+          <span className={`chip chip--estado chip--${estado}`}>{libre ? t.libre : llena ? t.llena : t.formacion}</span>
+          {turno.erasmus && <span className="chip"><img src="/assets/svg/icono-mundo.svg" width="15" height="15" alt="" />{t.soloErasmus}</span>}
+        </div>
+        {turno.equipo && <p className="sala__nombre">“{turno.equipo}”</p>}
+
+        {/* Las 6 plazas del turno: ocupadas (con icono) y libres (círculo vacío) */}
+        <div className="sala__plazas-fila">
+          <div className="sala__asientos" aria-hidden="true">
+            {Array.from({ length: MAX_PERSONAS }, (_, i) =>
+              i < turno.ocupadas ? <img key={i} src={iconos[i]} width="30" height="30" alt="" /> : <span key={i} className="sala__asiento" />
+            )}
+          </div>
+          <p className="sala__plazas">
+            {llena ? t.sinPlazas(turno.ocupadas) : <><b>{turno.hueco}</b> {t.de} {MAX_PERSONAS} {t.libres}</>}
+          </p>
+        </div>
+        {!llena && (
+          <p className="sala__perfecto">{t.perfecto} {libre ? `${MIN_SALA_NUEVA}-${MAX_PERSONAS}` : turno.hueco === 1 ? "1" : `1-${turno.hueco}`}</p>
         )}
       </div>
-      {bloqueo ? (
-        <img className="sala__candado" src="/assets/svg/icono-candado.svg" width="24.5" height="29.36" alt={bloqueo} />
-      ) : (
-        <span className="sala__elegir" aria-hidden="true">
-          <img className="base" src="/assets/svg/sala-base.svg" width="42" height="42" alt="" />
-          <img className="escogida" src="/assets/svg/sala-escogida.svg" width="42" height="42" alt="" />
-        </span>
-      )}
-    </div>
       {sinHueco && (
         <div className="sala__espera">
           {turno.en_espera ? (
@@ -128,8 +131,12 @@ export default function Hora() {
 
   const actualizar = (cambios) => setBorrador(guardarBorrador(cambios));
   const total = (borrador.integrantes || []).length + 1;
-  const soloErasmus = Boolean(borrador.soloErasmus);
-  const visibles = (turnos || []).filter((x) => !soloErasmus || x.erasmus);
+  // Filtro de arriba: todos, solo los que tienen hueco para el grupo, o solo Erasmus
+  const filtro = borrador.soloErasmus ? "erasmus" : borrador.filtro || "todos";
+  const cambiarFiltro = (f) => actualizar({ filtro: f, soloErasmus: f === "erasmus" });
+  const visibles = (turnos || []).filter((x) =>
+    filtro === "erasmus" ? x.erasmus : filtro === "hueco" ? !motivoBloqueo(x, total) : true
+  );
   const escogido = (turnos || []).find((x) => x.id === borrador.turnoId && !motivoBloqueo(x, total));
 
   // «Avísame si se libera una plaza»: apunta a la persona en la lista de espera de ese turno
@@ -167,7 +174,6 @@ export default function Hora() {
     <>
       <NavReserva />
       <main className="paso paso--hora">
-        <RetratosPaso />
         <PasoCabecera paso={2} />
 
         <div className="columna">
@@ -177,27 +183,34 @@ export default function Hora() {
             <p className="etiqueta">{t.etiqueta}</p>
           </header>
 
-          <p className="dia">
-            <img src="/assets/svg/icono-calendario.svg" width="20" height="22" alt="" />
-            {evento.fechaTexto} · {t.unicoDia}
-          </p>
-
-          <p className="eres">
-            <img src="/assets/svg/icono-personas.svg" width="28" height="25.64" alt="" />
-            <span>
-              <b>{t.sois(total)}</b>{" "}
-              {total >= MIN_SALA_NUEVA ? t.podeis : t.mostramos}{" "}
-              <Link href="/reserva/integrantes">{t.editar}</Link>
-            </span>
-          </p>
-
-          {soloErasmus && (
-            <p className="filtro-erasmus">
-              {t.soloMostrando} <button type="button" onClick={() => actualizar({ soloErasmus: false })}>{t.verTodos}</button>
+          {/* Día y tamaño del grupo, en una sola franja */}
+          <div className="hora-info">
+            <p className="hora-info__dia">
+              <img src="/assets/svg/icono-calendario.svg" width="20" height="22" alt="" />
+              {evento.fechaTexto} · {t.unicoDia}
             </p>
-          )}
+            <p className="hora-info__grupo">
+              <img src="/assets/svg/icono-personas.svg" width="26" height="24" alt="" />
+              <span>
+                <b>{t.sois(total)}</b> {total >= MIN_SALA_NUEVA ? t.podeis : t.mostramos}{" "}
+                <Link href="/reserva/integrantes">{t.editar}</Link>
+              </span>
+            </p>
+          </div>
+
+          {/* Filtros (como pestañas) */}
+          <div className="hora-filtros" role="group" aria-label={t.filtros}>
+            {[["todos", t.fTodos], ["hueco", t.fHueco], ["erasmus", t.fErasmus]].map(([clave, texto]) => (
+              <button key={clave} type="button" aria-pressed={filtro === clave} onClick={() => cambiarFiltro(clave)}>
+                {clave === "erasmus" && <img src="/assets/svg/icono-mundo.svg" width="15" height="15" alt="" />}
+                {texto}
+              </button>
+            ))}
+          </div>
 
           {turnos === null && !error && <p className="cargando">{t.cargando}</p>}
+
+          {turnos !== null && visibles.length === 0 && <p className="hora-vacio">{t.ninguno}</p>}
 
           <ul className="salas" role="radiogroup" aria-label={t.disponibles}>
             {visibles.map((x) => (
@@ -207,6 +220,7 @@ export default function Hora() {
 
           {escogido?.estado === "libre" && (
             <div className="hora-equipo">
+              <img src="/assets/img/icono-lirio.png" width="50" height="40" alt="" />
               <label htmlFor="equipo">{t.primeros}</label>
               <input className="campo" id="equipo" maxLength={40} placeholder={t.ejemplo}
                 value={borrador.equipo || ""} onChange={(e) => actualizar({ equipo: e.target.value })} />

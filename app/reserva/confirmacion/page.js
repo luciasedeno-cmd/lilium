@@ -1,6 +1,7 @@
 "use client";
 // Paso 3 · Revisar y crear la reserva
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import NavReserva from "@/components/NavReserva";
 import Cargando from "@/components/Cargando";
@@ -12,7 +13,6 @@ import { iconosDe } from "@/lib/fotos";
 import { eventoEn, HORAS_CONFIRMACION } from "@/lib/config";
 import { useIdioma } from "@/components/Idioma";
 import PiePagina from "@/components/PiePagina";
-import RetratosPaso from "@/components/RetratosPaso";
 
 const TEXTOS = {
   es: {
@@ -22,6 +22,7 @@ const TEXTOS = {
     integrantes: "Integrantes", liderAuto: "Líder · Confirmado automáticamente", recibira: "Recibirá correo de confirmación",
     plazo1: "Cada integrante tendrá", plazo2: "para confirmar desde su correo. Quien no confirme a tiempo perderá su plaza; la reserva sigue para quienes hayan confirmado.",
     reservando: "Reservando…", confirmar: "Confirmar reserva →",
+    vuestraSala: "Vuestra sala", editar: "Editar", casiListo: "Ya casi está: revisad que todo esté bien antes de confirmar.",
   },
   en: {
     sinNombre: "No name (you can add one later)", aceptar: "To book you must accept the Terms and Conditions.",
@@ -30,10 +31,10 @@ const TEXTOS = {
     integrantes: "Members", liderAuto: "Leader · Confirmed automatically", recibira: "Will receive a confirmation email",
     plazo1: "Each member will have", plazo2: "to confirm from their email. Anyone who doesn't confirm in time loses their place; the booking stays for those who have confirmed.",
     reservando: "Booking…", confirmar: "Confirm booking →",
+    vuestraSala: "Your room", editar: "Edit", casiListo: "Almost there: check everything is right before confirming.",
   },
 };
 
-const Separador = () => <img className="separador" src="/assets/svg/linea-discontinua.svg" width="720" height="1" alt="" />;
 
 export default function Confirmacion() {
   const { email: lider, error: errorSesion } = useSesion("reserva");
@@ -83,68 +84,70 @@ export default function Confirmacion() {
   return (
     <>
       <NavReserva />
-      <main className="paso">
-        <RetratosPaso />
+      <main className="paso paso--confirmacion">
         <PasoCabecera paso={3} />
 
-        <div className="columna">
-          <header className="confirmacion-encabezado">
+        <div className="conf">
+          <header className="conf__encabezado">
             <p className="etiqueta">{t.etiqueta}</p>
             <h1 className="titular">{t.titulo}</h1>
+            <p className="conf__intro">{t.casiListo}</p>
           </header>
 
-          <section className="tarjeta turno" aria-labelledby="turno-titulo">
-            <h2 id="turno-titulo">{t.turno}</h2>
-            <dl className="datos">
-              <div className="datos__fila"><dt>{t.dia}</dt><dd>{evento.fechaTexto}</dd></div>
-              <Separador />
-              <div className="datos__fila"><dt>{t.hora}</dt><dd>{turno.inicio}-{turno.fin}</dd></div>
-              <Separador />
-              <div className="datos__fila"><dt>{t.lugar}</dt><dd>{evento.lugar}</dd></div>
-              <Separador />
-              <div className="datos__fila"><dt>{t.equipo}</dt><dd>{equipo}</dd></div>
-              <Separador />
-              <div className="datos__fila"><dt>{t.tipo}</dt><dd>{nueva ? t.nueva : `${t.formacion} (${turno.ocupadas} + ${miembros.length})`}</dd></div>
-              <Separador />
-              <div className="datos__fila"><dt>{t.estado}</dt><dd><span className="chip">{t.pendiente}</span></dd></div>
-            </dl>
-          </section>
-
-          <section className="tarjeta equipo" aria-labelledby="equipo-titulo">
-            <div className="equipo__cabecera">
-              <h2 id="equipo-titulo">{t.integrantes} ({miembros.length})</h2>
-              <div className="avatares">
-                {miembros.map((m, i) => <img key={m} src={iconos[i]} width="51" height="51" alt="" />)}
+          <div className="conf__rejilla">
+            {/* Billete con los datos del turno */}
+            <section className="conf-billete" aria-labelledby="turno-titulo">
+              <div className="conf-tarjeta__cabecera">
+                <h2 id="turno-titulo">{t.turno}</h2>
+                <Link className="conf-editar" href="/reserva/hora">{t.editar}</Link>
               </div>
-            </div>
-            <ul className="equipo__lista">
-              {miembros.map((m, i) => (
-                <Fragment key={m}>
-                  <li>
-                    <div className="miembro">
-                      <img src={iconos[i]} width="51" height="51" alt="" />
-                      <div>
-                        <p className="miembro__correo">{m}</p>
-                        <p className="miembro__estado">{i === 0 ? t.liderAuto : t.recibira}</p>
-                      </div>
+              <div className="conf-billete__cuerpo">
+                <img className="conf-billete__lirio" src="/assets/img/icono-lirio.png" width="56" height="45" alt="" />
+                <p className="conf-billete__etiqueta">{t.vuestraSala}</p>
+                <p className="conf-billete__equipo">{equipo}</p>
+                <p className="conf-billete__hora">{turno.inicio}<span>–</span>{turno.fin}</p>
+                <p className="conf-billete__dia">{evento.fechaTexto}</p>
+                <p className="conf-billete__lugar">{evento.lugar}</p>
+                <div className="conf-billete__chips">
+                  <span className="chip">{nueva ? t.nueva : `${t.formacion} (${turno.ocupadas} + ${miembros.length})`}</span>
+                  <span className="chip chip--pendiente">{t.pendiente}</span>
+                </div>
+              </div>
+            </section>
+
+            {/* Integrantes */}
+            <section className="conf-equipo" aria-labelledby="equipo-titulo">
+              <div className="conf-tarjeta__cabecera">
+                <h2 id="equipo-titulo">{t.integrantes} <span>({miembros.length})</span></h2>
+                <Link className="conf-editar" href="/reserva/integrantes">{t.editar}</Link>
+              </div>
+              <ul className="conf-equipo__lista">
+                {miembros.map((m, i) => (
+                  <li key={m}>
+                    <img src={iconos[i]} width="46" height="46" alt="" />
+                    <div>
+                      <p className="conf-equipo__correo">{m}</p>
+                      <p className={`conf-equipo__estado${i === 0 ? " is-lider" : ""}`}>{i === 0 ? t.liderAuto : t.recibira}</p>
                     </div>
-                    <Separador />
                   </li>
-                </Fragment>
-              ))}
-            </ul>
-          </section>
+                ))}
+              </ul>
+            </section>
+          </div>
 
-          <p className="nota-plazo">
-            {t.plazo1} <b>{HORAS_CONFIRMACION} h</b> {t.plazo2}
-          </p>
+          <div className="conf__cierre">
+            <p className="conf__plazo">
+              <span className="conf__reloj" aria-hidden="true">⏳</span>
+              <span>{t.plazo1} <b>{HORAS_CONFIRMACION} h</b> {t.plazo2}</span>
+            </p>
 
-          <AceptarTerminos aceptado={aceptado} onCambiar={(v) => { setAceptado(v); if (v) setError(""); }} />
+            <AceptarTerminos aceptado={aceptado} onCambiar={(v) => { setAceptado(v); if (v) setError(""); }} />
 
-          <button className="boton confirmar" type="button" onClick={reservar} disabled={enviando} aria-disabled={aceptado ? undefined : "true"}>
-            {enviando ? t.reservando : t.confirmar}
-          </button>
-          <p className="error error--centro" role="alert">{error}</p>
+            <button className="boton confirmar" type="button" onClick={reservar} disabled={enviando} aria-disabled={aceptado ? undefined : "true"}>
+              {enviando ? t.reservando : t.confirmar}
+            </button>
+            <p className="error error--centro" role="alert">{error}</p>
+          </div>
         </div>
       </main>
       <PiePagina />

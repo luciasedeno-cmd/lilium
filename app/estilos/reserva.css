@@ -1247,24 +1247,7 @@ main.paso > :nth-child(n + 5) { animation-delay: 0.24s; }
   }
 }
 
-/* Paso 2: el título es muy ancho, así que los retratos van más abajo y algo más pequeños */
-.paso--hora .retrato-paso--izq {
-  top: 560px;
-  left: 40px;
-  transform-origin: left top;
-  scale: 0.8;
-}
 
-.paso--hora .retrato-paso--der {
-  top: 960px;
-  right: 60px;
-}
-
-@media (max-width: 1380px) {
-  .paso--hora .retratos-paso {
-    display: none;
-  }
-}
 
 @media (max-width: 760px) {
   /* Botones de los pasos en el móvil: el texto cabe en una línea */
@@ -1272,5 +1255,551 @@ main.paso > :nth-child(n + 5) { animation-delay: 0.24s; }
     height: 54px;
     padding: 0 12px;
     font-size: 15px;
+  }
+}
+
+/* ==========================================================
+   Paso 2 · Elegir hora (rediseño: filtros + tarjetas en dos columnas)
+   ========================================================== */
+.paso--hora .hora-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px 28px;
+  margin-top: 34px;
+  padding: 14px 24px;
+  border-top: 1px solid rgba(115, 47, 35, 0.25);
+  border-bottom: 1px solid rgba(115, 47, 35, 0.25);
+  color: var(--terracota);
+}
+
+.hora-info p {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hora-info__dia {
+  font-family: var(--font-baskervville);
+  font-weight: 700;
+  font-size: 19px;
+  white-space: nowrap;
+}
+
+.hora-info__grupo {
+  font-size: 15px;
+}
+
+.hora-info__grupo b {
+  font-family: var(--font-baskervville);
+  font-size: 18px;
+}
+
+.hora-info__grupo a {
+  text-decoration: underline;
+}
+
+/* Filtros con forma de pastilla */
+.hora-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.hora-filtros button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 38px;
+  padding: 0 18px;
+  border: 1px solid var(--terracota);
+  border-radius: 999px;
+  background: transparent;
+  font-family: var(--font-inter);
+  font-size: 15px;
+  color: var(--terracota);
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.hora-filtros button:hover {
+  background: rgba(115, 47, 35, 0.07);
+}
+
+.hora-filtros button[aria-pressed="true"] {
+  background: var(--terracota);
+  color: var(--fondo);
+}
+
+.hora-filtros button[aria-pressed="true"] img {
+  filter: brightness(0) invert(1);
+}
+
+.hora-vacio {
+  margin-top: 40px;
+  text-align: center;
+  color: var(--terracota);
+}
+
+/* Rejilla de tarjetas (dos columnas en el ordenador, algo más ancha que la columna) */
+.paso--hora .salas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+  margin: 32px -61px 0;
+}
+
+.paso--hora .sala-envoltorio {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border: 0;
+}
+
+.paso--hora .sala {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 22px 24px 20px;
+  border: 1px solid rgba(115, 47, 35, 0.28);
+  border-radius: 14px;
+  background: var(--fondo-oscuro);
+  box-shadow: 0 1px 2px rgba(41, 47, 32, 0.05);
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s, background-color 0.2s;
+}
+
+.paso--hora .sala:hover:not(.is-bloqueada):not(.is-llena) {
+  transform: translateY(-3px);
+  border-color: var(--terracota);
+  box-shadow: 0 10px 24px rgba(115, 47, 35, 0.12);
+}
+
+/* Tarjeta elegida: borde terracota grueso y fondo un poco más cálido */
+.paso--hora .sala.is-escogida {
+  border: 2px solid var(--terracota);
+  padding: 21px 23px 19px;
+  background: #fbe9dc;
+  box-shadow: 0 10px 24px rgba(115, 47, 35, 0.16);
+}
+
+.paso--hora .sala.is-bloqueada,
+.paso--hora .sala.is-llena {
+  background: rgba(255, 245, 230, 0.5);
+  border-style: dashed;
+}
+
+.paso--hora .sala.is-bloqueada > :not(.sala__cabeza),
+.paso--hora .sala.is-llena > :not(.sala__cabeza) {
+  opacity: 0.6;
+}
+
+.sala__cabeza {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.paso--hora .sala__hora {
+  padding: 0;
+  font-family: var(--font-baskervville);
+  font-weight: 700;
+  font-size: 34px;
+  line-height: 1;
+}
+
+.sala__guion {
+  padding: 0 4px;
+  font-weight: 400;
+  opacity: 0.6;
+}
+
+/* Círculo de elegir (se rellena con ✓ al elegir) */
+.sala__marca {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border: 1.5px solid var(--terracota);
+  border-radius: 50%;
+  color: var(--fondo);
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.sala.is-escogida .sala__marca {
+  background: var(--terracota);
+  animation: punto-latido 0.45s ease-out;
+}
+
+.paso--hora .sala__candado {
+  position: static;
+  width: 22px;
+  height: 26px;
+}
+
+.paso--hora .sala__chips {
+  margin: 0;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Etiqueta de estado con un puntito de color */
+.chip--estado::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.chip--libre { color: #4f6b3a; border-color: #4f6b3a; }
+.chip--formacion { color: var(--naranja); border-color: var(--naranja); }
+.chip--llena { color: #7d7468; border-color: #b7ad9f; }
+
+.paso--hora .sala__nombre {
+  min-height: 0;
+  margin: 0;
+  font-family: var(--font-baskervville);
+  font-style: italic;
+  font-size: 17px;
+}
+
+.sala__plazas-fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+}
+
+.sala__asientos {
+  display: flex;
+  gap: 4px;
+}
+
+.sala__asientos img,
+.sala__asiento {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+.sala__asiento {
+  border: 1.5px dashed rgba(115, 47, 35, 0.45);
+}
+
+.paso--hora .sala__plazas {
+  font-family: var(--font-inter);
+  font-weight: 400;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.paso--hora .sala__plazas b {
+  font-family: var(--font-baskervville);
+  font-size: 22px;
+}
+
+.sala__perfecto {
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.paso--hora .sala__espera {
+  margin-top: 10px;
+}
+
+/* Recuadro para poner nombre al equipo */
+.paso--hora .hora-equipo {
+  align-items: center;
+  margin-top: 32px;
+  padding: 24px 28px;
+  border: 1px solid rgba(115, 47, 35, 0.3);
+  text-align: center;
+  animation: paso-aparece 0.4s ease-out;
+}
+
+.paso--hora .hora-equipo .campo {
+  max-width: 460px;
+  text-align: center;
+}
+
+@media (max-width: 960px) {
+  .paso--hora .salas {
+    grid-template-columns: minmax(0, 1fr);
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .paso--hora .hora-info {
+    padding: 12px 4px;
+  }
+
+  .hora-info__dia {
+    font-size: 16px;
+  }
+
+  .hora-filtros button {
+    height: 34px;
+    padding: 0 13px;
+    font-size: 13px;
+  }
+
+  .paso--hora .sala__hora {
+    font-size: 28px;
+  }
+
+  .sala__asientos img,
+  .sala__asiento {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* ==========================================================
+   Paso 3 · Confirmación (rediseño: billete + integrantes en dos columnas)
+   ========================================================== */
+.conf {
+  width: 980px;
+  max-width: 100%;
+  margin: 0 auto;
+  color: var(--terracota);
+}
+
+.conf__encabezado {
+  margin-top: 46px;
+  text-align: center;
+}
+
+.conf__encabezado .etiqueta {
+  padding-left: 0;
+}
+
+.conf__encabezado .titular {
+  font-size: clamp(52px, 7vw, 96px);
+  line-height: 1.1;
+}
+
+.conf__intro {
+  margin-top: 6px;
+  font-family: var(--font-baskervville);
+  font-size: 19px;
+}
+
+.conf__rejilla {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: 26px;
+  align-items: stretch;
+  margin-top: 40px;
+}
+
+.conf-billete,
+.conf-equipo {
+  padding: 24px 26px 28px;
+  border: 1px solid rgba(115, 47, 35, 0.28);
+  border-radius: 16px;
+  background: var(--fondo-oscuro);
+  box-shadow: 0 10px 30px rgba(115, 47, 35, 0.08);
+}
+
+.conf-tarjeta__cabecera {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.conf-tarjeta__cabecera h2 {
+  font-family: var(--font-baskervville);
+  font-weight: 600;
+  font-size: 22px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.conf-tarjeta__cabecera h2 span {
+  font-weight: 400;
+  opacity: 0.7;
+}
+
+.conf-editar {
+  font-size: 14px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Billete: marco de puntos por dentro, como una entrada antigua */
+.conf-billete__cuerpo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 16px;
+  padding: 26px 18px 24px;
+  border: 1.5px dashed rgba(115, 47, 35, 0.45);
+  border-radius: 10px;
+  text-align: center;
+}
+
+.conf-billete__lirio {
+  width: 56px;
+  height: auto;
+}
+
+.conf-billete__etiqueta {
+  margin-top: 12px;
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.conf-billete__equipo {
+  margin-top: 2px;
+  font-family: var(--font-script);
+  font-size: 40px;
+  line-height: 1.15;
+}
+
+.conf-billete__hora {
+  margin-top: 14px;
+  font-family: var(--font-baskervville);
+  font-weight: 700;
+  font-size: 44px;
+  line-height: 1;
+}
+
+.conf-billete__hora span {
+  padding: 0 6px;
+  font-weight: 400;
+  opacity: 0.6;
+}
+
+.conf-billete__dia {
+  margin-top: 10px;
+  font-family: var(--font-baskervville);
+  font-size: 20px;
+}
+
+.conf-billete__lugar {
+  margin-top: 4px;
+  font-size: 14px;
+}
+
+.conf-billete__chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.chip--pendiente {
+  border-color: var(--naranja);
+  color: var(--naranja);
+}
+
+/* Integrantes */
+.conf-equipo__lista {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.conf-equipo__lista li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 0;
+  border-bottom: 1px dashed rgba(115, 47, 35, 0.35);
+}
+
+.conf-equipo__lista li:last-child {
+  border-bottom: 0;
+}
+
+.conf-equipo__lista img {
+  width: 46px;
+  height: 46px;
+  flex: none;
+}
+
+.conf-equipo__correo {
+  font-weight: 600;
+  font-size: 15px;
+  overflow-wrap: anywhere;
+}
+
+.conf-equipo__estado {
+  margin-top: 3px;
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+.conf-equipo__estado.is-lider {
+  color: #4f6b3a;
+  opacity: 1;
+}
+
+/* Cierre: plazo, términos y botón, centrados */
+.conf__cierre {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 18px;
+  width: 782px;
+  max-width: 100%;
+  margin: 34px auto 0;
+}
+
+.conf__plazo {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  background: rgba(209, 94, 35, 0.08);
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.conf__reloj {
+  font-size: 20px;
+  line-height: 1.1;
+}
+
+.paso--confirmacion .aceptar-terminos {
+  justify-content: center;
+}
+
+@media (max-width: 860px) {
+  .conf__rejilla {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  .conf__encabezado {
+    margin-top: 30px;
+  }
+
+  .conf__intro {
+    font-size: 16px;
+  }
+
+  .conf-billete,
+  .conf-equipo {
+    padding: 20px 16px 22px;
+  }
+
+  .conf-billete__hora {
+    font-size: 36px;
   }
 }
