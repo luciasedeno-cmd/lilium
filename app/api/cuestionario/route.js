@@ -1,4 +1,4 @@
-// POST /api/cuestionario · { general, ambientacion, dificultad, originalidad, inmersion, duracion, comentario?, idioma? }
+// POST /api/cuestionario · { general, ambientacion, dificultad, originalidad, inmersion, duracion, comentario, idioma? }
 // Guarda una respuesta anónima del cuestionario de después de la experiencia (página /cuestionario).
 import { db } from "@/lib/db";
 import { asegurarEsquema } from "@/lib/esquema";
@@ -24,7 +24,9 @@ export const POST = manejar(async (req) => {
     if (!Number.isInteger(n) || n < min || n > max) return error("Responde a todas las preguntas, por favor.");
     valores[clave] = n;
   }
-  const comentario = String(datos.comentario || "").trim().slice(0, 1000) || null;
+  // El comentario también es obligatorio
+  const comentario = String(datos.comentario || "").trim().slice(0, 1000);
+  if (!comentario) return error("Responde a todas las preguntas, por favor.");
   const idioma = datos.idioma === "en" ? "en" : "es";
 
   const sql = db();
