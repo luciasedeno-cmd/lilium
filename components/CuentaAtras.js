@@ -1,17 +1,13 @@
 "use client";
-// Reloj de la cuenta atrás (días, horas, minutos, segundos)
+// Reloj de la cuenta atrás: «FALTAN» y horas:minutos:segundos (como en el diseño).
+// Las horas son el total que queda (con 5 días por delante se ve, por ejemplo, 131:50:26).
 import { useEffect, useState } from "react";
 
 const dosCifras = (n) => String(n).padStart(2, "0");
 
-function partes(restante) {
+function texto(restante) {
   const s = Math.max(0, Math.floor(restante / 1000));
-  return {
-    dias: dosCifras(Math.floor(s / 86400)),
-    horas: dosCifras(Math.floor((s % 86400) / 3600)),
-    minutos: dosCifras(Math.floor((s % 3600) / 60)),
-    segundos: dosCifras(s % 60),
-  };
+  return `${dosCifras(Math.floor(s / 3600))}:${dosCifras(Math.floor((s % 3600) / 60))}:${dosCifras(s % 60)}`;
 }
 
 export default function CuentaAtras({ apertura }) {
@@ -30,13 +26,10 @@ export default function CuentaAtras({ apertura }) {
     return () => clearInterval(intervalo);
   }, [objetivo]);
 
-  const t = restante === null ? { dias: "00", horas: "00", minutos: "00", segundos: "00" } : partes(restante);
   return (
-    <div className="cuenta__reloj" role="timer" aria-live="off">
-      <div className="cuenta__bloque"><span className="cuenta__numero">{t.dias}</span><span className="cuenta__unidad">Días</span></div>
-      <div className="cuenta__bloque"><span className="cuenta__numero">{t.horas}</span><span className="cuenta__unidad">Horas</span></div>
-      <div className="cuenta__bloque"><span className="cuenta__numero">{t.minutos}</span><span className="cuenta__unidad">Minutos</span></div>
-      <div className="cuenta__bloque"><span className="cuenta__numero">{t.segundos}</span><span className="cuenta__unidad">Segundos</span></div>
+    <div className="cuenta__reloj">
+      <p className="cuenta__faltan">Faltan</p>
+      <p className="cuenta__tiempo" role="timer" aria-live="off">{restante === null ? "00:00:00" : texto(restante)}</p>
     </div>
   );
 }

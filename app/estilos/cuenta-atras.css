@@ -1,6 +1,6 @@
 /* ==========================================================
-   Lilium · Cuenta atrás hasta la apertura (30 de octubre)
-   Reutiliza el fondo, el degradado y el encaje de la Home.
+   Lilium · Cuenta atrás (Figma: CUENTA REGRESIVA 240:501)
+   El cuadro a pantalla completa con «FALTAN» y el reloj en el centro.
    ========================================================== */
 
 /* Solo en la página de la cuenta atrás (los estilos se comparten entre rutas en Next.js) */
@@ -11,160 +11,48 @@ body:has(.cuenta) {
 }
 
 body:has(.cuenta) {
-  background: var(--fondo-oscuro);
-}
-
-.cuenta-nav {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  height: 100px;
-  padding-left: 14px;
+  background: var(--verde-oscuro);
 }
 
 .cuenta {
-  position: relative;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: clamp(16px, 3.5vh, 36px);
   height: 100vh;
   height: 100svh;
-  padding: 100px 16px clamp(110px, 18vh, 180px);
+  padding: 16px;
   background: url("/assets/img/hero-retiro.webp") center / cover no-repeat;
-  color: var(--fondo-oscuro);
+  color: var(--fondo);
   text-align: center;
-  overflow: hidden;
-}
-
-.cuenta::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  opacity: 0.5;
-  background: radial-gradient(
-    ellipse 50% 50% at 50% 50%,
-    rgba(115, 47, 35, 1) 21.154%,
-    rgba(133, 72, 61, 0.8925) 30.108%,
-    rgba(150, 98, 87, 0.785) 39.063%,
-    rgba(185, 149, 139, 0.57) 56.971%,
-    rgba(255, 250, 242, 0.14) 92.788%
-  );
-}
-
-.cuenta > * {
-  position: relative;
-}
-
-.cuenta__titulo {
-  font-family: var(--font-script);
-  font-size: clamp(34px, min(11vw, 12vh), 120px);
-  line-height: 1;
-  white-space: nowrap;
-}
-
-/* Logotipo en blanco */
-.cuenta-nav .logo img {
-  filter: brightness(0) invert(1);
 }
 
 .cuenta__reloj {
-  display: flex;
-  justify-content: center;
-  gap: clamp(12px, 3vw, 40px);
-  margin-top: 12px;
+  /* Un poco de sombra para que el texto se lea bien sobre las zonas claras del cuadro */
+  text-shadow: 0 2px 18px rgba(41, 47, 32, 0.35);
 }
 
-.cuenta__bloque {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: clamp(4px, 1vh, 10px);
-  min-width: clamp(70px, 12vw, 150px);
-  padding: clamp(10px, 2.2vh, 22px) 12px clamp(8px, 1.8vh, 18px);
-  border: 1px solid rgba(255, 245, 230, 0.6);
-  border-radius: 15px;
-  background: rgba(41, 47, 32, 0.35);
-  backdrop-filter: blur(4px);
-}
-
-.cuenta__numero {
-  font-family: var(--font-baskervville);
-  font-weight: 500;
-  font-size: clamp(32px, min(7vw, 10vh), 96px);
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-}
-
-.cuenta__unidad {
-  font-family: var(--font-inter);
-  font-size: 16px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.cuenta__fecha {
+.cuenta__faltan {
   font-family: var(--font-baskerville);
-  font-size: 24px;
+  font-size: 48px;
+  line-height: 1.15;
+  text-transform: uppercase;
 }
 
-.cuenta__encaje {
-  position: absolute;
-  left: 50%;
-  /* El dibujo del SVG deja ~32 px transparentes abajo: lo bajamos para que el encaje toque el borde */
-  bottom: -33px;
-  width: max(1612px, 110vw); /* en pantallas muy anchas se estira (el dibujo deja un margen a cada lado) */
-  height: 176px;
-  max-width: none;
-  transform: translateX(-50%);
-  pointer-events: none;
+.cuenta__tiempo {
+  font-family: var(--font-baskerville);
+  font-size: 128px;
+  line-height: 1.15;
+  /* Todas las cifras del mismo ancho, para que el reloj no «baile» al cambiar los segundos */
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
-.cuenta.is-abierto .cuenta__reloj {
-  display: none;
-}
-
-@media (max-width: 600px) {
-  .cuenta {
-    padding-top: 72px;
+@media (max-width: 760px) {
+  .cuenta__faltan {
+    font-size: 30px;
   }
 
-  .cuenta-nav {
-    height: 72px;
-  }
-
-  .cuenta-nav .logo {
-    width: 150px;
-    height: 72px;
-  }
-
-  .cuenta-nav .logo img {
-    left: 0;
-    top: -6px;
-    width: 140px;
-    height: 84px;
-  }
-
-  .cuenta__bloque {
-    padding: 14px 6px 12px;
-  }
-
-  .cuenta__unidad {
-    font-size: 11px;
-  }
-
-  .cuenta__fecha {
-    font-size: 19px;
-  }
-
-  .cuenta__encaje {
-    height: 110px;
-    width: 1008px;
-    bottom: -21px;
+  .cuenta__tiempo {
+    font-size: clamp(56px, 19vw, 96px);
   }
 }

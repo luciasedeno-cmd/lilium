@@ -20,7 +20,8 @@
 - Cabecera de los pasos (`components/PasoCabecera.js`): 3 puntos animados + «PASO N DE 3»; los puntos anteriores llevan atrás. Pie común: `components/PiePagina.js`.
 - `/mi-reserva` (Figma «PAG RESERVA - INTEGRANTES B»): «Tu reserva» (QR, fragmento, cambiar de hora), «Mi equipo» (la líder pulsa «Editar reserva» para quitar ✕ o añadir integrantes y «Guardar cambios» → `/api/mi-reserva/integrantes`) y «Antes de venir…».
 - `middleware.js`: sin sesión, `/inicio`, `/reserva/*` y `/mi-reserva` llevan a `/acceso`.
-- `app/page.js`: portada con la cuenta atrás hasta el 30 de octubre; al llegar la fecha redirige a `/acceso`.
+- `app/page.js`: portada con la cuenta atrás hasta el 30 de octubre (Figma «CUENTA REGRESIVA»: cuadro a pantalla completa, «FALTAN» y horas:minutos:segundos, con las horas totales); al llegar la fecha redirige a `/acceso`.
+- `/acceso` con la sesión abierta no salta: muestra «Ya estás dentro» con «Continuar» y «Entrar con otro correo».
 - `app/inicio`, `app/acceso`, `app/reserva/{integrantes,hora,confirmacion}`, `app/mi-reserva`: páginas de la web.
 - `app/confirmar/[token]`: enlace del correo para confirmar la plaza. `app/entrada/[token]`: lo que abre el QR de la entrada.
 - `app/estilos/`: CSS del diseño (`base`, `home`, `reserva`, `cuenta-atras`) y `extra.css` para lo añadido con el backend.

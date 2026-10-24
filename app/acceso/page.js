@@ -9,7 +9,8 @@ const CORREO_VALIDO = /^[a-z0-9._-]+@alumnado\.esada\.es$/i;
 
 export default function Acceso() {
   const router = useRouter();
-  const [fase, setFase] = useState("correo"); // correo | codigo
+  const [fase, setFase] = useState("correo"); // correo | codigo | sesion (ya habías entrado)
+  const [sesion, setSesion] = useState(null); // { email, destino } si el navegador ya te recuerda
   const [correo, setCorreo] = useState("");
   const [codigo, setCodigo] = useState("");
   const [error, setError] = useState("");
@@ -17,13 +18,24 @@ export default function Acceso() {
   const [enviando, setEnviando] = useState(false);
   const campoCodigo = useRef(null);
 
-  // Si ya hay sesión, se continúa donde toque
+  // Si el navegador ya te recuerda, no se salta la página: se ofrece continuar o entrar con otro correo
   useEffect(() => {
     setCorreo(leerBorrador().correo || "");
     api("/api/sesion").then((s) => {
-      if (s.email) router.replace(s.tieneReserva ? "/mi-reserva" : "/inicio");
+      if (s.email) {
+        setSesion({ email: s.email, destino: s.tieneReserva ? "/mi-reserva" : "/inicio" });
+        setFase("sesion");
+      }
     });
-  }, [router]);
+  }, []);
+
+  // «Entrar con otro correo»: se cierra la sesión y vuelve el formulario
+  async function otroCorreo() {
+    await api("/api/sesion", { metodo: "DELETE" });
+    setSesion(null);
+    setCorreo("");
+    setFase("correo");
+  }
 
   useEffect(() => {
     if (fase === "codigo") campoCodigo.current?.focus();
@@ -63,9 +75,19 @@ export default function Acceso() {
       <main>
         <section className="acceso">
           <p className="acceso__etiqueta">ACCESO</p>
-          <h1 className="acceso__titulo">{fase === "correo" ? "Antes de entrar al prado..." : "Revisa tu correo"}</h1>
+          <h1 className="acceso__titulo">{fase === "codigo" ? "Revisa tu correo" : fase === "sesion" ? "Ya estás dentro" : "Antes de entrar al prado..."}</h1>
 
-          {fase === "correo" ? (
+          {fase === "sesion" ? (
+            <>
+              <p className="acceso__intro">Has entrado con <b>{sesion.email}</b>.</p>
+              <button className="boton" type="button" onClick={() => router.push(sesion.destino)}>
+                {sesion.destino === "/mi-reserva" ? "Ver mi reserva" : "Continuar"}
+              </button>
+              <p className="acceso__ayuda acceso__enlaces">
+                <button type="button" onClick={otroCorreo}>Entrar con otro correo</button>
+              </p>
+            </>
+          ) : fase === "correo" ? (
             <>
               <p className="acceso__intro">Solo el alumnado de ESADA puede reservar. Confirma tu correo institucional y te enviaremos un código.</p>
               <form onSubmit={pedirCodigo} noValidate>
