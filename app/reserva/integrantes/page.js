@@ -8,6 +8,7 @@ import PasoCabecera from "@/components/PasoCabecera";
 import { leerBorrador, guardarBorrador } from "@/lib/borrador";
 import { useSesion } from "@/lib/useSesion";
 import { iconosDe } from "@/lib/fotos";
+import PiePagina from "@/components/PiePagina";
 
 const CORREO_VALIDO = /^[a-z0-9._-]+@alumnado\.esada\.es$/i;
 const MAX_PERSONAS = 6;
@@ -49,7 +50,7 @@ export default function Integrantes() {
     <>
       <NavReserva />
       <main>
-        <PasoCabecera paso={1} atras="/inicio" />
+        <PasoCabecera paso={1} />
 
         <section className="integrantes-intro">
           <h1 className="titular">¿Quién asistirá al prado?</h1>
@@ -115,6 +116,7 @@ export default function Integrantes() {
           {total >= MIN_SALA_NUEVA ? "Continuar y abrir sala nueva →" : "Continuar y unirme a un grupo →"}
         </Link>
       </main>
+      <PiePagina />
     </>
   );
 }

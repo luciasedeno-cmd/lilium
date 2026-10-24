@@ -492,15 +492,8 @@ body:has(.pagina-acceso) {
 }
 
 /* ---------- Lista de espera en los turnos llenos ---------- */
-.sala-envoltorio {
-  position: relative;
-}
-
 .sala__espera {
-  position: absolute;
-  left: 25px;
-  right: 25px;
-  bottom: 18px;
+  margin-top: 18px;
   font-size: 15px;
   color: var(--terracota);
   cursor: default;
@@ -572,7 +565,558 @@ body:has(.pagina-acceso) {
   font-size: 16px;
 }
 
-/* Los turnos llenos son un poco más altos para que el botón «Avísame» no toque las fotos */
-.sala-envoltorio:has(.sala__espera) .sala {
-  min-height: 345px;
+
+
+/* ==========================================================
+   Mi reserva (Figma: PAG RESERVA - INTEGRANTES B)
+   Fondo con el cuadro; tarjetas «Tu reserva», «Mi equipo» y «Antes de venir…»
+   ========================================================== */
+main.mi-reserva {
+  min-height: 1165px;
+  padding: 59px 16px 76px;
+  background: var(--verde-oscuro) url("/assets/img/fondo-mi-reserva.webp") center top / cover no-repeat;
+  color: var(--terracota);
+}
+
+.mi-reserva__cabecera {
+  text-align: center;
+  color: var(--fondo-oscuro);
+  text-shadow: 0 2px 12px rgba(41, 47, 32, 0.35);
+}
+
+.mi-reserva__etiqueta {
+  font-family: var(--font-baskerville);
+  font-size: 24px;
+  text-transform: uppercase;
+}
+
+.mi-reserva__titulo {
+  font-family: var(--font-script);
+  font-weight: 400;
+  font-size: 145px;
+  line-height: 143px;
+}
+
+.mi-reserva__avisos {
+  width: 916px;
+  max-width: 100%;
+  margin: 12px auto 0;
+}
+
+/* Dos columnas: «Tu reserva» (343 px) a la izquierda y el resto (916 px) a la derecha */
+.mi-reserva__rejilla {
+  display: grid;
+  grid-template-columns: 343px minmax(0, 916px);
+  gap: 28px 52px;
+  justify-content: center;
+  align-items: start;
+  margin-top: 40px;
+}
+
+.mr-entrada {
+  grid-column: 1;
+  grid-row: 1 / span 3;
+}
+
+.mr-equipo,
+.mr-cambio,
+.mr-antes {
+  grid-column: 2;
+}
+
+.mr-tarjeta {
+  border-radius: 6px;
+  background: var(--fondo);
+  color: var(--terracota);
+}
+
+.mr-tarjeta__titulo {
+  font-family: var(--font-baskervville);
+  font-weight: 600;
+  font-size: 32px;
+  text-transform: uppercase;
+}
+
+/* ----- Tu reserva ----- */
+.mr-entrada {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 24px 34px;
+  border-radius: 7px;
+  text-align: center;
+}
+
+.mr-entrada__qr {
+  width: 203px;
+  height: 203px;
+  margin-top: 31px;
+}
+
+.mr-entrada__sin-qr {
+  display: flex;
+  align-items: center;
+  width: 203px;
+  height: 203px;
+  margin-top: 31px;
+  padding: 20px;
+  border: 1px dashed var(--terracota);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.mr-estado {
+  display: inline-flex;
+  align-items: center;
+  height: 31px;
+  margin-top: 13px;
+  padding: 5px 12px;
+  border-radius: 4px;
+  background: var(--terracota);
+  font-family: var(--font-inter);
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--fondo-oscuro);
+  text-transform: uppercase;
+}
+
+.mr-entrada__dato {
+  margin-top: 13px;
+  font-family: var(--font-inter);
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.mr-entrada__nota {
+  margin-top: 10px;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.mr-entrada .fragmento {
+  width: 100%;
+}
+
+/* Enlaces pequeños subrayados (cambiar de hora, cancelar solo mi asistencia…) */
+.mr-enlace {
+  margin-top: 14px;
+  font-family: var(--font-inter);
+  font-size: 13px;
+  color: var(--terracota);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.mr-enlace:disabled {
+  opacity: 0.5;
+}
+
+/* ----- Mi equipo ----- */
+.mr-equipo {
+  display: grid;
+  grid-template-columns: 327px minmax(0, 1fr);
+  gap: 32px;
+  padding: 29px 30px 30px 32px;
+  border: 1px solid var(--terracota);
+}
+
+.mr-equipo__sala {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 19px;
+  text-align: center;
+}
+
+.mr-equipo__icono {
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+}
+
+.mr-equipo__nombre {
+  margin-top: 12px;
+  font-family: var(--font-inter);
+  font-weight: 600;
+  font-size: 20px;
+}
+
+.mr-equipo__tipo {
+  margin: 4px 0 8px;
+  font-size: 13px;
+}
+
+/* Botones rectangulares pequeños del diseño (191 × 39) */
+.mr-boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 191px;
+  height: 39px;
+  margin-top: 19px;
+  padding: 0 16px;
+  border: 1px solid var(--terracota);
+  background: transparent;
+  font-family: var(--font-inter);
+  font-weight: 500;
+  font-size: 12px;
+  color: var(--terracota);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.mr-boton--lleno {
+  background: var(--terracota);
+  color: var(--fondo);
+}
+
+.mr-boton--claro {
+  background: var(--fondo);
+}
+
+.mr-boton:hover:not(:disabled),
+.mr-boton:focus-visible {
+  background: var(--fondo-oscuro);
+  color: var(--terracota);
+}
+
+.mr-boton--lleno:hover:not(:disabled),
+.mr-boton--lleno:focus-visible {
+  background: #5c251b;
+  color: var(--fondo);
+}
+
+.mr-boton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mr-equipo__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mr-chip {
+  height: 27px;
+  padding: 5px 11px;
+  border: 1px solid var(--terracota);
+  border-radius: 4px;
+  font-family: var(--font-inter);
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--terracota);
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.mr-chip:hover,
+.mr-chip:focus-visible {
+  background: var(--terracota);
+  color: var(--fondo);
+}
+
+.mr-miembros {
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mr-miembro {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 17px 0;
+  border-bottom: 1px dashed var(--terracota);
+  transition: opacity 0.2s;
+}
+
+.mr-miembro > img {
+  width: 51px;
+  height: 51px;
+  flex: none;
+}
+
+.mr-miembro__datos {
+  flex: 1;
+  min-width: 0;
+}
+
+.mr-miembro__correo {
+  font-family: var(--font-inter);
+  font-weight: 600;
+  font-size: 16px;
+  overflow-wrap: anywhere;
+}
+
+.mr-miembro__estado {
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+/* Persona marcada para quitar: se ve tachada y más clara hasta que se guarda */
+.mr-miembro.is-quitado {
+  opacity: 0.5;
+}
+
+.mr-miembro.is-quitado .mr-miembro__correo {
+  text-decoration: line-through;
+}
+
+.mr-miembro.is-nuevo {
+  animation: miembro-aparece 0.35s ease-out;
+}
+
+@keyframes miembro-aparece {
+  from { opacity: 0; transform: translateY(-6px); }
+}
+
+.mr-miembro__acciones {
+  display: flex;
+  gap: 10px;
+  flex: none;
+  padding-right: 4px;
+}
+
+/* Iconos redondos de 27 px: ✓ confirmado (verde) y ✕ quitar (naranja) */
+.mr-icono {
+  position: relative;
+  display: block;
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+}
+
+.mr-icono--si {
+  background: var(--verde-oscuro);
+}
+
+.mr-icono--si::after {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 7px;
+  width: 11px;
+  height: 6px;
+  border-left: 2px solid var(--fondo);
+  border-bottom: 2px solid var(--fondo);
+  transform: rotate(-45deg);
+}
+
+.mr-icono--quitar {
+  background: var(--naranja);
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.mr-icono--quitar::before,
+.mr-icono--quitar::after {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: 12.5px;
+  width: 13px;
+  height: 2px;
+  background: var(--fondo);
+  transform: rotate(45deg);
+}
+
+.mr-icono--quitar::after {
+  transform: rotate(-45deg);
+}
+
+.mr-icono--quitar:hover,
+.mr-icono--quitar:focus-visible {
+  transform: scale(1.12);
+}
+
+/* Al marcarla, la ✕ pasa a ser un botón vacío para «deshacer» */
+.mr-icono--quitar.is-deshacer {
+  border: 1.5px solid var(--naranja);
+  background: var(--fondo);
+}
+
+.mr-icono--quitar.is-deshacer::before,
+.mr-icono--quitar.is-deshacer::after {
+  background: var(--naranja);
+}
+
+.mr-anadir {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.mr-anadir .campo {
+  height: 39px;
+  font-size: 15px;
+}
+
+.mr-anadir .mr-boton {
+  margin-top: 0;
+  min-width: 0;
+}
+
+.mr-equipo__plazas {
+  margin-top: 19px;
+  font-family: var(--font-inter);
+  font-weight: 500;
+  font-size: 12px;
+  text-align: center;
+}
+
+.mr-equipo__botones {
+  display: flex;
+  justify-content: center;
+  gap: 31px;
+  margin-top: 13px;
+}
+
+.mr-equipo__botones .mr-boton {
+  margin-top: 0;
+}
+
+/* ----- Cambiar de hora ----- */
+.mr-cambio {
+  padding: 28px 45px;
+  border: 1px solid var(--terracota);
+}
+
+.mr-cambio p {
+  margin-top: 10px;
+  font-size: 15px;
+}
+
+/* ----- Antes de venir… ----- */
+.mr-antes {
+  padding: 28px 45px 40px;
+  border: 1px solid var(--terracota);
+}
+
+.mr-antes__lista {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 32px;
+  margin: 34px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mr-antes__lista li {
+  display: flex;
+  gap: 22px;
+  align-items: flex-start;
+}
+
+.mr-antes__lista img {
+  width: 51px;
+  height: 51px;
+  flex: none;
+  margin-top: 5px;
+}
+
+.mr-antes__lista p {
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.mr-antes__lista .mr-antes__titulo {
+  margin-bottom: 8px;
+  font-family: var(--font-inter);
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.mr-antes__lista a {
+  text-decoration: underline;
+}
+
+.mr-salir {
+  display: block;
+  margin: 32px auto 0;
+  padding: 8px 16px;
+  border-radius: 4px;
+  background: rgba(255, 250, 242, 0.85);
+  font-family: var(--font-inter);
+  font-size: 14px;
+  color: var(--terracota);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Pantallas medianas y móvil: una sola columna */
+@media (max-width: 1340px) {
+  .mi-reserva__rejilla {
+    grid-template-columns: minmax(0, 916px);
+  }
+
+  .mr-entrada,
+  .mr-equipo,
+  .mr-cambio,
+  .mr-antes {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .mr-entrada {
+    justify-self: center;
+    width: min(343px, 100%);
+  }
+}
+
+@media (max-width: 860px) {
+  .mr-equipo {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 24px 18px;
+  }
+
+  .mr-equipo__icono {
+    width: 160px;
+    height: 160px;
+  }
+
+  .mr-antes {
+    padding: 24px 18px 30px;
+  }
+
+  .mr-antes__lista {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 22px;
+  }
+}
+
+@media (max-width: 760px) {
+  main.mi-reserva {
+    min-height: 0;
+    padding-top: 36px;
+  }
+
+  .mi-reserva__titulo {
+    font-size: 72px;
+    line-height: 80px;
+  }
+
+  .mr-tarjeta__titulo {
+    font-size: 26px;
+  }
+
+  .mr-equipo__botones {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .mr-anadir {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 760px) {
+  .mr-miembro__correo {
+    font-size: 14px;
+  }
 }

@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
 const ENLACES = [
-  { id: "paraiso", texto: "El paraíso" },
+  { id: "paraiso", texto: "El retiro" },
   { id: "como-funciona", texto: "Cómo funciona" },
   { id: "faq", texto: "FaQ" },
 ];

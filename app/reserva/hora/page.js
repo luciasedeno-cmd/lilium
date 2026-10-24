@@ -10,6 +10,7 @@ import { leerBorrador, guardarBorrador, api } from "@/lib/borrador";
 import { useSesion } from "@/lib/useSesion";
 import { iconosDe } from "@/lib/fotos";
 import { EVENTO, MIN_SALA_NUEVA, MAX_PERSONAS } from "@/lib/config";
+import PiePagina from "@/components/PiePagina";
 
 /** ¿Puede este grupo elegir el turno? Devuelve null si sí, o el motivo si no. */
 function motivoBloqueo(turno, total) {
@@ -35,7 +36,7 @@ function Sala({ turno, total, escogida, onElegir, onEsperar }) {
       <p className="sala__hora">{turno.inicio}-{turno.fin}</p>
       <p className="sala__nombre">{turno.equipo ? `“${turno.equipo}”` : ""}</p>
       <div className="sala__chips">
-        <span className="chip">{libre ? "Sala Libre" : turno.estado === "completo" ? "Completo" : "En formación"}</span>
+        <span className="chip">{libre ? "Sala libre" : turno.estado === "completo" ? "Sala llena" : "En formación"}</span>
         {turno.erasmus && <span className="chip"><img src="/assets/svg/icono-mundo.svg" width="15" height="15" alt="" />Solo Erasmus</span>}
       </div>
       <div className="sala__pie">
@@ -52,7 +53,7 @@ function Sala({ turno, total, escogida, onElegir, onEsperar }) {
           )}
         </div>
         <p className="sala__plazas">
-          {libre ? `Quedan ${MAX_PERSONAS} plazas. 0 inscritos` : `Quedan ${turno.hueco} plazas. ${turno.ocupadas} inscritos`}
+          {libre ? `Quedan ${MAX_PERSONAS} plazas. 0 inscritos` : turno.hueco === 0 ? `No quedan plazas. ${turno.ocupadas} inscritos.` : `Quedan ${turno.hueco} plazas. ${turno.ocupadas} inscritos`}
         </p>
         {turno.estado !== "completo" && (
           <span className="chip">{libre ? `Perfecto para ${MIN_SALA_NUEVA}-${MAX_PERSONAS}` : `Perfecto para ${turno.hueco === 1 ? "1" : `1-${turno.hueco}`}`}</span>
@@ -135,12 +136,13 @@ export default function Hora() {
     <>
       <NavReserva />
       <main>
-        <PasoCabecera paso={2} atras="/reserva/integrantes" />
+        <PasoCabecera paso={2} />
 
         <div className="columna">
+          {/* Como en el diseño: primero el título grande y debajo «ELEGIR HORA» */}
           <header className="hora-encabezado">
-            <p className="etiqueta">ELEGIR HORA</p>
             <h1 className="titular">¿Cuándo empieza vuestro retiro?</h1>
+            <p className="etiqueta">ELEGIR HORA</p>
           </header>
 
           <p className="dia">
@@ -185,6 +187,7 @@ export default function Hora() {
           <p className="error" role="alert">{error}</p>
         </div>
       </main>
+      <PiePagina />
     </>
   );
 }

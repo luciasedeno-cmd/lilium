@@ -118,18 +118,21 @@ p {
   justify-content: center;
   padding: 12px 27px;
   border-radius: 7px;
-  background: var(--melocoton);
-  color: var(--verde-oscuro);
+  /* Diseño: fondo terracota y letra crema; al pasar el ratón, crema con borde terracota */
+  border: 1px solid var(--terracota);
+  background: var(--terracota);
+  color: var(--fondo);
   font-family: var(--font-baskerville);
   font-size: 24px;
   white-space: nowrap;
+  cursor: pointer;
   transition: background-color 0.2s, color 0.2s;
 }
 
 .boton-reserva:hover,
 .boton-reserva:focus-visible {
-  background: var(--terracota);
-  color: var(--melocoton);
+  background: var(--fondo);
+  color: var(--terracota);
 }
 
 /* ---------- Botón principal (flujo de reserva) ---------- */

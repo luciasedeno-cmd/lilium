@@ -74,7 +74,7 @@ body:has(.header) {
 .hero {
   position: relative;
   height: 924px;
-  background: url("/assets/img/hero.png") center / cover no-repeat;
+  background: url("/assets/img/hero-retiro.webp") center / cover no-repeat;
 }
 
 .hero::before {
@@ -532,11 +532,13 @@ body:has(.header) {
   color: #000;
 }
 
+/* El mapa ocupa todo el ancho de la pantalla (los textos siguen en la columna de 1440 px) */
 .ubicacion__mapa {
   position: absolute;
-  left: 316px;
+  left: calc(50% - 50vw);
   top: 18px;
-  width: 893px;
+  width: 100vw;
+  max-width: none;
   height: 551px;
   object-fit: cover;
 }
@@ -587,31 +589,44 @@ body:has(.header) {
   gap: 15px;
 }
 
-/* ---------- ¿Eres Erasmus? ---------- */
+/* ---------- ¿Erasmus? ---------- */
+/* El texto va dentro del arco del grabado; el encaje terracota cierra la sección por abajo */
 .erasmus {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 627px;
-  padding: 79px 16px 0;
-  background: var(--rosa);
+  height: 734px;
+  padding: 192px 16px 0;
+  background: var(--terracota) url("/assets/img/erasmus-arco.webp") center top / cover no-repeat;
+  color: var(--terracota);
   text-align: center;
 }
 
+.erasmus__lirio {
+  width: 99px;
+  height: 79px;
+}
+
 .erasmus__titulo {
+  margin-top: 26px;
   font-family: var(--font-script);
-  font-size: 96px;
-  line-height: 120px;
-  color: var(--fondo);
+  font-size: 130px;
+  line-height: 91px;
+  white-space: nowrap;
 }
 
 .erasmus__texto {
-  width: 629px;
+  width: 469px;
   max-width: 100%;
-  margin-top: 13px;
+  margin-top: 26px;
   font-family: var(--font-baskervville);
   font-size: 24px;
-  color: var(--fondo-oscuro);
+}
+
+.erasmus__boton {
+  margin-top: 38px;
 }
 
 /* ---------- Preguntas frecuentes ---------- */
@@ -724,19 +739,26 @@ body:has(.header) {
 }
 
 /* ---------- CTA invitación ---------- */
+/* ---------- Imagen final (paisaje) ---------- */
 .cta {
   position: relative;
   height: 494px;
-  overflow: hidden;
 }
 
-.cta img {
-  position: absolute;
-  left: -18.89%;
-  top: -21.66%;
-  width: 141.47%;
-  height: 214.78%;
-  max-width: none;
+.cta__paisaje {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* El encaje crema cuelga por encima del paisaje (y pisa un poco las preguntas) */
+.cta .encaje--arriba {
+  top: -43px;
+}
+
+/* Como en el diseño, el encaje terracota baja un poco sobre las preguntas */
+.erasmus .encaje--abajo {
+  bottom: -45px;
 }
 
 /* ---------- Footer ---------- */
@@ -1060,18 +1082,32 @@ body:has(.header) {
     max-width: 362px;
   }
 
+  /* En el móvil el arco se centra y el texto se ajusta a su hueco */
   .erasmus {
-    height: auto;
-    padding: 64px 16px 80px;
+    height: 640px;
+    padding: 150px 40px 0;
+    background-size: auto 100%;
+  }
+
+  .erasmus__lirio {
+    width: 72px;
+    height: 58px;
   }
 
   .erasmus__titulo {
-    font-size: 64px;
-    line-height: 1.2;
+    margin-top: 18px;
+    font-size: 72px;
+    line-height: 60px;
   }
 
   .erasmus__texto {
+    width: 260px;
     font-size: 18px;
+  }
+
+  .erasmus__boton {
+    margin-top: 28px;
+    font-size: 20px;
   }
 
   .faq__titulo {

@@ -10,6 +10,7 @@ import { leerBorrador, borrarBorrador, api } from "@/lib/borrador";
 import { useSesion } from "@/lib/useSesion";
 import { iconosDe } from "@/lib/fotos";
 import { EVENTO, HORAS_CONFIRMACION } from "@/lib/config";
+import PiePagina from "@/components/PiePagina";
 
 const Separador = () => <img className="separador" src="/assets/svg/linea-discontinua.svg" width="720" height="1" alt="" />;
 
@@ -59,7 +60,7 @@ export default function Confirmacion() {
     <>
       <NavReserva />
       <main>
-        <PasoCabecera paso={3} atras="/reserva/hora" />
+        <PasoCabecera paso={3} />
 
         <div className="columna">
           <header className="confirmacion-encabezado">
@@ -121,6 +122,7 @@ export default function Confirmacion() {
           <p className="error error--centro" role="alert">{error}</p>
         </div>
       </main>
+      <PiePagina />
     </>
   );
 }

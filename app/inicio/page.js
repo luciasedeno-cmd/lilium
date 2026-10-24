@@ -1,10 +1,12 @@
 // Home de Lilium
 import Link from "next/link";
-import { EVENTO, CONTACTO } from "@/lib/config";
+import { EVENTO } from "@/lib/config";
 import HomeHeader from "@/components/home/HomeHeader";
 import CarruselPasos from "@/components/home/CarruselPasos";
 import Faq from "@/components/home/Faq";
 import ErasmusBanner from "@/components/ErasmusBanner";
+import BotonErasmus from "@/components/home/BotonErasmus";
+import PiePagina from "@/components/PiePagina";
 
 export const metadata = {
   title: "Lilium · Escape Room ESADA",
@@ -87,7 +89,7 @@ export default function Inicio() {
 
         {/* Cuándo y dónde */}
         <section className="ubicacion">
-          <img className="ubicacion__mapa" src="/assets/img/mapa.jpg" alt="Mapa antiguo" />
+          <img className="ubicacion__mapa" src="/assets/img/mapa-ancho.webp" width="1440" height="551" alt="Mapa antiguo" />
           <div className="ubicacion__dato ubicacion__dato--cuando">
             <h2><img src="/assets/svg/pin.svg" width="28" height="28" alt="" />Cuándo</h2>
             <p>{EVENTO.fechaTexto}</p>
@@ -99,27 +101,26 @@ export default function Inicio() {
           </div>
         </section>
 
-        {/* ¿Eres Erasmus? */}
-        <section className="erasmus">
-          <h2 className="erasmus__titulo">¿Eres Erasmus?</h2>
+        {/* ¿Erasmus? (fondo: el arco con estatuas) */}
+        <section className="erasmus" id="erasmus">
+          <img className="erasmus__lirio" src="/assets/img/icono-lirio.png" width="99" height="79" alt="" />
+          <h2 className="erasmus__titulo">¿Erasmus?</h2>
           <p className="erasmus__texto">Hay turnos solo Erasmus y toda la experiencia está disponible en inglés.</p>
+          <BotonErasmus />
+          <img className="encaje encaje--abajo" src="/assets/svg/banner-encaje-terracota.svg" width="1612" height="176" alt="" />
         </section>
 
         {/* Preguntas frecuentes */}
         <Faq />
 
-        {/* CTA invitación */}
-        <section className="cta" aria-label="Invitación">
-          <img src="/assets/img/cta-invitacion.jpg" alt="" />
+        {/* Imagen final: paisaje con el encaje crema colgando por arriba */}
+        <section className="cta" aria-hidden="true">
+          <img className="encaje encaje--arriba" src="/assets/svg/banner-encaje.svg" width="1612" height="176" alt="" />
+          <img className="cta__paisaje" src="/assets/img/final-paisaje.webp" width="1440" height="494" alt="" />
         </section>
       </main>
 
-      <footer className="footer">
-        <p>Lilium · Escape Room ESADA · 2026</p>
-        <a href={`mailto:${CONTACTO}`}>{CONTACTO}</a>
-        <Link href="/terminos">Términos y Condiciones</Link>
-        <a href="#">Aviso Legal</a>
-      </footer>
+      <PiePagina />
 
       {/* Pop-up Erasmus: solo aquí, y solo la primera vez */}
       <ErasmusBanner />

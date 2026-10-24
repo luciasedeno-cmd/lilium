@@ -17,6 +17,8 @@
 ## Estructura
 - Orden de las páginas: 1) `/acceso` (confirmar el correo, ocupa justo la pantalla, sin scroll) → 2) `/inicio` (Home) → 3) reserva en 3 pasos. Quien ya tiene reserva (como líder o dentro de un grupo) va a `/mi-reserva` al entrar.
 - Pop-up Erasmus (`components/ErasmusBanner.js`): solo en `/inicio` y solo la primera vez en ese navegador (se guarda en localStorage). Fondos: `public/assets/img/erasmus-encaje.webp` (ordenador) y `erasmus-encaje-movil.webp` (móvil).
+- Cabecera de los pasos (`components/PasoCabecera.js`): 3 puntos animados + «PASO N DE 3»; los puntos anteriores llevan atrás. Pie común: `components/PiePagina.js`.
+- `/mi-reserva` (Figma «PAG RESERVA - INTEGRANTES B»): «Tu reserva» (QR, fragmento, cambiar de hora), «Mi equipo» (la líder pulsa «Editar reserva» para quitar ✕ o añadir integrantes y «Guardar cambios» → `/api/mi-reserva/integrantes`) y «Antes de venir…».
 - `middleware.js`: sin sesión, `/inicio`, `/reserva/*` y `/mi-reserva` llevan a `/acceso`.
 - `app/page.js`: portada con la cuenta atrás hasta el 30 de octubre; al llegar la fecha redirige a `/acceso`.
 - `app/inicio`, `app/acceso`, `app/reserva/{integrantes,hora,confirmacion}`, `app/mi-reserva`: páginas de la web.
@@ -33,7 +35,7 @@
 
 ## Reglas de las reservas (en `lib/reservas.js`)
 - De 3 a 6 personas por turno; con menos de 3 solo se puede unir a un grupo en formación.
-- Un correo = una reserva. El líder queda confirmado; el resto tiene 48 h para confirmar desde su correo o pierde la plaza.
+- Un correo = una reserva. El líder queda confirmado; el resto tiene 48 h para confirmar desde su correo o pierde la plaza. El plazo es de cada persona (`miembros.invitado_en`; vacío = fecha de la reserva) y el recordatorio también (`miembros.recordatorio_en`).
 - Hay que aceptar los Términos y Condiciones (`app/terminos`, incluye el aviso de luces y efectos) para reservar y para confirmar la plaza; se guarda en `miembros.terminos_en`.
 - Lista de espera («Avísame si se libera una plaza», tabla `lista_espera`): al cancelar, cambiar de hora o en `/api/cron` se escribe una vez a quien esperaba (`lib/avisos.js`).
 - Fragmentos de la frase secreta (`lib/fragmentos.js`): «Dos rostros, un espíritu: elegid bien.», 6 palabras con número romano. Se reparten al azar (fijo por sala) entre todas las personas de la sala; con menos de 6, a alguien le tocan varias.

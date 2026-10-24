@@ -10,67 +10,104 @@ main:not(:has(.hero)) {
   padding: 0 16px 120px;
 }
 
-/* ---------- Cabecera de paso: "Paso N de 3" ---------- */
+/* ---------- Cabecera de paso: 3 puntos + "PASO N DE 3" ---------- */
 .paso-cabecera {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 43px;
+  margin: 64px auto 0;
+}
+
+/* Fila de 3 puntos de 21 px unidos por líneas (287 px de ancho en total) */
+.pasos-puntos {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pasos-puntos__paso {
+  display: flex;
+  align-items: center;
+}
+
+.pasos-puntos__punto {
   position: relative;
-  width: 584px;
-  max-width: 100%;
-  height: 89px;
-  margin: 69px auto 0;
+  display: block;
+  flex: none;
+  width: 21px;
+  height: 21px;
+  border: 1px solid var(--terracota);
+  border-radius: 50%;
+  background: var(--fondo);
+  transition: background-color 0.3s, transform 0.3s;
 }
 
-.boton-atras {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 51px;
-  height: 51px;
+/* El paso actual: relleno, con un pequeño latido al llegar */
+.pasos-puntos__punto.is-actual {
+  background: var(--terracota);
+  animation: punto-latido 0.6s ease-out 0.45s backwards;
 }
 
-.boton-atras img {
+/* Los pasos anteriores se pueden pulsar para volver */
+a.pasos-puntos__punto:hover,
+a.pasos-puntos__punto:focus-visible {
+  background: rgba(115, 47, 35, 0.35);
+  transform: scale(1.15);
+}
+
+.pasos-puntos__linea {
+  position: relative;
+  display: block;
+  width: 112px;
+  height: 2px;
+  background: rgba(115, 47, 35, 0.3);
+  overflow: hidden;
+}
+
+.pasos-puntos__linea::after {
+  content: "";
   position: absolute;
   inset: 0;
+  background: var(--terracota);
+  transform: scaleX(0);
+  transform-origin: left;
 }
 
-.boton-atras .boton-atras__hover,
-.boton-atras:hover .boton-atras__base,
-.boton-atras:focus-visible .boton-atras__base {
-  opacity: 0;
+.pasos-puntos__linea.is-llena::after {
+  transform: none;
 }
 
-.boton-atras:hover .boton-atras__hover,
-.boton-atras:focus-visible .boton-atras__hover {
-  opacity: 1;
+/* La línea que lleva al paso actual se dibuja de izquierda a derecha */
+.pasos-puntos__linea.is-nueva::after {
+  animation: linea-dibujo 0.5s ease-out both;
+}
+
+@keyframes linea-dibujo {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes punto-latido {
+  0% { background: var(--fondo); transform: scale(1); }
+  50% { background: var(--terracota); transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pasos-puntos__punto.is-actual,
+  .pasos-puntos__linea.is-nueva::after {
+    animation: none;
+  }
 }
 
 .paso-cabecera__titulo {
-  position: absolute;
-  top: 15px;
-  left: 0;
-  right: 0;
-  font-family: var(--font-baskervville);
-  font-weight: 700;
-  font-size: 26px;
-  color: #000;
-  text-align: center;
-}
-
-.barra-pasos {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 76px;
-  height: 13px;
-  border: 1px solid rgba(209, 94, 35, 0.75);
-  border-radius: 20px;
-}
-
-.barra-pasos__relleno {
-  position: absolute;
-  inset: -1px auto -1px -1px;
-  border: 1px solid rgba(209, 94, 35, 0.75);
-  border-radius: 20px;
-  background: var(--naranja);
+  font-family: var(--font-baskerville);
+  font-size: 24px;
+  color: var(--terracota);
+  text-transform: uppercase;
 }
 
 /* ---------- Encabezado de sección ---------- */
@@ -431,16 +468,40 @@ main:not(:has(.hero)) {
 /* ==========================================================
    Paso 2 · Hora
    ========================================================== */
+/* El título del paso 2 es más ancho que la columna (1104 px en el diseño) */
 .hora-encabezado {
-  margin-top: 85px;
+  position: relative;
+  left: 50%;
+  width: min(1104px, calc(100vw - 32px));
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+.hora-encabezado .titular {
+  font-size: clamp(52px, 8.9vw, 128px);
+  line-height: 1.12;
+}
+
+.hora-encabezado .etiqueta {
+  margin-top: 28px;
+  padding-left: 0;
+}
+
+/* Botones de los pasos: como en el diseño, en mayúsculas */
+main:has(.paso-cabecera) .boton {
+  font-family: var(--font-inter);
+  font-weight: 500;
+  font-size: 20px;
+  text-transform: uppercase;
 }
 
 .dia {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 15px;
+  width: fit-content;
   height: 44px;
-  margin-top: 18px;
+  margin: 37px auto 0;
   padding: 9px 23px 9px 24px;
   border: 1px solid var(--terracota);
   font-family: var(--font-baskervville);
@@ -482,46 +543,57 @@ main:not(:has(.hero)) {
   text-decoration: underline;
 }
 
+/* Lista de turnos (diseño nuevo): sin tarjetas, separados por una línea de puntos.
+   Es algo más ancha que la columna (904 px frente a 782 px). */
 .salas {
   display: flex;
   flex-direction: column;
-  gap: 27px;
-  margin: 27px 0 0;
+  gap: 55px;
+  margin: 45px -61px 0;
   padding: 0;
   list-style: none;
 }
 
+.sala-envoltorio {
+  padding-bottom: 24px;
+  border-bottom: 1px dashed var(--terracota);
+}
+
 .sala {
   position: relative;
-  min-height: 290px;
-  padding: 14px 25px 25px;
-  border-radius: 15px;
-  background: var(--fondo-oscuro);
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   color: var(--terracota);
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+  border-radius: 6px;
+  outline-offset: 8px;
 }
 
-.sala:hover:not(.is-bloqueada) {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+/* Al pasar el ratón, el círculo de elegir crece un poco */
+.sala__elegir {
+  transition: transform 0.2s;
 }
 
-.sala.is-escogida {
+.sala:hover:not(.is-bloqueada):not(.is-llena) .sala__elegir,
+.sala:focus-visible .sala__elegir {
+  transform: scale(1.12);
+}
+
+.sala:focus-visible {
   outline: 2px solid var(--terracota);
 }
 
-.sala.is-bloqueada {
+.sala.is-bloqueada,
+.sala.is-llena {
   cursor: not-allowed;
 }
 
-.sala.is-llena {
-  opacity: 0.55;
-  cursor: not-allowed;
+/* En los turnos a los que no podéis entrar, las fotos y la etiqueta se ven más apagadas */
+.sala.is-bloqueada .sala__pie,
+.sala.is-llena .sala__pie {
+  opacity: 0.6;
 }
 
 .sala__hora {
+  padding-right: 60px;
   font-family: var(--font-baskervville);
   font-weight: 700;
   font-size: 40px;
@@ -540,13 +612,11 @@ main:not(:has(.hero)) {
 }
 
 .sala__pie {
-  position: absolute;
-  left: 25px;
-  right: 31px;
-  top: 192px;
   display: flex;
   align-items: center;
   gap: 19px;
+  margin-top: 37px;
+  padding-left: 4px;
 }
 
 .sala__plazas {
@@ -561,8 +631,8 @@ main:not(:has(.hero)) {
 
 .sala__elegir {
   position: absolute;
-  top: 23px;
-  right: 31px;
+  top: 9px;
+  right: 0;
   width: 42px;
   height: 42px;
 }
@@ -583,14 +653,14 @@ main:not(:has(.hero)) {
 
 .sala__candado {
   position: absolute;
-  top: 31px;
-  right: 29px;
+  top: 39px;
+  right: 6px;
   width: 24.5px;
   height: 29.36px;
 }
 
 .hora-continuar {
-  margin-top: 38px;
+  margin-top: 65px;
 }
 
 .hora-continuar + .error {
@@ -734,11 +804,12 @@ main:not(:has(.hero)) {
   }
 
   .paso-cabecera {
-    margin-top: 24px;
+    gap: 24px;
+    margin-top: 28px;
   }
 
   .paso-cabecera__titulo {
-    font-size: 22px;
+    font-size: 20px;
   }
 
   .integrantes-intro,
@@ -797,9 +868,9 @@ main:not(:has(.hero)) {
     font-size: 20px;
   }
 
-  .sala {
-    padding-bottom: 96px;
-    min-height: 0;
+  .salas {
+    gap: 32px;
+    margin: 32px 0 0;
   }
 
   .sala__hora {
@@ -812,8 +883,7 @@ main:not(:has(.hero)) {
   }
 
   .sala__pie {
-    top: auto;
-    bottom: 20px;
+    margin-top: 24px;
     flex-wrap: wrap;
     gap: 8px 12px;
   }
@@ -824,5 +894,23 @@ main:not(:has(.hero)) {
 
   .datos__fila {
     flex-wrap: wrap;
+  }
+}
+
+/* Si la pantalla no deja sitio para la lista ancha de turnos, se ajusta a la columna */
+@media (max-width: 960px) {
+  .salas {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  /* La fecha del paso 2 cabe en una línea en el móvil */
+  .dia {
+    max-width: 100%;
+    padding: 9px 14px;
+    font-size: 16px;
+    white-space: nowrap;
   }
 }

@@ -36,7 +36,7 @@ body:has(.cuenta) {
   height: 100vh;
   height: 100svh;
   padding: 100px 16px clamp(110px, 18vh, 180px);
-  background: url("/assets/img/hero.png") center / cover no-repeat;
+  background: url("/assets/img/hero-retiro.webp") center / cover no-repeat;
   color: var(--fondo-oscuro);
   text-align: center;
   overflow: hidden;

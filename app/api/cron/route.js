@@ -23,10 +23,8 @@ export const GET = manejar(async (req) => {
       limite: limiteDe(p.creada),
     })
   ));
-  // Se marca la reserva como avisada solo si todos sus correos salieron bien
-  const fallidas = new Set(pendientes.filter((_, i) => resultados[i].status === "rejected").map((p) => p.reserva_id));
-  const avisadas = [...new Set(pendientes.map((p) => p.reserva_id))].filter((id) => !fallidas.has(id));
-  await marcarRecordatorio(avisadas);
+  // Se apunta el recordatorio solo a quien le salió bien el correo (al resto se reintenta la próxima hora)
+  await marcarRecordatorio(pendientes.filter((_, i) => resultados[i].status === "fulfilled").map((p) => p.email));
 
   const listaEspera = await avisarListaEspera();
   return ok({ listaEspera, enviados: resultados.filter((r) => r.status === "fulfilled").length, fallidos: resultados.filter((r) => r.status === "rejected").length });

@@ -1,19 +1,36 @@
-// Cabecera de cada paso de la reserva: botón atrás + «Paso N de 3» + barra de progreso
+// Cabecera de cada paso de la reserva (Figma: 3 puntos unidos por una línea + «PASO N DE 3»).
+// Los puntos de los pasos anteriores son enlaces para volver atrás.
+// Al entrar en un paso, la línea hasta su punto se dibuja y el punto se rellena (animación en CSS).
 import Link from "next/link";
 
-const RELLENO = { 1: "34.93%", 2: "69.86%", 3: "calc(100% + 2px)" };
+const PASOS = [
+  { href: "/reserva/integrantes", nombre: "Integrantes" },
+  { href: "/reserva/hora", nombre: "Hora" },
+  { href: "/reserva/confirmacion", nombre: "Confirmación" },
+];
 
-export default function PasoCabecera({ paso, atras }) {
+export default function PasoCabecera({ paso }) {
   return (
-    <div className="paso-cabecera">
-      <Link className="boton-atras" href={atras} aria-label="Volver">
-        <img className="boton-atras__base" src="/assets/svg/boton-atras.svg" width="51" height="51" alt="" />
-        <img className="boton-atras__hover" src="/assets/svg/boton-atras-hover.svg" width="51" height="51" alt="" />
-      </Link>
+    <nav className="paso-cabecera" aria-label="Pasos de la reserva">
+      <ol className="pasos-puntos" data-paso={paso}>
+        {PASOS.map(({ href, nombre }, i) => {
+          const n = i + 1;
+          const clase = `pasos-puntos__punto${n === paso ? " is-actual" : ""}${n < paso ? " is-hecho" : ""}`;
+          return (
+            <li key={href} className="pasos-puntos__paso">
+              {/* Línea que une con el punto anterior; se dibuja al llegar a este paso */}
+              {n > 1 && <span className={`pasos-puntos__linea${n <= paso ? " is-llena" : ""}${n === paso ? " is-nueva" : ""}`} aria-hidden="true" />}
+              {n < paso ? (
+                <Link className={clase} href={href} aria-label={`Volver al paso ${n}: ${nombre}`} />
+              ) : (
+                <span className={clase} aria-label={`Paso ${n}: ${nombre}${n === paso ? " (estás aquí)" : ""}`}
+                  aria-current={n === paso ? "step" : undefined} role="img" />
+              )}
+            </li>
+          );
+        })}
+      </ol>
       <p className="paso-cabecera__titulo">Paso {paso} de 3</p>
-      <div className="barra-pasos" role="progressbar" aria-valuemin={1} aria-valuemax={3} aria-valuenow={paso}>
-        <div className="barra-pasos__relleno" style={{ width: RELLENO[paso] }} />
-      </div>
-    </div>
+    </nav>
   );
 }
