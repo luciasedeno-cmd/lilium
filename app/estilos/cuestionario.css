@@ -1,71 +1,107 @@
 /* ==========================================================
-   Lilium · Cuestionario (/cuestionario) y «Respuesta enviada» (/cuestionario/enviado)
+   Lilium · Cuestionario (/cuestionario, Figma «PAG ENCUESTA») y «Respuesta enviada» (/cuestionario/enviado)
    Colores y medidas del sistema de diseño «Lilium DEFINITIVO» (lilium-ds.css).
-   Cada pregunta es una sección con su propio fondo para que no sea monótono.
    ========================================================== */
 main.cues,
 main.cues-enviado {
-  padding: 0; /* la barra de navegación va por encima de la portada */
-  overflow-x: clip; /* los encajes son más anchos que la pantalla */
-  background: var(--bg);
-  color: var(--ink);
-}
-
-.cues__etiqueta {
-  font: 400 22px/28px var(--font-serif);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.cues__titulo {
-  font-family: var(--font-script-ds);
-  font-weight: 400;
-  font-size: clamp(72px, 11vw, 160px);
-  line-height: 1.05;
-}
-
-/* ---------- Portada (cuadro del retiro, como la Home) ---------- */
-.cues-portada {
-  position: relative;
-  display: grid;
-  place-items: center;
-  min-height: 100svh;
-  padding: 96px var(--space-4) 160px;
-  background: url("/assets/img/hero-retiro.webp") center / cover no-repeat;
+  padding: 0; /* la barra de navegación va por encima */
+  overflow-x: clip;
   color: var(--cream-50);
-  text-align: center;
 }
 
-.cues-portada::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse 60% 60% at 50% 45%, rgba(41, 47, 32, 0.75), rgba(41, 47, 32, 0.35));
+/* El cuadro del retiro ocupa toda la página, detrás de las tarjetas */
+main.cues {
+  padding: 140px var(--space-4) 160px;
+  background: var(--brand-forest) url("/assets/img/fondo-encuesta.webp") center top / cover no-repeat;
 }
 
-.cues-portada__contenido {
-  position: relative;
+/* ---------- Encabezado ---------- */
+.cues__encabezado {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-6);
-  max-width: var(--container-narrow);
+  text-align: center;
+  text-shadow: 0 2px 16px rgba(41, 47, 32, 0.45);
   animation: cues-aparecer 0.9s ease both;
 }
 
-.cues-portada__intro {
-  max-width: 560px;
-  font: 400 18px/28px var(--font-sans);
+/* «TU OPINIÓN NOS IMPORTA» (Baskervville semibold 24, mayúsculas) */
+.cues__etiqueta {
+  position: relative;
+  z-index: 1;
+  font: 600 24px/1.2 var(--font-serif);
+  text-transform: uppercase;
+  color: var(--cream-100);
 }
 
-.cues-portada__boton {
+/* «Cuestionario» en letra de mano, muy grande, montado un poco sobre el antetítulo */
+.cues__titulo {
+  margin-top: -16px;
+  font-family: var(--font-script-ds);
+  font-weight: 400;
+  font-size: clamp(80px, 13.2vw, 190px);
+  line-height: 1;
+  color: var(--cream-100);
+}
+
+.cues__intro {
+  max-width: 495px;
+  margin-top: var(--space-6);
+  font: 500 14px/1.3 var(--font-sans);
+}
+
+/* ---------- Tarjetas de cristal ---------- */
+.cues__formulario {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-16);
+  max-width: 773px;
+  margin: 58px auto 0;
+}
+
+.cues-tarjeta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-8);
+  width: 100%;
+  min-height: 198px;
+  padding: var(--space-8) var(--space-6);
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  background: rgba(255, 250, 242, 0.21);
+  -webkit-backdrop-filter: blur(7.4px);
+  backdrop-filter: blur(7.4px);
+  text-align: center;
+  scroll-margin: 120px;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+  /* Entra suave al aparecer en pantalla (navegadores que lo permiten) */
+  animation: cues-aparecer linear both;
+  animation-timeline: view();
+  animation-range: entry 0% cover 25%;
+}
+
+.cues-tarjeta:hover {
+  background: rgba(255, 250, 242, 0.27);
+}
+
+/* Al intentar enviar, la que falta se marca con un borde crema y se mueve un poco */
+.cues-tarjeta.is-falta {
   border-color: var(--cream-50);
-  background: var(--cream-50);
-  color: var(--ink);
 }
 
-.cues-portada__boton:hover {
-  background: var(--cream-100);
+.cues-tarjeta.is-falta .cues-tarjeta__titulo {
+  animation: cues-temblar 0.5s ease;
+}
+
+/* Pregunta: Inter semibold 20, blanco, mayúsculas */
+.cues-tarjeta__titulo {
+  max-width: 711px;
+  font: 600 20px/1.2 var(--font-sans);
+  text-transform: uppercase;
+  color: #fff;
 }
 
 @keyframes cues-aparecer {
@@ -73,117 +109,26 @@ main.cues-enviado {
   to { opacity: 1; transform: none; }
 }
 
-/* ---------- Secciones de las preguntas ---------- */
-.cues-pregunta {
-  position: relative;
-  display: grid;
-  place-items: center;
-  min-height: 78svh;
-  padding: var(--space-24) var(--space-4);
-  scroll-margin-top: 0;
-}
-
-/* Temas de color */
-.cues-pregunta--crema { background: var(--bg); color: var(--ink); }
-.cues-pregunta--albaricoque { background: var(--brand-apricot); color: var(--ink); }
-.cues-pregunta--granate { background: var(--primary); color: var(--cream-50); }
-.cues-pregunta--verde { background: var(--brand-forest); color: var(--cream-50); }
-.cues-pregunta--cuadro {
-  background: linear-gradient(rgba(41, 47, 32, 0.72), rgba(41, 47, 32, 0.72)), url("/assets/img/faq-fondo.jpg") center / cover no-repeat;
-  color: var(--cream-50);
-}
-/* La última: dentro del arco del grabado */
-.cues-pregunta--arco {
-  background: var(--surface) url("/assets/img/erasmus-arco.webp") center / cover no-repeat;
-  color: var(--ink);
-}
-
-.cues-pregunta--arco .cues-pregunta__caja {
-  padding: var(--space-12) var(--space-8);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--ink);
-  background: var(--cream-50);
-  box-shadow: var(--shadow-card);
-}
-
-/* El primer bloque queda debajo del encaje de la portada */
-.cues-pregunta--crema:first-child {
-  padding-top: 160px;
-}
-
-.cues-pregunta__caja {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-12);
-  width: 100%;
-  max-width: var(--container-narrow);
-  text-align: center;
-  /* Entra suave cuando aparece en pantalla (navegadores que lo permiten) */
-  animation: cues-aparecer linear both;
-  animation-timeline: view();
-  animation-range: entry 0% cover 30%;
-}
-
-.cues-pregunta__titulo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-2);
-  width: 100%;
-  padding: 0;
-  font: 400 clamp(26px, 3.4vw, 40px) / 1.25 var(--font-serif);
-}
-
-/* Número romano grande, en letra de mano */
-.cues-pregunta__romano {
-  font: 400 clamp(64px, 8vw, 104px) / 1 var(--font-script-ds);
-  opacity: 0.85;
-}
-
-.cues-pregunta--albaricoque .cues-pregunta__romano,
-.cues-pregunta--crema .cues-pregunta__romano {
-  color: var(--primary);
-}
-
-/* Al intentar enviar, la que falta se mueve un poco */
-.cues-pregunta.is-falta .cues-pregunta__titulo {
-  animation: cues-temblar 0.5s ease;
-}
-
-.cues-pregunta.is-falta .cues-pregunta__titulo::after {
-  content: "";
-  width: 56px;
-  height: 2px;
-  margin-top: var(--space-2);
-  background: currentColor;
-}
-
 @keyframes cues-temblar {
   20%, 60% { transform: translateX(-6px); }
   40%, 80% { transform: translateX(6px); }
 }
 
-/* ---------- Flores (1 a 5) ---------- */
-.cues-flores {
+/* ---------- Estrellas (1 a 5) ---------- */
+.cues-estrellas {
   display: flex;
   justify-content: center;
-  gap: var(--space-4);
+  gap: 56px;
 }
 
-.cues-flor {
+.cues-estrella {
   position: relative;
   display: grid;
   place-items: center;
-  width: 72px;
-  height: 72px;
-  border-radius: var(--radius-full);
   cursor: pointer;
 }
 
-.cues-flor input,
+.cues-estrella input,
 .cues-escala__opcion input {
   position: absolute;
   inset: 0;
@@ -192,65 +137,45 @@ main.cues-enviado {
   cursor: pointer;
 }
 
-.cues-flor__svg {
-  width: 60px;
-  height: 60px;
+.cues-estrella__svg {
+  display: block;
   fill: transparent;
-  stroke: currentColor;
-  stroke-width: 1.3;
+  stroke: var(--cream-50);
+  stroke-width: 2;
+  stroke-linejoin: round;
   transition: fill 0.2s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.cues-flor__centro {
-  fill: transparent;
-}
-
-.cues-flor.is-llena .cues-flor__svg {
-  fill: var(--team);
-  stroke: var(--primary);
-}
-
-.cues-flor.is-llena .cues-flor__centro {
-  fill: var(--brand-apricot);
-}
-
-/* En el fondo albaricoque, el centro de la flor va en crema para que se vea */
-.cues-pregunta--albaricoque .cues-flor.is-llena .cues-flor__centro {
+.cues-estrella.is-llena .cues-estrella__svg {
   fill: var(--cream-50);
 }
 
-.cues-flor:hover .cues-flor__svg {
-  transform: scale(1.12) rotate(10deg);
+.cues-estrella:hover .cues-estrella__svg {
+  transform: scale(1.15);
 }
 
-.cues-flor:has(input:checked) .cues-flor__svg {
-  animation: cues-florecer 0.5s ease;
+.cues-estrella:has(input:checked) .cues-estrella__svg {
+  animation: cues-brillar 0.5s ease;
 }
 
-@keyframes cues-florecer {
-  0% { transform: scale(0.7) rotate(-40deg); }
-  60% { transform: scale(1.25) rotate(20deg); }
+@keyframes cues-brillar {
+  0% { transform: scale(0.7) rotate(-30deg); }
+  60% { transform: scale(1.25) rotate(10deg); }
   100% { transform: scale(1) rotate(0); }
 }
 
-.cues-flor:has(input:focus-visible),
+.cues-estrella:has(input:focus-visible),
 .cues-escala__opcion:has(input:focus-visible) {
-  outline: 2px solid currentColor;
-  outline-offset: 3px;
-}
-
-.cues-flores__texto {
-  min-height: 28px;
-  margin-top: calc(-1 * var(--space-8));
-  font: italic 400 20px/28px var(--font-serif);
+  outline: 2px solid var(--cream-50);
+  outline-offset: 4px;
+  border-radius: var(--radius-sm);
 }
 
 /* ---------- Escala (0 a 5) ---------- */
 .cues-escala {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: var(--space-3);
-  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 44px;
 }
 
 .cues-escala__opcion {
@@ -258,18 +183,21 @@ main.cues-enviado {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-3);
+  gap: 10px;
+  width: 42px;
   cursor: pointer;
 }
 
+/* Cuadrito con el número: borde crema de 2 px, esquinas de 5 px */
 .cues-escala__numero {
   display: grid;
   place-items: center;
-  width: 100%;
-  height: 72px;
-  border: 1px solid currentColor;
-  border-radius: var(--radius-md);
-  font: 400 32px/1 var(--font-serif);
+  width: 42px;
+  height: 44px;
+  border: 2px solid var(--cream-50);
+  border-radius: 5px;
+  font: 600 20px/1 var(--font-sans);
+  color: #fff;
   transition: background-color 0.15s ease, color 0.15s ease, transform 0.2s ease;
 }
 
@@ -277,118 +205,74 @@ main.cues-enviado {
   transform: translateY(-3px);
 }
 
-/* Elegida: en fondo claro, granate; en fondo oscuro, crema */
-.cues-pregunta--crema .cues-escala__opcion.is-elegida .cues-escala__numero {
-  border-color: var(--primary);
-  background: var(--primary);
-  color: var(--on-primary);
-}
-
-.cues-pregunta--granate .cues-escala__opcion.is-elegida .cues-escala__numero {
-  border-color: var(--cream-50);
+.cues-escala__opcion.is-elegida .cues-escala__numero {
   background: var(--cream-50);
   color: var(--primary);
 }
 
 .cues-escala__palabra {
-  min-height: 16px;
-  font: 500 12px/16px var(--font-sans);
-  letter-spacing: 0.04em;
+  min-height: 15px;
+  font: 500 12px/1.2 var(--font-sans);
   text-transform: uppercase;
+  white-space: nowrap;
+  color: #fff;
 }
 
-/* ---------- Comentario y envío ---------- */
-.cues-comentario {
-  width: 100%;
-  min-height: 160px;
-  padding: var(--space-4);
-  border: 1px solid var(--ink);
-  border-radius: var(--radius-md);
-  background: var(--bg);
-  font: 400 16px/24px var(--font-sans);
-  color: var(--ink);
-  resize: vertical;
-}
-
-.cues-comentario::placeholder {
-  color: var(--ink-muted);
-}
-
-.cues-comentario:focus {
-  outline: 2px solid var(--ink);
-  outline-offset: 1px;
-}
-
+/* ---------- Botón «Enviar encuesta» ---------- */
 .cues__enviar {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: var(--space-3);
-  width: 100%;
+}
+
+.cues__boton {
+  min-width: 191px;
+  min-height: 39px;
+  padding: 0 var(--space-6);
+  border: 0;
+  border-radius: 0;
+  background: var(--cream-50);
+  font: 500 12px/1 var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--primary);
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.cues__boton:hover {
+  background: var(--cream-100);
+  transform: translateY(-2px);
+}
+
+.cues__boton:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.cues__boton:focus-visible {
+  outline: 2px solid var(--cream-50);
+  outline-offset: 3px;
 }
 
 .cues__mensaje {
   min-height: 24px;
-  font: 500 16px/24px var(--font-sans);
+  font: 600 16px/24px var(--font-sans);
+  text-shadow: 0 1px 8px rgba(41, 47, 32, 0.6);
 }
 
-/* ---------- Contador fijo abajo ---------- */
-.cues-progreso {
-  position: fixed;
-  left: 50%;
-  bottom: var(--space-4);
-  z-index: 40;
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-full);
-  background: color-mix(in srgb, var(--cream-50) 88%, transparent);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  box-shadow: var(--shadow-card);
-  color: var(--ink);
-  font: 500 12px/16px var(--font-sans);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  transform: translateX(-50%);
-}
-
-.cues-progreso__flores {
-  display: flex;
-  gap: 2px;
-}
-
-.cues-progreso__punto {
-  display: grid;
-  place-items: center;
-  width: 22px;
-  height: 22px;
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--ink);
-  cursor: pointer;
-}
-
-.cues-progreso__punto .cues-flor__svg {
-  width: 18px;
-  height: 18px;
-  stroke-width: 2;
-}
-
-.cues-progreso__punto.is-hecha .cues-flor__svg {
-  fill: var(--team);
-  stroke: var(--primary);
-}
-
-.cues-progreso__punto.is-hecha .cues-flor__centro {
-  fill: var(--brand-apricot);
-}
-
-.cues-progreso.is-completo {
-  background: var(--primary);
-  color: var(--cream-50);
+/* ---------- Móvil ---------- */
+@media (max-width: 600px) {
+  main.cues { padding: 110px var(--space-4) 96px; }
+  .cues__etiqueta { font-size: 18px; }
+  .cues__titulo { margin-top: -6px; }
+  .cues__formulario { gap: var(--space-6); margin-top: var(--space-8); }
+  .cues-tarjeta { min-height: 0; padding: var(--space-6) var(--space-4); gap: var(--space-6); }
+  .cues-tarjeta__titulo { font-size: 16px; }
+  .cues-estrellas { gap: 0; justify-content: space-between; width: 100%; max-width: 300px; }
+  .cues-escala { gap: 0; justify-content: space-between; width: 100%; max-width: 320px; }
+  .cues-escala__palabra { font-size: 10px; }
 }
 
 /* ---------- «Respuesta enviada» ---------- */
@@ -397,7 +281,7 @@ main.cues-enviado {
   place-items: center;
   min-height: 100svh;
   padding: 96px var(--space-4) var(--space-12);
-  background: linear-gradient(rgba(41, 47, 32, 0.55), rgba(41, 47, 32, 0.55)), url("/assets/img/hero-retiro.webp") center / cover no-repeat;
+  background: linear-gradient(rgba(41, 47, 32, 0.55), rgba(41, 47, 32, 0.55)), url("/assets/img/fondo-encuesta.webp") center / cover no-repeat;
 }
 
 .cues-enviado__tarjeta {
@@ -410,14 +294,21 @@ main.cues-enviado {
   border-radius: var(--radius-lg);
   background: var(--bg);
   box-shadow: var(--shadow-card);
+  color: var(--ink);
   text-align: center;
   animation: cues-aparecer 0.8s ease both;
+}
+
+/* Dentro de la tarjeta crema, el antetítulo va en granate */
+.cues-enviado__tarjeta .cues__etiqueta {
+  font-size: 18px;
+  color: var(--ink);
 }
 
 .cues-enviado__lirio {
   width: 80px;
   height: auto;
-  animation: cues-florecer 0.9s 0.3s ease both;
+  animation: cues-brillar 0.9s 0.3s ease both;
 }
 
 .cues-enviado__titulo {
@@ -443,11 +334,11 @@ main.cues-enviado {
 
 /* Quien prefiere menos movimiento (ajuste del sistema), sin animaciones */
 @media (prefers-reduced-motion: reduce) {
-  .cues-portada__contenido,
-  .cues-pregunta__caja,
+  .cues__encabezado,
+  .cues-tarjeta,
   .cues-enviado__tarjeta,
   .cues-enviado__lirio,
-  .cues-flor__svg {
+  .cues-estrella__svg {
     animation: none !important;
     transition: none;
   }
@@ -455,17 +346,5 @@ main.cues-enviado {
 
 /* ---------- Móvil ---------- */
 @media (max-width: 600px) {
-  .cues-pregunta { min-height: 70svh; padding: var(--space-16) var(--space-4); }
-  .cues-pregunta--crema:first-child { padding-top: 140px; }
-  .cues-pregunta--arco .cues-pregunta__caja { padding: var(--space-8) var(--space-4); }
-  .cues-flores { gap: 0; justify-content: space-between; width: 100%; }
-  .cues-flor { width: 60px; height: 60px; }
-  .cues-flor__svg { width: 48px; height: 48px; }
-  .cues-escala { gap: var(--space-1); }
-  .cues-escala__numero { height: 56px; font-size: 24px; }
-  .cues-escala__palabra { font-size: 10px; letter-spacing: 0; }
   .cues-enviado__tarjeta { padding: var(--space-8) var(--space-4); }
-  .cues-progreso { gap: var(--space-2); padding: var(--space-2) var(--space-3); font-size: 10px; }
-  .cues-progreso__punto { width: 18px; height: 18px; }
-  .cues-progreso__punto .cues-flor__svg { width: 16px; height: 16px; }
 }
