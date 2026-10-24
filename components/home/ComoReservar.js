@@ -47,8 +47,8 @@ export default function ComoReservar({ children }) {
   return (
     <div className="como-bloque" ref={bloque}>
       <section className="como-reservar" id="como-funciona">
-        <h2 className="como-reservar__titulo">{t.titulo}</h2>
-        <p className="como-reservar__subtitulo">{t.subtitulo}</p>
+        <h2 className="como-reservar__titulo" data-revelar="escala">{t.titulo}</h2>
+        <p className="como-reservar__subtitulo" data-revelar="arriba" style={{ "--retardo": "0.15s" }}>{t.subtitulo}</p>
       </section>
       {children}
     </div>

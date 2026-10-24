@@ -61,11 +61,11 @@ export default function CarruselPasos() {
         if (e.key === "ArrowLeft") mostrar(actual - 1);
       }}
     >
-      <div className="pasos__imagen">
+      <div className="pasos__imagen" data-revelar="izquierda">
         <img src="/assets/img/como-funciona-mano.png" alt={idioma === "en" ? "Hand holding a carnation" : "Mano sosteniendo un clavel"} />
       </div>
 
-      <div className="pasos__texto" aria-live="polite">
+      <div className="pasos__texto" aria-live="polite" data-revelar="derecha" style={{ "--retardo": "0.15s" }}>
         {/* Barrita de progreso: puntos (se pueden pulsar) unidos por líneas */}
         <div className="pasos__barra" role="tablist" aria-label={idioma === "en" ? "Choose step" : "Elegir paso"}>
           {lista.map((_, i) => (

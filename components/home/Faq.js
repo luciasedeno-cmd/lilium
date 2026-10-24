@@ -28,8 +28,8 @@ const PREGUNTAS = {
 };
 
 const TEXTOS = {
-  es: { etiqueta: "PREGUNTAS FRECUENTES", titulo: "LO QUE TODO EL MUNDO PREGUNTA" },
-  en: { etiqueta: "FREQUENTLY ASKED QUESTIONS", titulo: "WHAT EVERYONE ASKS" },
+  es: { etiqueta: "PREGUNTAS FRECUENTES", titulo: "Lo que todo el mundo pregunta" },
+  en: { etiqueta: "FREQUENTLY ASKED QUESTIONS", titulo: "What everyone asks" },
 };
 
 export default function Faq() {
@@ -39,13 +39,20 @@ export default function Faq() {
 
   return (
     <section className="faq" id="faq" data-fondo="oscuro">
+      {/* El cuadro de fondo va en una capa aparte para que se mueva más despacio (parallax) */}
+      <div className="faq__fondo" data-parallax="0.15" aria-hidden="true" />
       <div className="faq__bloque">
-        <p className="faq__etiqueta"><img src="/assets/svg/punto.svg" width="7" height="7" alt="" />{t.etiqueta}</p>
-        <h2 className="faq__titulo">{t.titulo}</h2>
+        <p className="faq__etiqueta" data-revelar="arriba"><img src="/assets/svg/punto.svg" width="7" height="7" alt="" />{t.etiqueta}</p>
+        <h2 className="faq__titulo" data-revelar="arriba" style={{ "--retardo": "0.1s" }}>{t.titulo}</h2>
 
         <div className="faq__lista">
           {PREGUNTAS[idioma].map(([pregunta, respuesta], i) => (
-            <div className={`faq__item${abierta === i ? " is-open" : ""}`} key={pregunta}>
+            <div
+              className={`faq__item${abierta === i ? " is-open" : ""}`}
+              key={pregunta}
+              data-revelar="derecha"
+              style={{ "--retardo": `${0.15 + i * 0.06}s` }}
+            >
               <div className="faq__caja">
                 <button className="faq__pregunta" type="button" aria-expanded={abierta === i}
                   onClick={() => setAbierta(abierta === i ? null : i)}>

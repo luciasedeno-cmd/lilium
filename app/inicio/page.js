@@ -9,6 +9,7 @@ import Faq from "@/components/home/Faq";
 import ErasmusBanner from "@/components/ErasmusBanner";
 import BotonErasmus from "@/components/home/BotonErasmus";
 import PiePagina from "@/components/PiePagina";
+import Animaciones from "@/components/home/Animaciones";
 
 export const metadata = {
   title: "Lilium · Escape Room ESADA",
@@ -83,7 +84,9 @@ export default async function Inicio() {
 
       <main>
         {/* Portada */}
-        <section className="hero" data-fondo="oscuro" data-principal>
+        <section className="hero" data-fondo="oscuro" data-principal data-salida>
+          {/* El cuadro va en una capa aparte para que se mueva más despacio (parallax) */}
+          <div className="hero__fondo" data-parallax="0.35" aria-hidden="true" />
           <h1 className="hero__titulo">
             <span className="hero__linea hero__linea--1">{t.lineas[0]}</span>
             <span className="hero__linea hero__linea--2">{t.lineas[1]}</span>
@@ -96,15 +99,17 @@ export default async function Inicio() {
           <img className="encaje encaje--arriba" src="/assets/svg/banner-encaje.svg" width="1612" height="176" alt="" />
 
           <div className="historia__contenido">
-            <div className="retrato">
+            <div className="retrato" data-revelar="izquierda" data-parallax="-0.06">
               <img className="retrato__marco" src="/assets/img/marco-retrato.png" alt="" />
               <img className="retrato__foto" src="/assets/img/retrato.png" width="348" height="509" alt={t.retratoAlt} />
             </div>
 
             <div className="historia__texto">
-              <h2 className="historia__titulo">{t.historiaTitulo}</h2>
+              <h2 className="historia__titulo" data-revelar="derecha">{t.historiaTitulo}</h2>
               <div className="historia__parrafos">
-                {t.historia.map((p) => <p key={p}>{p}</p>)}
+                {t.historia.map((p, i) => (
+                  <p key={p} data-revelar="arriba" style={{ "--retardo": `${0.15 + i * 0.12}s` }}>{p}</p>
+                ))}
               </div>
             </div>
           </div>
@@ -120,10 +125,16 @@ export default async function Inicio() {
 
         {/* ¿Qué necesita el ritual? */}
         <section className="ritual">
-          <h2 className="ritual__titulo">{t.ritualTitulo}</h2>
+          <h2 className="ritual__titulo" data-revelar="escala">{t.ritualTitulo}</h2>
           <div className="ritual__cuadros">
             {t.cuadros.map((c, i) => (
-              <article className={`cuadro cuadro--${i + 1}`} key={IMAGENES[i]}>
+              <article
+                className={`cuadro cuadro--${i + 1}`}
+                key={IMAGENES[i]}
+                data-revelar="arriba"
+                data-parallax={["-0.04", "0.05", "-0.02"][i]}
+                style={{ "--retardo": `${i * 0.15}s` }}
+              >
                 <div className="polaroid">
                   <img src={`/assets/img/${IMAGENES[i]}`} alt={c.alt} />
                 </div>
@@ -139,24 +150,26 @@ export default async function Inicio() {
 
         {/* Cuándo y dónde */}
         <section className="ubicacion" data-fondo="claro">
-          <img className="ubicacion__mapa" src="/assets/img/mapa-ancho.webp" width="1440" height="551" alt={t.mapaAlt} />
-          <div className="ubicacion__dato ubicacion__dato--cuando">
-            <h2><img src="/assets/svg/pin.svg" width="28" height="28" alt="" />{t.cuando}</h2>
+          <img className="ubicacion__mapa" src="/assets/img/mapa-ancho.webp" width="1440" height="551" alt={t.mapaAlt} data-escala="1.08" />
+          <div className="ubicacion__dato ubicacion__dato--cuando" data-revelar="derecha">
+            <h2><span className="ubicacion__pin" aria-hidden="true" />{t.cuando}</h2>
             <p>{evento.fechaTexto}</p>
             <p><i>{t.cuandoNota}</i></p>
           </div>
-          <div className="ubicacion__dato ubicacion__dato--donde">
-            <h2><img src="/assets/svg/pin.svg" width="28" height="28" alt="" />{t.donde}</h2>
+          <div className="ubicacion__dato ubicacion__dato--donde" data-revelar="izquierda" style={{ "--retardo": "0.15s" }}>
+            <h2><span className="ubicacion__pin" aria-hidden="true" />{t.donde}</h2>
             <p>{evento.lugar}</p>
           </div>
         </section>
 
         {/* ¿Erasmus? (fondo: el arco con estatuas) */}
         <section className="erasmus" id="erasmus" data-fondo="oscuro">
-          <img className="erasmus__lirio" src="/assets/img/icono-lirio.png" width="99" height="79" alt="" />
-          <h2 className="erasmus__titulo">{t.erasmusTitulo}</h2>
-          <p className="erasmus__texto">{t.erasmusTexto}</p>
-          <BotonErasmus />
+          <img className="erasmus__lirio" src="/assets/img/icono-lirio.png" width="99" height="79" alt="" data-revelar="girar" />
+          <h2 className="erasmus__titulo" data-revelar="escala" style={{ "--retardo": "0.1s" }}>{t.erasmusTitulo}</h2>
+          <p className="erasmus__texto" data-revelar="arriba" style={{ "--retardo": "0.2s" }}>{t.erasmusTexto}</p>
+          <div data-revelar="arriba" style={{ "--retardo": "0.3s" }}>
+            <BotonErasmus />
+          </div>
           <img className="encaje encaje--abajo" src="/assets/svg/banner-encaje-terracota.svg" width="1612" height="176" alt="" />
         </section>
 
@@ -166,18 +179,26 @@ export default async function Inicio() {
         {/* Llamada final sobre el paisaje: invita a reservar */}
         <section className="cta" aria-labelledby="cta-titulo" data-fondo="claro">
           <img className="encaje encaje--arriba" src="/assets/svg/banner-encaje.svg" width="1612" height="176" alt="" />
-          <img className="cta__paisaje" src="/assets/img/final-paisaje.webp" width="1440" height="494" alt="" />
+          {/* El paisaje se mueve más despacio y se va acercando al bajar */}
+          <div className="cta__marco" aria-hidden="true">
+            <img className="cta__paisaje" src="/assets/img/final-paisaje.webp" width="1440" height="494" alt="" data-parallax="0.18" />
+          </div>
           <div className="cta__contenido">
-            <img className="cta__lirio" src="/assets/img/icono-lirio.png" width="99" height="79" alt="" />
-            <p className="cta__etiqueta">{t.finalEtiqueta}</p>
-            <h2 className="cta__titulo" id="cta-titulo">{t.finalTitulo}</h2>
-            <p className="cta__texto">{t.finalTexto}</p>
-            <Link className="boton-reserva cta__boton" href="/reserva/integrantes">{t.reservar}</Link>
+            <img className="cta__lirio" src="/assets/img/icono-lirio.png" width="99" height="79" alt="" data-revelar="girar" />
+            <p className="cta__etiqueta" data-revelar="arriba" style={{ "--retardo": "0.1s" }}>{t.finalEtiqueta}</p>
+            <h2 className="cta__titulo" id="cta-titulo" data-revelar="escala" style={{ "--retardo": "0.2s" }}>{t.finalTitulo}</h2>
+            <p className="cta__texto" data-revelar="arriba" style={{ "--retardo": "0.3s" }}>{t.finalTexto}</p>
+            <div data-revelar="arriba" style={{ "--retardo": "0.4s" }}>
+              <Link className="boton-reserva cta__boton" href="/reserva/integrantes">{t.reservar}</Link>
+            </div>
           </div>
         </section>
       </main>
 
       <PiePagina />
+
+      {/* Animaciones al bajar (aparecer, parallax…) */}
+      <Animaciones />
 
       {/* Pop-up Erasmus: solo aquí, y solo la primera vez */}
       <ErasmusBanner />
