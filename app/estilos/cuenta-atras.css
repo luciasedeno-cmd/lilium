@@ -39,6 +39,9 @@ body:has(.cuenta) {
 }
 
 .cuenta__tiempo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
   font-family: var(--font-baskerville);
   font-size: 128px;
   line-height: 1.15;
@@ -47,12 +50,59 @@ body:has(.cuenta) {
   white-space: nowrap;
 }
 
+.cuenta__grupo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Nombre pequeño debajo de cada número (días, horas, min, seg) */
+.cuenta__unidad {
+  margin-top: -8px;
+  font-size: 18px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.cuenta__dos-puntos {
+  padding: 0 0.04em;
+}
+
+/* Botón pequeño «Admin» abajo a la derecha */
+.cuenta {
+  position: relative;
+}
+
+.cuenta__admin {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  padding: 6px 14px;
+  border: 1px solid rgba(255, 250, 242, 0.7);
+  border-radius: 4px;
+  background: rgba(41, 47, 32, 0.35);
+  font-family: var(--font-inter);
+  font-size: 13px;
+  color: var(--fondo);
+  transition: background-color 0.2s;
+}
+
+.cuenta__admin:hover,
+.cuenta__admin:focus-visible {
+  background: rgba(41, 47, 32, 0.7);
+}
+
 @media (max-width: 760px) {
   .cuenta__faltan {
     font-size: 30px;
   }
 
   .cuenta__tiempo {
-    font-size: clamp(56px, 19vw, 96px);
+    font-size: clamp(44px, 14vw, 72px);
+  }
+
+  .cuenta__unidad {
+    margin-top: -4px;
+    font-size: 11px;
   }
 }

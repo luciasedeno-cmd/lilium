@@ -1,13 +1,17 @@
 "use client";
-// Reloj de la cuenta atrás: «FALTAN» y horas:minutos:segundos (como en el diseño).
-// Las horas son el total que queda (con 5 días por delante se ve, por ejemplo, 131:50:26).
-import { useEffect, useState } from "react";
+// Reloj de la cuenta atrás: «FALTAN» y días:horas:minutos:segundos, con el nombre debajo de cada número.
+import { Fragment, useEffect, useState } from "react";
 
 const dosCifras = (n) => String(n).padStart(2, "0");
 
-function texto(restante) {
+function partes(restante) {
   const s = Math.max(0, Math.floor(restante / 1000));
-  return `${dosCifras(Math.floor(s / 3600))}:${dosCifras(Math.floor((s % 3600) / 60))}:${dosCifras(s % 60)}`;
+  return [
+    [dosCifras(Math.floor(s / 86400)), "días"],
+    [dosCifras(Math.floor((s % 86400) / 3600)), "horas"],
+    [dosCifras(Math.floor((s % 3600) / 60)), "min"],
+    [dosCifras(s % 60), "seg"],
+  ];
 }
 
 export default function CuentaAtras({ apertura }) {
@@ -26,10 +30,21 @@ export default function CuentaAtras({ apertura }) {
     return () => clearInterval(intervalo);
   }, [objetivo]);
 
+  const grupos = partes(restante === null ? 0 : restante);
   return (
     <div className="cuenta__reloj">
       <p className="cuenta__faltan">Faltan</p>
-      <p className="cuenta__tiempo" role="timer" aria-live="off">{restante === null ? "00:00:00" : texto(restante)}</p>
+      <p className="cuenta__tiempo" role="timer" aria-live="off">
+        {grupos.map(([numero, nombre], i) => (
+          <Fragment key={nombre}>
+            {i > 0 && <span className="cuenta__dos-puntos" aria-hidden="true">:</span>}
+            <span className="cuenta__grupo">
+              <span className="cuenta__numero">{numero}</span>
+              <span className="cuenta__unidad">{nombre}</span>
+            </span>
+          </Fragment>
+        ))}
+      </p>
     </div>
   );
 }
