@@ -15,6 +15,7 @@
 - Variables de entorno: ver `.env.example`.
 
 ## Estructura
+- Resumen de todo lo hecho y lo pendiente, para quien siga: `docs/resumen-sesion.md`.
 - Orden de las páginas: 1) `/acceso` (confirmar el correo, ocupa justo la pantalla, sin scroll) → 2) `/inicio` (Home) → 3) reserva en 3 pasos. Quien ya tiene reserva (como líder o dentro de un grupo) va a `/mi-reserva` al entrar.
 - Pop-up Erasmus (`components/ErasmusBanner.js`): solo en `/inicio` y solo la primera vez en ese navegador (se guarda en localStorage). Fondos: `public/assets/img/erasmus-encaje.webp` (ordenador) y `erasmus-encaje-movil.webp` (móvil).
 - **Barra de navegación única** (`components/home/HomeHeader.js`; `NavReserva` la reexporta): fija, casi transparente con desenfoque; detecta si el fondo de detrás es oscuro (atributo `data-fondo="oscuro|claro"` en las secciones con imagen, o el color de fondo) y pasa a texto crema; se esconde al bajar y aparece al subir. Va siempre POR ENCIMA de la página (sin hueco): 100 % transparente sobre la sección principal (`data-principal`: la portada en la Home, la cabecera de `/mi-reserva`; en el resto, el principio de la página) y, al pasarla, cristal de color. Por eso las páginas dejan 72 px arriba (`main` en `reserva.css`, `main.mi-reserva` y `.pagina-acceso main` en `extra.css`). La cuenta atrás y `/admin` no la llevan (la web está cerrada).
