@@ -114,6 +114,39 @@ main.cues {
   40%, 80% { transform: translateX(6px); }
 }
 
+/* ---------- Correo de ESADA (primera tarjeta) ---------- */
+.cues-tarjeta--correo {
+  min-height: 0;
+  gap: var(--space-4);
+}
+
+.cues-correo {
+  width: min(100%, 460px);
+  height: 48px;
+  padding: 0 var(--space-4);
+  border: 2px solid var(--cream-50);
+  border-radius: 5px;
+  background: rgba(255, 250, 242, 0.12);
+  font: 500 16px/1 var(--font-sans);
+  color: #fff;
+  text-align: center;
+}
+
+.cues-correo::placeholder {
+  color: rgba(255, 250, 242, 0.7);
+}
+
+.cues-correo:focus {
+  outline: 2px solid var(--cream-50);
+  outline-offset: 3px;
+}
+
+.cues-correo__nota {
+  max-width: 480px;
+  font: 400 13px/1.4 var(--font-sans);
+  color: var(--cream-50);
+}
+
 /* ---------- Estrellas (1 a 5) ---------- */
 .cues-estrellas {
   display: flex;

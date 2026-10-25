@@ -4,12 +4,13 @@
 // 4 se valoran con estrellas (1 a 5) y 2 con una escala de 0 a 5. Todas son obligatorias.
 // Al responder, la página baja sola a la siguiente. Al enviar se guarda en la tabla «cuestionario»
 // de Supabase y se pasa a /cuestionario/enviado.
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import NavReserva from "@/components/NavReserva";
 import PiePagina from "@/components/PiePagina";
 import { useIdioma } from "@/components/Idioma";
 import { api } from "@/lib/borrador";
+import { CORREO_VALIDO } from "@/lib/config";
 
 const TEXTOS = {
   es: {
@@ -24,6 +25,9 @@ const TEXTOS = {
       duracion: "¿Qué te ha parecido la duración de la experiencia?",
     },
     estrellas: (n) => (n === 1 ? "1 estrella" : `${n} estrellas`),
+    correoTitulo: "Tu correo de ESADA",
+    correoNota: "Solo para saber que ya has respondido (y no escribirte para pedírtelo). Tus respuestas son anónimas.",
+    correoMal: "Escribe tu correo de ESADA (nombreapellido@alumnado.esada.es).",
     dificultadEtiquetas: { 0: "Muy fácil", 5: "Muy difícil" },
     duracionEtiquetas: { 0: "Muy corta", 3: "Genial", 5: "Muy larga" },
     enviar: "Enviar encuesta", enviando: "Enviando…",
@@ -41,6 +45,9 @@ const TEXTOS = {
       duracion: "What did you think of the length of the experience?",
     },
     estrellas: (n) => (n === 1 ? "1 star" : `${n} stars`),
+    correoTitulo: "Your ESADA email",
+    correoNota: "Only so we know you've answered (and don't write to ask you). Your answers are anonymous.",
+    correoMal: "Type your ESADA email (nameSurname@alumnado.esada.es).",
     dificultadEtiquetas: { 0: "Very easy", 5: "Very hard" },
     duracionEtiquetas: { 0: "Too short", 3: "Just right", 5: "Too long" },
     enviar: "Send survey", enviando: "Sending…",
@@ -109,6 +116,17 @@ export default function Cuestionario() {
   const [mensaje, setMensaje] = useState("");
   const [marcadas, setMarcadas] = useState(false); // tras intentar enviar, se señalan las que faltan
   const tarjetas = useRef({});
+  // Quién responde: con el enlace personal del correo (?t=…) ya se sabe; si no (QR de la sala), se pide el correo
+  const [token, setToken] = useState(null);
+  const [correo, setCorreo] = useState("");
+  const [correoFalta, setCorreoFalta] = useState(false);
+
+  useEffect(() => {
+    const enlace = new URLSearchParams(window.location.search).get("t");
+    if (enlace) return setToken(enlace);
+    // Si ya había entrado en la web con su correo, se rellena solo
+    api("/api/sesion").then((r) => r?.email && setCorreo((c) => c || r.email));
+  }, []);
 
   const pendientes = PREGUNTAS.filter((p) => respuestas[p.clave] === undefined);
 
@@ -127,13 +145,18 @@ export default function Cuestionario() {
 
   async function enviar(e) {
     e.preventDefault();
+    if (!token && !CORREO_VALIDO.test(correo.trim())) {
+      setCorreoFalta(true);
+      setMensaje(t.correoMal);
+      return tarjetas.current.correo?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
     if (pendientes.length > 0) {
       setMarcadas(true);
       setMensaje(t.faltan(pendientes.length));
       return irA(pendientes[0].clave);
     }
     setEnviando(true);
-    const r = await api("/api/cuestionario", { metodo: "POST", datos: { ...respuestas, idioma } });
+    const r = await api("/api/cuestionario", { metodo: "POST", datos: { ...respuestas, idioma, token, email: token ? undefined : correo.trim() } });
     if (!r.ok) {
       setEnviando(false);
       return setMensaje(r.mensaje);
@@ -152,6 +175,25 @@ export default function Cuestionario() {
         </header>
 
         <form className="cues__formulario" onSubmit={enviar} noValidate>
+          {/* Correo de ESADA (no sale si se llega desde el enlace del correo) */}
+          {!token && (
+            <section ref={(el) => (tarjetas.current.correo = el)} className={`cues-tarjeta cues-tarjeta--correo ${correoFalta && !CORREO_VALIDO.test(correo.trim()) ? "is-falta" : ""}`}>
+              <label className="cues-tarjeta__titulo" htmlFor="cues-correo">{t.correoTitulo}</label>
+              <input
+                id="cues-correo"
+                className="cues-correo"
+                type="email"
+                autoComplete="email"
+                placeholder="nombreapellido@alumnado.esada.es"
+                value={correo}
+                onChange={(e) => {
+                  setCorreo(e.target.value);
+                  setMensaje("");
+                }}
+              />
+              <p className="cues-correo__nota">{t.correoNota}</p>
+            </section>
+          )}
           {PREGUNTAS.map((p, i) => (
             <section
               key={p.clave}

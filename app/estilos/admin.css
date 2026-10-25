@@ -1,0 +1,379 @@
+/* ==========================================================
+   Lilium · Panel del equipo (/admin)
+   Colores y medidas del sistema de diseño «Lilium DEFINITIVO» (lilium-ds.css).
+   ========================================================== */
+main.panel {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  color: var(--ink);
+}
+
+/* ---------- Cabecera ---------- */
+.panel__cabecera {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-12);
+  text-align: center;
+}
+
+.panel__etiqueta {
+  font: 400 18px/1.3 var(--font-serif);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.panel__titulo {
+  font-family: var(--font-script-ds);
+  font-weight: 400;
+  font-size: clamp(60px, 9vw, 112px);
+  line-height: 1.05;
+}
+
+.panel__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+/* ---------- Totales ---------- */
+.panel__totales {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-12);
+}
+
+.panel-cifra {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-6) var(--space-3);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  text-align: center;
+}
+
+.panel-cifra__valor {
+  font: 400 56px/1 var(--font-serif);
+}
+
+.panel-cifra__etiqueta {
+  font: 500 13px/1.3 var(--font-sans);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.panel-cifra__nota {
+  font: 400 13px/1.3 var(--font-sans);
+  color: var(--ink-muted);
+}
+
+.panel-cifra--destacada {
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+.panel-cifra--destacada .panel-cifra__nota {
+  color: var(--cream-100);
+}
+
+/* Barra de lo lleno que está el retiro */
+.panel__barra {
+  height: 10px;
+  margin-top: var(--space-6);
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.panel__barra span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--primary);
+  transition: width 0.6s ease;
+}
+
+/* ---------- Búsqueda ---------- */
+.panel__buscar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-top: var(--space-12);
+}
+
+.panel__busqueda {
+  width: min(100%, 420px);
+  height: var(--control-md);
+  padding: 0 var(--space-4);
+  border: 1px solid var(--ink);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  font: 400 16px/1 var(--font-sans);
+  color: var(--ink);
+}
+
+.panel__busqueda:focus {
+  outline: 2px solid var(--ink);
+  outline-offset: 1px;
+}
+
+.panel__vacias,
+.panel__nada,
+.panel__leyenda {
+  font: 400 15px/1.5 var(--font-sans);
+  color: var(--ink-muted);
+}
+
+.panel__aviso {
+  min-height: 22px;
+  margin-top: var(--space-2);
+  font: 600 15px/1.4 var(--font-sans);
+}
+
+.panel__nada {
+  margin-top: var(--space-8);
+  text-align: center;
+}
+
+.panel__leyenda {
+  max-width: 720px;
+  margin: var(--space-12) auto 0;
+  text-align: center;
+}
+
+/* ---------- Salas ---------- */
+.panel__salas {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  margin-top: var(--space-4);
+}
+
+.panel-sala {
+  padding: var(--space-6) var(--space-8) var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+
+.panel-sala__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--ink);
+}
+
+.panel-sala__cabecera h2 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-4);
+  font-weight: 400;
+}
+
+.panel-sala__hora {
+  font: 400 28px/1.1 var(--font-serif);
+}
+
+.panel-sala__equipo {
+  font: 400 40px/1 var(--font-script-ds);
+}
+
+.panel-sala__plazas {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font: 400 24px/1 var(--font-serif);
+  white-space: nowrap;
+}
+
+.panel-sala__plazas b {
+  font-size: 36px;
+  font-weight: 400;
+}
+
+.panel-grupo + .panel-grupo {
+  margin-top: var(--space-4);
+}
+
+.panel-grupo__titulo {
+  margin-top: var(--space-4);
+  font: 500 13px/1 var(--font-sans);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.panel-grupo__notas {
+  margin: var(--space-2) 0 var(--space-2);
+  font: 400 14px/1.5 var(--font-sans);
+  color: var(--ink-muted);
+}
+
+/* ---------- Tabla de personas ---------- */
+.panel-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font: 400 15px/1.3 var(--font-sans);
+}
+
+.panel-tabla th {
+  padding: var(--space-3) var(--space-2);
+  font: 500 12px/1 var(--font-sans);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: left;
+  color: var(--ink-muted);
+}
+
+.panel-tabla td {
+  padding: var(--space-3) var(--space-2);
+  border-top: 1px dashed rgba(115, 47, 35, 0.35);
+  vertical-align: middle;
+}
+
+.panel-tabla__persona {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  overflow-wrap: anywhere;
+}
+
+.panel-tabla__persona img {
+  flex: none;
+  width: 36px;
+  height: 36px;
+}
+
+.panel-estado,
+.panel-valoro {
+  font-size: 14px;
+  color: var(--ink-muted);
+}
+
+.panel-estado.is-ok,
+.panel-valoro.is-ok {
+  color: var(--success);
+  font-weight: 600;
+}
+
+/* Sí / No */
+.panel-vino {
+  display: inline-flex;
+  border: 1px solid var(--ink);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.panel-vino button {
+  min-width: 56px;
+  height: 38px;
+  padding: 0 var(--space-3);
+  border: 0;
+  background: var(--bg);
+  font: 500 14px/1 var(--font-sans);
+  color: var(--ink);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.panel-vino button + button {
+  border-left: 1px solid var(--ink);
+}
+
+.panel-vino button:not(.is-elegido):hover {
+  background: var(--cream-100);
+}
+
+.panel-vino__si.is-elegido {
+  background: var(--success);
+  color: var(--cream-50);
+}
+
+.panel-vino__no.is-elegido {
+  background: var(--primary);
+  color: var(--cream-50);
+}
+
+.panel-vino button:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: -3px;
+}
+
+/* ---------- Pantallas medianas y móvil ---------- */
+@media (max-width: 1000px) {
+  .panel__totales {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .panel__totales {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+
+  .panel-cifra__valor {
+    font-size: 40px;
+  }
+
+  .panel-sala {
+    padding: var(--space-4);
+  }
+
+  .panel-sala__equipo {
+    font-size: 32px;
+  }
+
+  /* En el móvil cada persona es una ficha: correo arriba y las tres columnas debajo */
+  .panel-tabla thead {
+    display: none;
+  }
+
+  .panel-tabla,
+  .panel-tabla tbody,
+  .panel-tabla tr,
+  .panel-tabla td {
+    display: block;
+    width: 100%;
+  }
+
+  .panel-tabla tr {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--space-2) var(--space-3);
+    padding: var(--space-3) 0;
+    border-top: 1px dashed rgba(115, 47, 35, 0.35);
+  }
+
+  .panel-tabla td {
+    padding: 0;
+    border: 0;
+  }
+
+  .panel-tabla__persona {
+    grid-column: 1 / -1;
+  }
+
+  .panel-tabla td[data-titulo]:not(.panel-tabla__persona)::before {
+    content: attr(data-titulo);
+    display: block;
+    margin-bottom: 4px;
+    font: 500 11px/1 var(--font-sans);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+}

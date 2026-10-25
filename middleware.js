@@ -12,6 +12,7 @@ const SIEMPRE_ABIERTO = [
   /^\/$/, // la cuenta atrás
   /^\/admin$/, // la página del equipo
   /^\/api\/acceso\/admin$/, // su contraseña
+  /^\/api\/admin\/.+$/, // el panel del equipo (cada ruta comprueba la llave por su cuenta)
   /^\/api\/cron$/, // la tarea de cada hora (tiene su propia clave)
   // Enlaces de los correos de las pruebas (solo funcionan con su código secreto)
   /^\/confirmar\/[^/]+$/,

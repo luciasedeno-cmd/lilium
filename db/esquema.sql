@@ -78,6 +78,13 @@ create table if not exists cuestionario (
 );
 alter table cuestionario enable row level security;
 
+-- El día del retiro (panel /admin y correos automáticos):
+alter table miembros add column if not exists asistio boolean;              -- vino (sí / no / vacío = sin marcar)
+alter table miembros add column if not exists asistio_en timestamptz;
+alter table miembros add column if not exists valorado_en timestamptz;      -- rellenó el cuestionario
+alter table miembros add column if not exists recordatorio_dia_en timestamptz; -- correo del día antes enviado
+alter table miembros add column if not exists aviso_valoracion_en timestamptz; -- correo «¿nos valoras?» enviado
+
 -- Turnos del día (edítalos aquí o desde el panel de Supabase). Solo se insertan si la tabla está vacía.
 -- Cada turno dura una hora: 45 minutos de experiencia + 15 de cortesía para recolocar la sala.
 insert into turnos (inicio, fin, erasmus)

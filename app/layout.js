@@ -5,12 +5,23 @@ import "./estilos/cuenta-atras.css";
 import "./estilos/extra.css";
 import "./estilos/lilium-ds.css";
 import "./estilos/cuestionario.css";
+import "./estilos/admin.css";
 import { IdiomaProvider } from "@/components/Idioma";
 import { idiomaActual } from "@/lib/idiomaServidor";
 
 export const metadata = {
   title: "Lilium · Escape Room ESADA",
   description: "Lilium, el escape room de ESADA: cinco guías, un destino.",
+  // Icono de la pestaña: el lirio, negro si el ordenador o el móvil está en modo claro y blanco en modo oscuro.
+  // Van en /assets para que se vean también antes de la apertura (el guardián de la web no toca esa carpeta).
+  icons: {
+    icon: [
+      { url: "/assets/favicon/lirio.svg", type: "image/svg+xml" },
+      { url: "/assets/favicon/lirio-negro.png", type: "image/png", media: "(prefers-color-scheme: light)" },
+      { url: "/assets/favicon/lirio-blanco.png", type: "image/png", media: "(prefers-color-scheme: dark)" },
+    ],
+    apple: "/assets/favicon/apple-touch-icon.png",
+  },
 };
 
 export default async function RootLayout({ children }) {

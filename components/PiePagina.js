@@ -7,8 +7,8 @@ import { CONTACTO } from "@/lib/config";
 import { useTextos } from "./Idioma";
 
 const TEXTOS = {
-  es: { terminos: "Términos y Condiciones", legal: "Aviso Legal" },
-  en: { terminos: "Terms and Conditions", legal: "Legal Notice" },
+  es: { terminos: "Términos y Condiciones", legal: "Aviso Legal", admin: "Admin" },
+  en: { terminos: "Terms and Conditions", legal: "Legal Notice", admin: "Admin" },
 };
 
 export default function PiePagina() {
@@ -20,6 +20,8 @@ export default function PiePagina() {
       <a href={`mailto:${CONTACTO}`}>{CONTACTO}</a>
       <Link href="/terminos">{t.terminos}</Link>
       <a href="#">{t.legal}</a>
+      {/* Panel del equipo (con el correo y la contraseña de admin) */}
+      <Link href="/admin">{t.admin}</Link>
     </footer>
   );
 }

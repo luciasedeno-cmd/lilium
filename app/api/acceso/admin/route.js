@@ -1,4 +1,5 @@
-// POST /api/acceso/admin · { email, clave } → página del equipo (botón «Admin» de la cuenta atrás)
+// POST /api/acceso/admin · { email, clave } → página del equipo (/admin: botón «Admin» de la cuenta atrás y del pie)
+// DELETE /api/acceso/admin → salir del panel (se borra la llave de este navegador)
 // Solo lilium@esada.es, con la contraseña guardada en Vercel como ADMIN_CLAVE (nunca en el código).
 // Si es correcta, el navegador recibe la «llave de pruebas» para ver la web antes de la apertura.
 import { createHash, timingSafeEqual } from "node:crypto";
@@ -47,5 +48,11 @@ export const POST = manejar(async (req) => {
     path: "/",
     maxAge: DIAS_PREVIA * 24 * 3600,
   });
+  return ok();
+});
+
+export const DELETE = manejar(async () => {
+  const almacen = await cookies();
+  almacen.delete(COOKIE_PREVIA);
   return ok();
 });

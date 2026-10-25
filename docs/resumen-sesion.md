@@ -34,6 +34,10 @@ Resumen para quien siga con la web. Los detalles técnicos están en `CLAUDE.md`
 - Retrato de «¿Qué es Lilium?» con los ojos que siguen al ratón (en el móvil, miran hacia donde se toca). Entre secciones, encajes que suben al bajar para que no se vea el corte.
 - **Home animada**: entrada de la portada, elementos que aparecen al bajar, parallax suave (portada, retrato, cuadros del ritual, preguntas, paisaje final) y salida de la portada que se funde con la historia. Correcciones: textos del ritual en verde (se leían mal), datos de «Cuándo / Dónde» sobre tarjetas de papel con punto terracota, y título de las preguntas en letra de mano como el resto.
 
+- **Panel del equipo** (`/admin`, enlace «Admin» en el pie): lista de reservas por sala y grupo, plazas, «¿Ha venido?» (Sí/No) y «¿Ha valorado?».
+- **Correos nuevos**: recordatorio el día antes y «¿Qué te pareció Lilium?» el día después (solo a quien no ha valorado). Todos los correos con la estética del diseño del equipo.
+- Favicon del lirio (negro / blanco según el modo del dispositivo). QR del cuestionario para imprimir: `docs/qr-cuestionario.png`.
+
 ## Cosas pendientes o para revisar
 - **Términos y Condiciones**: el texto es un borrador; revisarlo.
 - **Traducciones al inglés**: escritas por Claude; conviene revisarlas. Los **correos** solo están en español, y el **fragmento secreto** también.
