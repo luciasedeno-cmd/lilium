@@ -55,6 +55,15 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Móviles antiguos (por ejemplo iPhone con iOS anterior al 16) no entienden «overflow-x: clip»:
+   sin esto, los encajes (más anchos que la pantalla) dejarían mover la página hacia los lados */
+@supports not (overflow-x: clip) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+}
+
 img {
   display: block;
   max-width: 100%;

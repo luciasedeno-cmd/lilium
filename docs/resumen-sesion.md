@@ -3,7 +3,7 @@
 Resumen para quien siga con la web. Los detalles técnicos están en `CLAUDE.md`.
 
 ## Qué es y cómo está montado
-- Web de reservas del escape room **Lilium** de ESADA (evento: viernes 20 de noviembre; reservas abren el 30 de octubre).
+- Web de reservas del escape room **Lilium** de ESADA (evento: viernes 6 de noviembre en Calle Trinidad, 4, Centro, 18001 Granada; reservas abren el 30 de octubre).
 - **Next.js (JavaScript, sin TypeScript)** con rutas de API en `app/api/`, base de datos **Postgres en Supabase** y correos con **Gmail**.
 - Se trabaja **solo en la rama `main`**; cada push a `main` se publica en **Vercel** (producción). Compilar con `npm run build` antes de subir.
 - Las claves secretas van **solo en Vercel** (Settings → Environment Variables), nunca en el código: `DATABASE_URL`, `SESSION_SECRET`, `GMAIL_USER`, `GMAIL_APP_PASSWORD`, `CRON_SECRET`, `ADMIN_CLAVE`… (lista completa en `.env.example`).

@@ -28,7 +28,7 @@ const TEXTOS = {
       "Un libro antiguo y una noche de luna llena lo cambiaron todo. Ahora ha llegado el momento de abrir el círculo.",
       "Este retiro es para ti, para soltar el cansancio de tantas entregas y liberar lo que pesa. Solo tienes que entrar: ellas se encargan del resto.",
     ],
-    ritualTitulo: "¿Qué necesita el ritual?",
+    ritualTitulo: "¿Qué necesita el retiro?",
     cuadros: [
       { alt: "Mujer escribiendo una carta", titulo: "Correo de ESADA", texto: "Todas las personas del grupo necesitan su correo nombreapellido@alumnado.esada.es." },
       { alt: "Grupo de personas reunidas", titulo: "De 3 a 6 personas", texto: "Hacen falta 3 para abrir una sala nueva. Máximo 6 por turno" },
@@ -54,7 +54,7 @@ const TEXTOS = {
       "An old book and a full-moon night changed everything. Now the time has come to open the circle.",
       "This retreat is for you: to shake off the weariness of so many deadlines and let go of what weighs you down. All you have to do is step inside; they will take care of the rest.",
     ],
-    ritualTitulo: "What does the ritual need?",
+    ritualTitulo: "What does the retreat need?",
     cuadros: [
       { alt: "Woman writing a letter", titulo: "ESADA email", texto: "Everyone in the group needs their nameSurname@alumnado.esada.es email." },
       { alt: "Group of people gathered together", titulo: "3 to 6 people", texto: "You need 3 to open a new room. Maximum 6 per session" },
@@ -126,7 +126,7 @@ export default async function Inicio() {
           <CarruselPasos />
         </ComoReservar>
 
-        {/* ¿Qué necesita el ritual? */}
+        {/* ¿Qué necesita el retiro? */}
         <section className="ritual">
           {/* Unión con «¿Cómo reservar?»: el encaje del color del ritual sube y tapa el corte */}
           <div className="union union--crudo" data-subir aria-hidden="true" />
@@ -199,8 +199,6 @@ export default async function Inicio() {
               <Link className="boton-reserva cta__boton" href="/reserva/integrantes">{t.reservar}</Link>
             </div>
           </div>
-          {/* Unión con el pie de página (verde) */}
-          <div className="union union--pie" aria-hidden="true" />
         </section>
       </main>
 

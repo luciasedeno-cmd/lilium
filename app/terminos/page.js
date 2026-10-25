@@ -2,6 +2,7 @@
 // ⚠️ TEXTO PROVISIONAL: revisadlo y cambiad lo que haga falta. Cada <p> es un párrafo y cada <li> un punto de lista.
 import Link from "next/link";
 import NavReserva from "@/components/NavReserva";
+import PiePagina from "@/components/PiePagina";
 import { EVENTO, CONTACTO, MIN_SALA_NUEVA, MAX_PERSONAS, HORAS_CONFIRMACION } from "@/lib/config";
 import { idiomaActual } from "@/lib/idiomaServidor";
 
@@ -61,6 +62,7 @@ function TerminosEs() {
           <p><Link href="/inicio">← Volver al inicio</Link></p>
         </article>
       </main>
+      <PiePagina />
     </>
   );
 }
@@ -120,6 +122,7 @@ function TerminosEn() {
           <p><Link href="/inicio">← Back to home</Link></p>
         </article>
       </main>
+      <PiePagina />
     </>
   );
 }

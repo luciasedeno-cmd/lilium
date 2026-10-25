@@ -11,7 +11,7 @@ main.cues-enviado {
 
 /* El cuadro del retiro ocupa toda la página, detrás de las tarjetas */
 main.cues {
-  padding: 140px var(--space-4) 160px;
+  padding: 140px var(--space-4) 200px;
   background: var(--brand-forest) url("/assets/img/fondo-encuesta.webp") center top / cover no-repeat;
 }
 
@@ -280,7 +280,7 @@ main.cues-enviado {
   display: grid;
   place-items: center;
   min-height: 100svh;
-  padding: 96px var(--space-4) var(--space-12);
+  padding: 96px var(--space-4) 170px; /* abajo, sitio para el encaje del pie */
   background: linear-gradient(rgba(41, 47, 32, 0.55), rgba(41, 47, 32, 0.55)), url("/assets/img/fondo-encuesta.webp") center / cover no-repeat;
 }
 

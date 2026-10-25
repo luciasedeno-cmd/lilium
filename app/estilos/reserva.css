@@ -7,8 +7,9 @@
 /* Márgenes de las páginas de reserva. En Next.js todos los estilos se comparten entre páginas,
    así que se excluye la Home (la que tiene .hero) para que sus secciones lleguen de borde a borde. */
 main:not(:has(.hero)) {
-  /* 72 px arriba: la barra de navegación va por encima, transparente */
-  padding: 72px 16px 120px;
+  /* 72 px arriba: la barra de navegación va por encima, transparente.
+     180 px abajo: sitio para el encaje del pie, que sube sobre el final de la página */
+  padding: 72px 16px 180px;
 }
 
 /* ---------- Cabecera de paso: 3 puntos + "PASO N DE 3" ---------- */
@@ -959,11 +960,16 @@ main.paso > :nth-child(n + 5) { animation-delay: 0.24s; }
   animation: retrato-flota 7s ease-in-out infinite alternate;
 }
 
+/* Retrato de la izquierda: mismas proporciones que el de la Home (el marco no se deforma
+   y la foto queda justo en el centro del encaje) */
 .retrato-paso--izq {
-  left: 58px;
-  top: 144px;
-  width: 218px;
-  height: 275px;
+  left: max(24px, calc(50% - 640px));
+  top: 470px;
+  width: 190px;
+  aspect-ratio: 509 / 709;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .retrato-paso__marco {
@@ -971,23 +977,23 @@ main.paso > :nth-child(n + 5) { animation-delay: 0.24s; }
   inset: 0;
   width: 100%;
   height: 100%;
-}
-
-.retrato-paso__foto {
-  position: absolute;
-  left: 18%;
-  top: 11%;
-  width: 64%;
-  height: 78%;
-  border-radius: 50%;
   object-fit: cover;
 }
 
+.retrato-paso__foto {
+  position: relative;
+  width: 68.4%;
+  aspect-ratio: 348 / 509;
+  object-fit: cover;
+}
+
+/* Retrato de la derecha: en el margen contrario, un poco más abajo */
 .retrato-paso--der {
-  right: 101px;
-  top: 499px;
-  width: 145px;
-  height: 191px;
+  right: max(24px, calc(50% - 640px));
+  top: 600px;
+  width: 160px;
+  height: auto;
+  aspect-ratio: 145 / 191;
   animation-delay: -3s;
 }
 
@@ -1135,20 +1141,19 @@ main.paso > :nth-child(n + 5) { animation-delay: 0.24s; }
   transform: scale(1.08);
 }
 
-/* Hueco del correo + botón «+» (617 × 70 y 63 px en el diseño) */
+/* Hueco del correo + botón «+»: misma anchura que la lista (716 px); el «+» queda alineado con las ✕ */
 .int-form {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 23px;
-  width: 703px;
+  gap: 16px;
+  width: 716px;
   max-width: 100%;
-  margin: 40px auto 0;
+  margin: 32px auto 0;
 }
 
 .int-form__campo.campo {
   flex: 1;
-  height: 70px;
+  height: 64px;
   padding: 0 18px;
   border-radius: 14px;
   font-size: 20px;
@@ -1169,34 +1174,40 @@ main.paso > :nth-child(n + 5) { animation-delay: 0.24s; }
 }
 
 .int-error {
-  width: 703px;
+  width: 716px;
   max-width: 100%;
   min-height: 22px;
   margin: 8px auto 0;
   padding-left: 18px;
 }
 
+/* Botón principal: misma anchura que la lista y el hueco del correo */
 .paso--integrantes .integrantes-continuar {
-  margin-top: 26px;
+  width: 716px;
+  height: 64px;
+  margin-top: 20px;
 }
 
-/* Aviso naranja de debajo del botón */
+/* Nota de debajo del botón: más pequeña y en color suave, para que no compita con el botón
+   (antes era naranja, más grande y más ancha que el resto) */
 .int-aviso {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  width: 860px;
+  width: 716px;
   max-width: 100%;
-  margin: 22px auto 0;
+  margin: 16px auto 0;
   font-family: var(--font-inter);
-  font-weight: 600;
-  font-size: 17px;
-  color: var(--naranja);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--burgundy-500, #8a5247);
   text-align: center;
 }
 
 .int-aviso b {
-  font-weight: 700;
+  font-weight: 600;
+  color: var(--terracota);
 }
 
 @media (max-width: 760px) {
@@ -1243,7 +1254,7 @@ main.paso > :nth-child(n + 5) { animation-delay: 0.24s; }
   }
 
   .int-aviso {
-    font-size: 15px;
+    font-size: 13px;
   }
 }
 
@@ -1853,15 +1864,12 @@ main.paso > :nth-child(n + 5) { animation-delay: 0.24s; }
   text-align: center;
 }
 
-.rev-emblema__circulo {
-  display: grid;
-  place-items: center;
+/* Emblema: un icono de perfil (círculo de color con su símbolo ya centrado en el dibujo) */
+.rev-emblema__icono {
   width: 250px;
   height: 250px;
   border-radius: var(--radius-full);
-  background: var(--team);
-  color: var(--brand-forest);
-  font: 400 110px/1 var(--font-script-ds);
+  box-shadow: var(--shadow-card);
 }
 
 .rev-emblema__nombre {
@@ -2084,10 +2092,9 @@ main.paso > :nth-child(n + 5) { animation-delay: 0.24s; }
     gap: var(--space-4);
   }
 
-  .rev-emblema__circulo {
+  .rev-emblema__icono {
     width: 96px;
     height: 96px;
-    font-size: 48px;
   }
 
   .rev-emblema__nombre {

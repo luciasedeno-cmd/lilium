@@ -458,8 +458,8 @@ const MAX_GRUPO = 6;
 const HORAS_CONFIRMACION = 48;
 const DOMINIO_PERMITIDO = "alumnado.esada.es";
 const EVENTO = {                      // SOLO UN DÍA de evento
-  fecha: new Date(2026, 10, 20),      // 20 noviembre 2026 (mes 0-indexado)
-  lugar: { es: "ESADA · Sala polivalente (planta baja)", en: "ESADA · Multipurpose room (ground floor)" },
+  fecha: new Date(2026, 10, 6),       // 6 noviembre 2026 (mes 0-indexado)
+  lugar: { es: "Calle Trinidad, 4, Centro, 18001 Granada", en: "Calle Trinidad, 4, Centro, 18001 Granada" },
   mapsUrl: "https://www.google.com/maps/search/?api=1&query=ESADA+Escuela+Superior+de+Arte+y+Dise%C3%B1o+de+Andaluc%C3%ADa+Granada"
 };
 const CONTACTO = "lilium@esada.es";
@@ -929,9 +929,9 @@ function pHome() {
           <div>
             <h2 id="h-historia">${L("¿Quién es Lilium?", "Who is Lilium?")}</h2>
             <div class="texto">${L(
-              `<p>Lilium nace de una <b>fiesta</b> que nunca termina: un prado en flor, una <b>hermandad</b> vestida de blanco y un <b>ritual</b> que nadie recuerda haber empezado. Durante <b>cuarenta y cinco</b> minutos, vuestro grupo tendrá que <b>descifrar</b> qué se celebra allí antes de que caiga la noche… si es que alguna vez cae.</p>
+              `<p>Lilium nace de una <b>fiesta</b> que nunca termina: un prado en flor, una <b>hermandad</b> vestida de blanco y un <b>retiro</b> que nadie recuerda haber empezado. Durante <b>cuarenta y cinco</b> minutos, vuestro grupo tendrá que <b>descifrar</b> qué se celebra allí antes de que caiga la noche… si es que alguna vez cae.</p>
                <p><b>Reservar</b> es sencillo y está pensado para que nadie se quede fuera: <b>entra con tu correo de ESADA, reúne a tu gente (de ${MIN_GRUPO} a ${MAX_GRUPO}) y elegid hora. Si sois menos, os unimos a un grupo que esté formándose.</b></p>`,
-              `<p>Lilium was born from a <b>party</b> that never ends: a meadow in bloom, a <b>sisterhood</b> dressed in white and a <b>ritual</b> nobody remembers starting. For <b>forty-five</b> minutes, your group will have to <b>decipher</b> what is being celebrated there before night falls… if it ever does.</p>
+              `<p>Lilium was born from a <b>party</b> that never ends: a meadow in bloom, a <b>sisterhood</b> dressed in white and a <b>retreat</b> nobody remembers starting. For <b>forty-five</b> minutes, your group will have to <b>decipher</b> what is being celebrated there before night falls… if it ever does.</p>
                <p><b>Booking</b> is easy and designed so nobody is left out: <b>sign in with your ESADA email, gather your people (${MIN_GRUPO} to ${MAX_GRUPO}) and pick a time. If you're fewer, we'll add you to a group that's forming.</b></p>`)}</div>
           </div>
         </div>
@@ -955,7 +955,7 @@ function pHome() {
       </section>
 
       <section class="ritual sec" id="requisitos" aria-labelledby="h-req">
-        <h2 id="h-req">${L("¿Qué necesita el ritual?", "What does the ritual need?")}</h2>
+        <h2 id="h-req">${L("¿Qué necesita el retiro?", "What does the retreat need?")}</h2>
         <div class="req-grid">${req.map(([img, w, h, t, d]) => `<div class="req"><div class="foto"><img src="assets/${img}" alt="" width="${w}" height="${h}"></div><h3>${t}</h3><p>${d}</p></div>`).join("")}</div>
       </section>
 
@@ -1404,7 +1404,7 @@ function plantillasEmail(r) {
         <p style="margin-top:14px">${L("Compartid vuestros fragmentos antes del día para descubrir la palabra secreta.", "Share your fragments before the day to discover the secret word.")}</p>` },
     { id: "rec", titulo: L("Recordatorio", "Reminder"), cuando: L(`Enviado el ${fechaLarga(rec)} (2 días antes)`, `Sent on ${fechaLarga(rec)} (2 days before)`), para: L("Todo el grupo", "Whole group"),
       asunto: L(`Pasado mañana: Lilium a las ${t.inicio}`, `The day after tomorrow: Lilium at ${t.inicio}`),
-      html: `<h3>${L("Faltan 2 días para el ritual", "2 days until the ritual")}</h3>
+      html: `<h3>${L("Faltan 2 días para el retiro", "2 days until the retreat")}</h3>
         <ul class="sumlist">
           <li><span class="k">${L("Hora", "Time")}</span><span class="v">${horaTurno(t)}</span></li>
           <li><span class="k">${L("Ubicación exacta", "Exact location")}</span><span class="v"><a href="${EVENTO.mapsUrl}" target="_blank" rel="noopener">${EVENTO.lugar[state.lang]} · Google Maps ↗</a></span></li>

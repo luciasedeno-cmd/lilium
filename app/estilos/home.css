@@ -280,15 +280,6 @@ body:has(.hero) {
 .union--crudo { --union-color: var(--crudo); }
 .union--terracota { --union-color: var(--terracota); }
 
-/* Al final de la Home el encaje verde del pie sube sobre el paisaje (siempre visible) */
-.union--pie {
-  --union-color: var(--verde-oscuro);
-  top: auto;
-  bottom: -33px;
-  z-index: 2;
-  translate: none;
-}
-
 /* El encaje del color de «¿Cómo reservar?» también crece hacia arriba al bajar
    (se estira desde su borde de abajo, así nunca tapa el título de la sección) */
 .encaje--como {
@@ -1066,9 +1057,10 @@ body:has(.hero) {
 
 /* ---------- CTA invitación ---------- */
 /* ---------- Imagen final (paisaje) ---------- */
+/* Más alta que el paisaje del diseño (494 px): los últimos 150 px quedan para el encaje del pie */
 .cta {
   position: relative;
-  height: 494px;
+  height: 640px;
 }
 
 .cta__marco {
@@ -1099,7 +1091,7 @@ body:has(.hero) {
 
 .cta__contenido {
   position: absolute;
-  inset: 70px 16px 30px;
+  inset: 70px 16px 160px;
   z-index: 1;
   display: flex;
   flex-direction: column;
@@ -1156,6 +1148,7 @@ body:has(.hero) {
 
 /* ---------- Footer ---------- */
 .footer {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1172,6 +1165,31 @@ body:has(.hero) {
 
 .footer a:hover {
   text-decoration: underline;
+}
+
+/* Encaje verde del pie: el mismo en todas las páginas. Cuelga hacia arriba sobre el final de la página
+   (el dibujo deja 33 px vacíos abajo; por eso se baja esa medida) */
+.footer__encaje {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% - 33px);
+  width: max(1612px, 110vw);
+  height: 176px;
+  max-width: none;
+  transform: translateX(-50%);
+  background: var(--verde-oscuro);
+  -webkit-mask: url("/assets/svg/banner-encaje-reserva.svg") center / 100% 100% no-repeat;
+  mask: url("/assets/svg/banner-encaje-reserva.svg") center / 100% 100% no-repeat;
+  pointer-events: none;
+}
+
+/* En el móvil, el encaje más bajito (misma forma, más pequeño) */
+@media (max-width: 760px) {
+  .footer__encaje {
+    width: 1008px;
+    height: 110px;
+    bottom: calc(100% - 21px);
+  }
 }
 
 /* ==========================================================
@@ -1501,7 +1519,11 @@ body:has(.hero) {
   }
 
   .cta {
-    height: 460px;
+    height: 560px;
+  }
+
+  .cta__contenido {
+    inset: 60px 16px 110px;
   }
 
   .cta__titulo {

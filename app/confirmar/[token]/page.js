@@ -1,5 +1,6 @@
 // Página del enlace del correo de invitación: confirmar la plaza
 import NavReserva from "@/components/NavReserva";
+import PiePagina from "@/components/PiePagina";
 import BotonConfirmar from "@/components/BotonConfirmar";
 import { miembroPorToken, reservaDe } from "@/lib/reservas";
 import { conDb } from "@/lib/db";
@@ -65,6 +66,7 @@ export default async function Confirmar({ params }) {
           )}
         </section>
       </main>
+      <PiePagina />
     </>
   );
 }

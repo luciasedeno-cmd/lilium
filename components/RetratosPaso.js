@@ -1,4 +1,5 @@
-// Dos retratos ovalados con marco de encaje a los lados de las páginas de los pasos (Figma «PAG RESERVA - INTEGRANTES»).
+// Dos retratos ovalados con marco de encaje a los lados del paso 1 (Figma «PAG RESERVA - INTEGRANTES»).
+// Van en los márgenes, a la altura del formulario (no junto al título), uno más alto que el otro.
 // Solo decoran: se ocultan en pantallas estrechas para no tapar nada.
 export default function RetratosPaso() {
   return (

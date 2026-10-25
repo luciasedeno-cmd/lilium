@@ -21,7 +21,7 @@ const TEXTOS = {
     sinNombre: "Vuestra hermandad", editarReserva: "Editar reserva", anularReserva: "Anular reserva",
     preguntaAnular: "¿Seguro que quieres empezar de cero? Se borrará el grupo y la hora que has elegido.",
     laSala: "La sala", experiencia: "Lilium · El retiro",
-    sinopsis: "Cinco guías os esperan en el prado para un ritual de 45 minutos. Entrad con la mente abierta: el resto lo descubriréis dentro.",
+    sinopsis: "Cinco guías os esperan en el prado para un retiro de 45 minutos. Entrad con la mente abierta: el resto lo descubriréis dentro.",
     minutos: "45 min", personas: `${MIN_SALA_NUEVA}–${MAX_PERSONAS} personas`, erasmus: "Solo Erasmus", verMas: "Ver más sobre la experiencia",
     fechaHora: "Fecha y hora", dia: "Día", hora: "Hora", llegada: "Llegada", antes: "15 min antes", lugar: "Lugar",
     tuEquipo: "Tu equipo", liderConfirmado: "Líder · Confirmado", invitado: "Invitado · Recibirá correo para confirmar",
@@ -48,7 +48,7 @@ const TEXTOS = {
     sinNombre: "Your sisterhood", editarReserva: "Edit booking", anularReserva: "Cancel booking",
     preguntaAnular: "Are you sure you want to start again? Your group and chosen time will be cleared.",
     laSala: "The room", experiencia: "Lilium · The retreat",
-    sinopsis: "Five guides await you in the meadow for a 45-minute ritual. Come with an open mind: you'll discover the rest inside.",
+    sinopsis: "Five guides await you in the meadow for a 45-minute retreat. Come with an open mind: you'll discover the rest inside.",
     minutos: "45 min", personas: `${MIN_SALA_NUEVA}–${MAX_PERSONAS} people`, erasmus: "Erasmus only", verMas: "Learn more about the experience",
     fechaHora: "Date and time", dia: "Day", hora: "Time", llegada: "Arrival", antes: "15 min early", lugar: "Place",
     tuEquipo: "Your team", liderConfirmado: "Leader · Confirmed", invitado: "Guest · Will get an email to confirm",
@@ -112,10 +112,11 @@ export default function Confirmacion() {
   const iconos = iconosDe(miembros); // icono de perfil de cada persona
   const nueva = turno.estado === "libre";
   const equipo = nueva ? (borrador.equipo || "").trim() || t.sinNombre : turno.equipo || t.sinNombre;
+  const iconoEquipo = iconosDe([`equipo:${equipo.trim().toLowerCase()}`])[0]; // emblema del equipo
   // ¿Sigue valiendo el turno con el grupo actual? (se puede quitar gente desde aquí)
   const valido = nueva ? miembros.length >= MIN_SALA_NUEVA : turno.hueco >= miembros.length;
   const aceptado = terminos && normas;
-  // Fecha corta para el resumen: «vie, 20 nov» / «Fri 20 Nov»
+  // Fecha corta para el resumen: «vie, 6 nov» / «Fri 6 Nov»
   const fechaCorta = new Date(`${EVENTO.fecha}T12:00:00`).toLocaleDateString(idioma === "en" ? "en-GB" : "es-ES", { weekday: "short", day: "numeric", month: "short" });
 
   async function reservar() {
@@ -153,7 +154,8 @@ export default function Confirmacion() {
         <div className="rev__rejilla">
           {/* ---------- Columna 1: emblema del equipo ---------- */}
           <aside className="rev-emblema">
-            <span className="rev-emblema__circulo" aria-hidden="true">{equipo.trim().charAt(0)}</span>
+            {/* Emblema del equipo: uno de los iconos de perfil, «al azar» pero siempre el mismo para ese nombre */}
+            <img className="rev-emblema__icono" src={iconoEquipo} width="250" height="250" alt="" />
             <p className="rev-emblema__nombre">“{equipo}”</p>
             <Link className="ll-btn ll-btn--md ll-btn--primary" href="/reserva/integrantes">{t.editarReserva}</Link>
             <button className="ll-btn ll-btn--md ll-btn--secondary" type="button" onClick={anular}>{t.anularReserva}</button>

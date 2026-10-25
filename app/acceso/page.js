@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import NavReserva from "@/components/NavReserva";
+import PiePagina from "@/components/PiePagina";
 import { useTextos } from "@/components/Idioma";
 import { api, leerBorrador, guardarBorrador } from "@/lib/borrador";
 
@@ -148,6 +149,7 @@ export default function Acceso() {
           )}
         </section>
       </main>
+      <PiePagina />
     </div>
   );
 }
