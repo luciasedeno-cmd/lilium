@@ -42,7 +42,7 @@ Resumen para quien siga con la web. Los detalles técnicos están en `CLAUDE.md`
 - **Términos y Condiciones**: el texto es un borrador; revisarlo.
 - **Traducciones al inglés**: escritas por Claude; conviene revisarlas. Los **correos** solo están en español, y el **fragmento secreto** también.
 - **«Aviso Legal»** del pie todavía no lleva a ninguna página.
-- **GitHub**: añadir los secretos `LILIUM_URL` y `CRON_SECRET` para que funcione la tarea de cada hora (recordatorios y lista de espera).
+- **Correos automáticos**: Vercel llama a `/api/cron` una vez al día a las 10:00 (`vercel.json`). Comprobar que existe la variable `CRON_SECRET` en Vercel. Opcional: los secretos `LILIUM_URL` y `CRON_SECRET` en GitHub para que además se ejecute cada hora.
 - Imágenes exportadas como captura desde Figma (el lirio, el retrato de la joven con lirios…): si se tienen los originales, cambiarlos para que se vean más nítidos.
 - En el móvil la historia de la Home es algo más alta que una pantalla (texto + retrato no caben).
 - **Antes del 30 de octubre**: borrar las reservas de prueba pegando `db/borrar-reservas.sql` en el SQL Editor de Supabase.

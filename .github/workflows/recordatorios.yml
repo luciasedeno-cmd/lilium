@@ -1,4 +1,6 @@
-# Cada hora llama a /api/cron: aplica el plazo de 48 h y envía los recordatorios de las 12 h.
+# OPCIONAL. Vercel ya llama a /api/cron una vez al día (vercel.json → «crons», a las 10:00 de España),
+# que basta para el recordatorio del día antes y el correo de valoración. Esta tarea de GitHub lo hace
+# además cada hora (recordatorios del plazo de 48 h más puntuales). Si no se configura, no pasa nada.
 # Necesita dos secretos del repositorio (Settings → Secrets and variables → Actions):
 #   LILIUM_URL   → la URL pública de la web, p. ej. https://lilium.vercel.app
 #   CRON_SECRET  → el mismo valor que la variable CRON_SECRET de Vercel

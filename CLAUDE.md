@@ -45,7 +45,7 @@
 - `db/cambiar-turnos.sql`: para cambiar los turnos desde el SQL Editor de Supabase (borra las reservas que haya).
 - Iconos de perfil (`public/assets/img/perfiles/`, 10 símbolos × 6 colores): `lib/fotos.js` → `iconosDe(correos)` da a cada persona uno «al azar» fijo según su correo, sin repetir símbolo ni color dentro del grupo.
 - `public/assets/`: imágenes y SVG. `public/prototipo.html`: prototipo antiguo de una sola página (solo referencia).
-- `.github/workflows/recordatorios.yml`: llama cada hora a `/api/cron` (plazo de 48 h y recordatorios).
+- `/api/cron` lo llama **Vercel una vez al día** (`vercel.json` → `crons`, 9:00 UTC = 10:00 en España; en el plan gratuito de Vercel no se puede más a menudo). Vercel manda sola la cabecera con `CRON_SECRET` (tiene que existir esa variable en Vercel). Opcional: `.github/workflows/recordatorios.yml` lo llama además cada hora si se ponen los secretos `LILIUM_URL` y `CRON_SECRET` en GitHub.
 - Diseño de referencia en Figma: https://www.figma.com/design/b0Z4AyQb7eFU08qjStTuFz/Lilium-Figma?node-id=1-6
 
 ## Textos
