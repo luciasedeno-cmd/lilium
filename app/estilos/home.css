@@ -1373,7 +1373,8 @@ body:has(.hero) {
     display: flex;
     flex-direction: column;
     gap: 32px;
-    padding: 180px 24px 48px;
+    /* Abajo, sitio para el encaje que sube desde la sección de Erasmus (así no tapa «Dónde») */
+    padding: 180px 24px 180px;
   }
 
   .ubicacion__mapa {
@@ -1604,13 +1605,26 @@ body:has(.hero) {
   .erasmus {
     height: auto;
     aspect-ratio: 768 / 1340;
-    padding: 47vw 23% 0;
+    /* Los textos y el botón bajan hasta el centro del hueco del arco */
+    padding: 62vw 23% 0;
     background: var(--terracota) url("/assets/img/erasmus-arco-movil.webp") center top / 100% 100% no-repeat;
   }
 
   .erasmus__lirio {
     width: 56px;
     height: 45px;
+  }
+
+  /* El encaje de arriba de Erasmus, más pequeño en el móvil y pegado justo al borde del arco
+     (así no tapa la tarjeta de «Dónde»). El dibujo deja 33 px vacíos abajo de 176: a este tamaño, 19 px. */
+  .ubicacion {
+    padding-bottom: 130px;
+  }
+
+  .erasmus .union {
+    width: 920px;
+    height: 100px;
+    bottom: calc(100% - 19px);
   }
 
   .erasmus__titulo {
