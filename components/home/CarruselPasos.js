@@ -49,27 +49,57 @@ export default function CarruselPasos() {
       bloque.classList.add("como-bloque--simple");
       return;
     }
-    let pendiente = false;
-    function pintar() {
-      pendiente = false;
+    // «objetivo» = dónde debería estar según la rueda; «pos» = dónde se pinta. pos va detrás de objetivo
+    // poco a poco y con una velocidad máxima: así, aunque alguien gire la rueda muy deprisa,
+    // las tarjetas pasan despacio y se ve cada mano (como un carrito que frena y acelera suave).
+    const VELOCIDAD_MAX = 0.9; // pasos por segundo como mucho
+    let objetivo = 0;
+    let pos = null;
+    let ultimo = 0;
+    let animando = false;
+
+    function calcularObjetivo() {
       const r = bloque.getBoundingClientRect();
       const recorrido = bloque.offsetHeight - window.innerHeight;
       const avance = Math.min(1, Math.max(0, -r.top / Math.max(1, recorrido))) * (n - 1);
-      // Cada paso se queda quieto un rato y luego pasa suave al siguiente
+      // Cada paso se queda quieto un buen rato y luego pasa suave al siguiente
       const i = Math.min(n - 2, Math.floor(avance));
-      const f = Math.min(1, Math.max(0, (avance - i - 0.3) / 0.4));
-      const pos = i + f * f * (3 - 2 * f);
-      pista.current.style.transform = `translateX(${(-pos * 100) / n}%)`;
-      relleno.current.style.transform = `scaleX(${pos / (n - 1)})`;
-      setActual(Math.round(pos));
+      const f = Math.min(1, Math.max(0, (avance - i - 0.25) / 0.5));
+      objetivo = i + f * f * (3 - 2 * f);
     }
+
+    function pintar(pPos) {
+      pista.current.style.transform = `translateX(${(-pPos * 100) / n}%)`;
+      relleno.current.style.transform = `scaleX(${pPos / (n - 1)})`;
+      setActual(Math.round(pPos));
+    }
+
+    function fotograma(t) {
+      const dt = Math.min(0.05, (t - ultimo) / 1000 || 0.016);
+      ultimo = t;
+      const resta = objetivo - pos;
+      // Se acerca un 8 % del camino que falta en cada fotograma, sin pasar de la velocidad máxima
+      let paso = resta * (1 - Math.pow(0.92, dt * 60));
+      const tope = VELOCIDAD_MAX * dt;
+      paso = Math.max(-tope, Math.min(tope, paso));
+      pos = Math.abs(resta) < 0.001 ? objetivo : pos + paso;
+      pintar(pos);
+      if (pos !== objetivo) requestAnimationFrame(fotograma);
+      else animando = false;
+    }
+
     const alBajar = () => {
-      if (!pendiente) {
-        pendiente = true;
-        requestAnimationFrame(pintar);
+      calcularObjetivo();
+      if (!animando) {
+        animando = true;
+        ultimo = performance.now();
+        requestAnimationFrame(fotograma);
       }
     };
-    pintar();
+    // Al cargar la página se coloca directamente donde toca (sin animación)
+    calcularObjetivo();
+    pos = objetivo;
+    pintar(pos);
     window.addEventListener("scroll", alBajar, { passive: true });
     window.addEventListener("resize", alBajar);
     return () => {
