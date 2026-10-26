@@ -36,6 +36,7 @@ const TEXTOS = {
     salasVacias: (n) => (n === 1 ? "1 turno sin reservas" : `${n} turnos sin reservas`),
     salaSinNombre: "Sin nombre", erasmus: "Erasmus", grupo: (n) => `Grupo ${n}`, notas: "Anotaciones",
     sinDueno: "Palabras de la frase que no tiene nadie (dádselas el día del retiro):",
+    noVinieron: "Palabras de quien no ha venido (dádselas al grupo):", palabraTitulo: "Su palabra de la frase secreta",
     persona: "Persona", estado: "Estado", vino: "¿Ha venido?", valoro: "¿Ha valorado?",
     lider: "Líder", confirmada: "Confirmada", pendiente: "Sin confirmar",
     si: "Sí", no: "No", valorado: "Sí", noValorado: "Todavía no", correoEnviado: "Correo enviado",
@@ -70,6 +71,7 @@ const TEXTOS = {
     salasVacias: (n) => (n === 1 ? "1 session without bookings" : `${n} sessions without bookings`),
     salaSinNombre: "No name", erasmus: "Erasmus", grupo: (n) => `Group ${n}`, notas: "Notes",
     sinDueno: "Words of the phrase nobody has (hand them out on the day):",
+    noVinieron: "Words of people who didn't come (give them to the group):", palabraTitulo: "Their word of the secret phrase",
     persona: "Person", estado: "Status", vino: "Attended?", valoro: "Rated?",
     lider: "Leader", confirmada: "Confirmed", pendiente: "Not confirmed",
     si: "Yes", no: "No", valorado: "Yes", noValorado: "Not yet", correoEnviado: "Email sent",
@@ -362,6 +364,16 @@ function Panel({ t, datos, aviso, marcar, actualizar, salir }) {
               {s.grupos.map((g, n) => (
                 <Grupo key={g.id} t={t} grupo={g} numero={s.grupos.length > 1 ? n + 1 : null} marcar={marcar} />
               ))}
+              {/* Quien está marcado como «No ha venido»: su palabra falta en la sala */}
+              {(() => {
+                const faltan = s.grupos.flatMap((g) => g.personas).filter((p) => p.asistio === false && p.fragmento).map((p) => p.fragmento);
+                return faltan.length > 0 && (
+                  <p className="panel-sala__fragmentos">
+                    {t.noVinieron}{" "}
+                    {faltan.map((f) => <b key={f.numero}>{f.numero} {f.palabra}</b>).reduce((a, b) => [a, " · ", b])}
+                  </p>
+                );
+              })()}
               {/* Con menos de 6 personas, alguna palabra de la frase secreta se queda sin dueño */}
               {s.sinDueno?.length > 0 && (
                 <p className="panel-sala__fragmentos">
@@ -477,6 +489,12 @@ function Grupo({ t, grupo, numero, marcar }) {
               <td className="panel-tabla__persona" data-titulo={t.persona}>
                 <img src={iconos[i]} width="36" height="36" alt="" />
                 <span>{p.email}</span>
+                {/* Su palabra de la frase secreta (solo se ve aquí, en el panel del equipo) */}
+                {p.fragmento && (
+                  <span className="panel-palabra" title={t.palabraTitulo}>
+                    <small>{p.fragmento.numero}</small> {p.fragmento.palabra}
+                  </span>
+                )}
               </td>
               <td data-titulo={t.estado}>
                 <span className={`panel-estado${p.confirmado ? " is-ok" : ""}`}>

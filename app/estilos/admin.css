@@ -453,3 +453,20 @@ main.panel {
   font-family: var(--font-serif);
   letter-spacing: 0.04em;
 }
+
+/* Palabra de la frase secreta de cada persona, junto a su correo */
+.panel-palabra {
+  flex: none;
+  margin-left: auto;
+  padding: 2px 10px;
+  border: 1px solid var(--ink);
+  border-radius: var(--radius-full);
+  font: 500 13px/1.6 var(--font-serif);
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.panel-palabra small {
+  font-size: 10px;
+  opacity: 0.75;
+}
