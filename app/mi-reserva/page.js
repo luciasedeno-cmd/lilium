@@ -17,7 +17,6 @@ import { fechaHora } from "@/lib/idioma";
 
 
 // Número corto de la reserva para el título (las 6 primeras letras de su identificador)
-const numeroDe = (id) => String(id).replace(/-/g, "").slice(0, 6).toUpperCase();
 
 const TEXTOS = {
   es: {
@@ -32,6 +31,7 @@ const TEXTOS = {
     guardadoInvitados: "Cambios guardados. Hemos enviado la invitación a las personas nuevas: tienen 48 h para confirmar.", guardado: "Cambios guardados.",
     cargando: "Cargando tu reserva…", nuevo: "Nuevo · recibirá la invitación al guardar", seQuitara: "Se quitará del grupo al guardar",
     lider: "Líder", invitado: "Invitado", confirmado: "Confirmado", pendienteHasta: (f) => `Pendiente (hasta el ${f})`,
+    unida: "Se ha unido a vuestra sala", unidaConfirmada: "Se ha unido a vuestra sala · Confirmado", otrosSala: "También en vuestra sala",
     miReserva: "Mi reserva", numero: "Nº", tuReserva: "Tu reserva", qrAlt: "QR de tu entrada: enséñalo en la puerta",
     sinQr: "Tu entrada (el código QR) aparecerá aquí cuando confirmes tu plaza desde el enlace de tu correo.",
     pendiente: "Pendiente de confirmación", confirmada: "Confirmada", llegad: "llegad 15 min antes", soloErasmus: "Solo Erasmus",
@@ -61,6 +61,7 @@ const TEXTOS = {
     guardadoInvitados: "Changes saved. We've sent the invitation to the new people: they have 48 h to confirm.", guardado: "Changes saved.",
     cargando: "Loading your booking…", nuevo: "New · will get the invitation when you save", seQuitara: "Will be removed from the group when you save",
     lider: "Leader", invitado: "Guest", confirmado: "Confirmed", pendienteHasta: (f) => `Pending (until ${f})`,
+    unida: "Joined your room", unidaConfirmada: "Joined your room · Confirmed", otrosSala: "Also in your room",
     miReserva: "My booking", numero: "No.", tuReserva: "Your booking", qrAlt: "Your ticket's QR: show it at the door",
     sinQr: "Your ticket (the QR code) will appear here once you confirm your place from the link in your email.",
     pendiente: "Pending confirmation", confirmada: "Confirmed", llegad: "arrive 15 min early", soloErasmus: "Erasmus only",
@@ -204,7 +205,8 @@ function MiReservaContenido() {
   // Plazas libres en el turno teniendo en cuenta los cambios sin guardar
   const hueco = MAX_PERSONAS - turno.ocupadas + quitar.length - anadir.length;
   const lista = [...miembros.map((m) => ({ ...m, nuevo: false })), ...anadir.map((c) => ({ email: c, confirmado: false, nuevo: true }))];
-  const iconos = iconosDe(lista.map((m) => m.email)); // icono de perfil de cada persona
+  const companeros = reserva.companeros || []; // gente de otros grupos que comparte sala
+  const iconos = iconosDe([...lista, ...companeros].map((m) => m.email)); // icono de perfil de cada persona
   const [iconoEquipo] = iconosDe([`equipo-${turno.id}`]);
   const hayCambios = quitar.length > 0 || anadir.length > 0;
 
@@ -221,7 +223,8 @@ function MiReservaContenido() {
       <main className="mi-reserva" data-fondo="oscuro">
         <header className="mi-reserva__cabecera" data-principal>
           <p className="mi-reserva__etiqueta">{t.miReserva}</p>
-          <h1 className="mi-reserva__titulo">{t.numero} {numeroDe(reserva.id)}</h1>
+          {/* Nombre que se le puso al grupo (si no tiene, «Vuestra hermandad») */}
+          <h1 className="mi-reserva__titulo">{turno.equipo || t.hermandad}</h1>
         </header>
 
         <div className="mi-reserva__avisos">
@@ -307,6 +310,24 @@ function MiReservaContenido() {
                   );
                 })}
               </ul>
+
+              {/* Personas que estaban solas y se han unido a vuestra sala: más claras y sin ✕ (no se pueden quitar) */}
+              {companeros.length > 0 && (
+                <>
+                  <p className="mr-otros__titulo">{t.otrosSala}</p>
+                  <ul className="mr-miembros mr-miembros--otros">
+                    {companeros.map((m, i) => (
+                      <li key={m.email} className="mr-miembro is-ajeno">
+                        <img src={iconos[lista.length + i]} width="51" height="51" alt="" />
+                        <div className="mr-miembro__datos">
+                          <p className="mr-miembro__correo">{m.email}</p>
+                          <p className="mr-miembro__estado">{m.confirmado ? t.unidaConfirmada : t.unida}</p>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
 
               {editando && mostrarCampo && hueco > 0 && (
                 <form className="mr-anadir" onSubmit={anadirCorreo}>
