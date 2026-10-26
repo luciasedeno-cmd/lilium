@@ -10,7 +10,7 @@ import ErasmusBanner from "@/components/ErasmusBanner";
 import BotonErasmus from "@/components/home/BotonErasmus";
 import PiePagina from "@/components/PiePagina";
 import Animaciones from "@/components/home/Animaciones";
-import RetratoOjos from "@/components/home/RetratoOjos";
+import RetratoOjos, { CuadroOjo, CuadroMariposa } from "@/components/home/RetratoOjos";
 import PantallaCarga from "@/components/PantallaCarga";
 
 export const metadata = {
@@ -23,6 +23,7 @@ const TEXTOS = {
     lineas: ["Cinco guías", "Un destino"],
     reservar: "Reserva ahora",
     retratoAlt: "Retrato de una joven de la hermandad",
+    ojoAlt: "Detalle de un ojo pintado al óleo, en un marco de encaje", mariposaAlt: "Mano con una mariposa posada y un brazalete de serpiente",
     historiaTitulo: "¿Qué es Lilium?",
     historia: [
       "Dicen que algunos caminos están destinados a cruzarse. El de ellas lo hizo sin aviso: cinco desconocidas que se reconocieron al instante. A la luz de las velas unieron sus energías y nació Lilium.",
@@ -49,6 +50,7 @@ const TEXTOS = {
     lineas: ["Five guides", "One destiny"],
     reservar: "Book now",
     retratoAlt: "Portrait of a young woman of the sisterhood",
+    ojoAlt: "Detail of an eye painted in oil, in a lace frame", mariposaAlt: "Hand with a butterfly resting on it and a snake bracelet",
     historiaTitulo: "What is Lilium?",
     historia: [
       "They say some paths are meant to cross. Theirs did without warning: five strangers who recognised each other at once. By candlelight they joined their energies, and Lilium was born.",
@@ -108,6 +110,16 @@ export default async function Inicio() {
               <img loading="lazy" decoding="async" className="retrato__marco" src="/assets/img/marco-retrato.webp" alt="" />
               {/* Los ojos siguen al ratón (o miran hacia donde se toca en el móvil) */}
               <RetratoOjos alt={t.retratoAlt} />
+            </div>
+
+            {/* Dos cuadros pequeños con encaje: el ojo (mira al ratón) y la mano con la mariposa (mueve las alas) */}
+            <div className="historia__cuadros">
+              <div data-revelar="arriba" data-parallax="0.05" style={{ "--retardo": "0.1s" }}>
+                <CuadroOjo alt={t.ojoAlt} />
+              </div>
+              <div data-revelar="arriba" data-parallax="-0.04" style={{ "--retardo": "0.25s" }}>
+                <CuadroMariposa alt={t.mariposaAlt} />
+              </div>
             </div>
 
             <div className="historia__texto">
