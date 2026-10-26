@@ -11,7 +11,7 @@ import { useEffect, useRef } from "react";
  * respecto a ese elemento. alto = a qué altura están los ojos (0 arriba, 1 abajo); alcance = a cuántos
  * píxeles de distancia ya mira del todo hacia el ratón. Se usa en el retrato grande y en el cuadro del ojo.
  */
-export function useMirada(alto = 0.5, alcance = 140) {
+export function useMirada(alto = 0.5, alcance = 140, pantalla = false) {
   const caja = useRef(null);
 
   useEffect(() => {
@@ -26,6 +26,18 @@ export function useMirada(alto = 0.5, alcance = 140) {
       const r = el.getBoundingClientRect();
       const dx = x - (r.left + r.width / 2);
       const dy = y - (r.top + r.height * alto);
+      if (pantalla) {
+        // Modo «pantalla»: cuanto más cerca del borde de la pantalla está el ratón, más se gira el ojo
+        // (ratón en el borde izquierdo = mira del todo a la izquierda; a medio camino = a medias)
+        const cx = r.left + r.width / 2;
+        const cy = r.top + r.height * alto;
+        const hx = dx < 0 ? cx : window.innerWidth - cx;
+        const hy = dy < 0 ? cy : window.innerHeight - cy;
+        const suavizar = (v) => Math.sign(v) * Math.pow(Math.min(1, Math.abs(v)), 0.7);
+        el.style.setProperty("--ox", suavizar(dx / Math.max(hx, 80)).toFixed(3));
+        el.style.setProperty("--oy", suavizar(dy / Math.max(hy, 80)).toFixed(3));
+        return;
+      }
       const distancia = Math.hypot(dx, dy) || 1;
       const fuerza = Math.min(1, distancia / alcance);
       el.style.setProperty("--ox", ((dx / distancia) * fuerza).toFixed(3));
@@ -49,7 +61,7 @@ export function useMirada(alto = 0.5, alcance = 140) {
       window.removeEventListener("pointermove", alMover);
       window.removeEventListener("pointerdown", alMover);
     };
-  }, [alto, alcance]);
+  }, [alto, alcance, pantalla]);
 
   return caja;
 }
@@ -71,9 +83,12 @@ export default function RetratoOjos({ alt }) {
   );
 }
 
-/** Cuadro pequeño del ojo (Figma «Frame 37»): el iris también sigue al ratón */
+/**
+ * Cuadro pequeño del ojo (Figma «Frame 37»): el iris sigue al ratón por toda la pantalla
+ * (el cuadro está a la derecha, así que casi siempre mira hacia la izquierda, hacia el texto)
+ */
 export function CuadroOjo({ alt }) {
-  const caja = useMirada(0.48, 160);
+  const caja = useMirada(0.48, 160, true);
   return (
     <div className="cuadro-ojo" ref={caja}>
       <img className="cuadro-ojo__base" src="/assets/img/cuadro-ojo.webp" width="663" height="918" alt={alt} />
@@ -84,7 +99,7 @@ export function CuadroOjo({ alt }) {
   );
 }
 
-/** Cuadro pequeño de la mano con la mariposa (Figma «Frame 77»): la mariposa mueve las alas */
+/** Cuadro pequeño de la mano con la mariposa (Figma «Frame 77»): la mariposa aletea sin parar (no depende del ratón) */
 export function CuadroMariposa({ alt }) {
   return (
     <div className="cuadro-mariposa">

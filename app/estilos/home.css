@@ -422,11 +422,14 @@ body:has(.hero) {
   width: 39.71%;
   height: 101.48%;
   max-width: none;
-  translate: calc(var(--ox, 0) * 26%) calc(var(--oy, 0) * 7%);
-  transition: translate 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+  /* Hacia la izquierda hay más sitio dentro del párpado que hacia la derecha: se mueve más (55 % frente a 35 %) */
+  translate:
+    calc(min(var(--ox, 0), 0) * 55% + max(var(--ox, 0), 0) * 35%)
+    calc(var(--oy, 0) * 12%);
+  transition: translate 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
-/* Alas de la mariposa: se cierran y abren desde el cuerpo, dos aleteos y una pausa */
+/* Alas de la mariposa: se cierran y abren desde el cuerpo sin parar (no depende del ratón) */
 .cuadro-mariposa__alas {
   position: absolute;
   left: 42.99%;
@@ -434,16 +437,14 @@ body:has(.hero) {
   width: 14.63%;
   height: 10.35%;
   transform-origin: 52.6% 76.3%;
-  animation: mariposa-aletea 3.2s ease-in-out infinite;
+  animation: mariposa-aletea 0.55s ease-in-out infinite alternate;
   pointer-events: none;
 }
 
+/* Un aleteo: alas abiertas → casi cerradas (y vuelta, gracias a «alternate») */
 @keyframes mariposa-aletea {
-  0%, 46%, 100% { transform: scaleX(1) skewY(0deg); }
-  52% { transform: scaleX(0.28) skewY(-6deg); }
-  58% { transform: scaleX(1) skewY(0deg); }
-  64% { transform: scaleX(0.32) skewY(-5deg); }
-  70% { transform: scaleX(1) skewY(0deg); }
+  from { transform: scaleX(1) skewY(0deg); }
+  to { transform: scaleX(0.25) skewY(-6deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {
