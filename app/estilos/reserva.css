@@ -1033,7 +1033,7 @@ main.paso > :nth-child(n + 5) { animation-delay: 0.24s; }
   font-size: 20px;
 }
 
-/* Grupo (aparece al añadir a la primera persona) */
+/* Grupo: la líder con el «+» y, debajo de la línea, un hueco por cada persona añadida */
 .int-grupo {
   width: 716px;
   max-width: 100%;
@@ -1045,7 +1045,7 @@ main.paso > :nth-child(n + 5) { animation-delay: 0.24s; }
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding-bottom: 22px;
+  padding: 0 8px 22px;
   border-bottom: 1px solid var(--terracota);
 }
 
@@ -1057,10 +1057,62 @@ main.paso > :nth-child(n + 5) { animation-delay: 0.24s; }
   color: var(--terracota);
 }
 
-.int-lider img {
+/* Círculo con el lirio (Figma: borde terracota fino) */
+.int-lider__icono {
+  display: grid;
+  place-items: center;
+  flex: none;
   width: 94px;
   height: 94px;
-  flex: none;
+  border: 1px solid var(--terracota);
+  border-radius: 50%;
+}
+
+.int-lider__icono img {
+  width: 50px;
+  height: auto;
+}
+
+.int-mas {
+  color: var(--fondo);
+}
+
+.int-mas:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Huecos para los correos (Figma «… A»): campo redondeado + ✕ naranja, alineada con el «+» */
+.int-huecos {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin: 28px 0 0;
+  padding: 0 16px 0 8px;
+  list-style: none;
+}
+
+.int-hueco {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  animation: paso-aparece 0.35s ease-out;
+}
+
+.int-hueco__campo.campo {
+  flex: 1;
+  height: 52px;
+  padding: 0 14px;
+  border-radius: 10px;
+  font-size: 17px;
+}
+
+.int-hueco__campo.campo:focus {
+  box-shadow: 0 0 0 3px rgba(209, 94, 35, 0.18);
+}
+
+.int-hueco__campo.campo[aria-invalid="true"] {
+  border-color: var(--naranja);
 }
 
 .int-lider__nombre {
@@ -1071,52 +1123,6 @@ main.paso > :nth-child(n + 5) { animation-delay: 0.24s; }
 .int-lider__correo {
   margin-top: 8px;
   font-size: 16px;
-  overflow-wrap: anywhere;
-}
-
-.int-grupo__contador {
-  flex: none;
-  font-family: var(--font-script);
-  font-size: 44px;
-  color: var(--terracota);
-}
-
-.int-grupo__contador b {
-  font-size: 64px;
-  font-weight: 400;
-}
-
-.int-grupo__contador span {
-  font-family: var(--font-inter);
-  font-size: 13px;
-}
-
-.int-lista {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.int-fila {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 12px 0;
-  border-bottom: 1px dashed rgba(115, 47, 35, 0.45);
-  color: var(--terracota);
-  animation: paso-aparece 0.35s ease-out;
-}
-
-.int-fila img {
-  width: 46px;
-  height: 46px;
-  flex: none;
-}
-
-.int-fila__correo {
-  flex: 1;
-  min-width: 0;
-  font-size: 18px;
   overflow-wrap: anywhere;
 }
 
@@ -1141,38 +1147,6 @@ main.paso > :nth-child(n + 5) { animation-delay: 0.24s; }
   transform: scale(1.08);
 }
 
-/* Hueco del correo + botón «+»: misma anchura que la lista (716 px); el «+» queda alineado con las ✕ */
-.int-form {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  width: 716px;
-  max-width: 100%;
-  margin: 32px auto 0;
-}
-
-.int-form__campo.campo {
-  flex: 1;
-  height: 64px;
-  padding: 0 18px;
-  border-radius: 14px;
-  font-size: 20px;
-  transition: box-shadow 0.2s;
-}
-
-.int-form__campo.campo:focus {
-  box-shadow: 0 0 0 3px rgba(209, 94, 35, 0.18);
-}
-
-.int-form__mas {
-  color: var(--fondo);
-}
-
-.int-form__mas:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
 .int-error {
   width: 716px;
   max-width: 100%;
@@ -1185,7 +1159,7 @@ main.paso > :nth-child(n + 5) { animation-delay: 0.24s; }
 .paso--integrantes .integrantes-continuar {
   width: 716px;
   height: 64px;
-  margin-top: 20px;
+  margin-top: 24px;
 }
 
 /* Nota de debajo del botón: más pequeña y en color suave, para que no compita con el botón
@@ -1223,9 +1197,27 @@ main.paso > :nth-child(n + 5) { animation-delay: 0.24s; }
     gap: 14px;
   }
 
-  .int-lider img {
+  .int-lider__icono {
     width: 60px;
     height: 60px;
+  }
+
+  .int-lider__icono img {
+    width: 32px;
+  }
+
+  .int-huecos {
+    gap: 14px;
+    padding: 0 8px 0 0;
+  }
+
+  .int-hueco {
+    gap: 12px;
+  }
+
+  .int-hueco__campo.campo {
+    height: 48px;
+    font-size: 15px;
   }
 
   .int-lider__nombre {
@@ -1236,22 +1228,9 @@ main.paso > :nth-child(n + 5) { animation-delay: 0.24s; }
     font-size: 14px;
   }
 
-  .int-grupo__contador b {
-    font-size: 44px;
-  }
 
-  .int-fila__correo {
-    font-size: 15px;
-  }
 
-  .int-form {
-    gap: 12px;
-  }
 
-  .int-form__campo.campo {
-    height: 56px;
-    font-size: 16px;
-  }
 
   .int-aviso {
     font-size: 13px;

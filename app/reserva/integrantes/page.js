@@ -1,19 +1,23 @@
 "use client";
-// Paso 1 · Integrantes del grupo
-import { useEffect, useState } from "react";
-import Link from "next/link";
+// Paso 1 · Integrantes del grupo (Figma «PAG RESERVA - INTEGRANTES» y «… A»).
+// Al principio solo se ve la persona que ha entrado (líder) con un «+». Cada vez que se pulsa el «+»
+// aparece una fila con un hueco para el correo de otra persona y una ✕ para quitarla.
+// Al pulsar «Continuar» se comprueban los correos y se pasa a elegir la hora.
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import NavReserva from "@/components/NavReserva";
 import Cargando from "@/components/Cargando";
 import PasoCabecera from "@/components/PasoCabecera";
 import { leerBorrador, guardarBorrador } from "@/lib/borrador";
 import { useSesion } from "@/lib/useSesion";
-import { iconosDe } from "@/lib/fotos";
 import PiePagina from "@/components/PiePagina";
 import { useTextos } from "@/components/Idioma";
 import RetratosPaso from "@/components/RetratosPaso";
 import { IconoCruz, IconoMas } from "@/components/Iconos";
 
-const CORREO_VALIDO = /^[a-z0-9._-]+@alumnado\.esada\.es$/i;
+// Aquí solo se mira que tenga forma de correo: el servidor comprueba que sea de ESADA
+// (o de las personas autorizadas por el equipo, como el profesor)
+const CORREO_VALIDO = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_PERSONAS = 6;
 const MIN_SALA_NUEVA = 3;
 
@@ -25,6 +29,7 @@ const TEXTOS = {
     correoMal: "El correo debe ser nombreapellido@alumnado.esada.es", repetido: "Ese correo ya está en el grupo.", maximo: "Máximo 6 personas por turno.",
     avisoTitulo: "Mínimo 3 personas para abrir sala nueva.", avisoTexto: "Con 1 o 2 personas, únete a un grupo en formación para completar la hermandad.",
     abrirSala: "Continuar y abrir sala nueva →", unirme: "Continuar y unirme a un grupo →",
+    pista: "nombreapellido@alumnado.esada.es", hueco: "Hay un correo sin escribir: rellénalo o quítalo con la ✕.",
   },
   en: {
     titulo: "Who will come to the meadow?", intro: "Write the emails of all the members so they receive the confirmation in their inbox.",
@@ -33,37 +38,68 @@ const TEXTOS = {
     correoMal: "The email must be nameSurname@alumnado.esada.es", repetido: "That email is already in the group.", maximo: "Maximum 6 people per session.",
     avisoTitulo: "Minimum 3 people to open a new room.", avisoTexto: "With 1 or 2 people, join a group being formed to complete the sisterhood.",
     abrirSala: "Continue and open a new room →", unirme: "Continue and join a group →",
+    pista: "namesurname@alumnado.esada.es", hueco: "There's an empty email: fill it in or remove it with the ✕.",
   },
 };
 
 export default function Integrantes() {
+  const router = useRouter();
   const { email: lider, error: errorSesion } = useSesion("reserva");
   const t = useTextos(TEXTOS);
-  const [integrantes, setIntegrantes] = useState([]);
-  const [campo, setCampo] = useState("");
+  // Una fila por cada «+» pulsado: { id, correo } (el id sirve para que React no confunda las filas)
+  const [filas, setFilas] = useState([]);
   const [error, setError] = useState("");
+  const [malas, setMalas] = useState([]); // ids de las filas con algún problema
+  const siguienteId = useRef(0);
+  const nuevaFila = (correo = "") => ({ id: siguienteId.current++, correo });
+  const ultimaAnadida = useRef(null);
 
-  useEffect(() => setIntegrantes(leerBorrador().integrantes || []), []);
+  // Si ya había empezado (volviendo atrás desde la hora), se recuperan los correos
+  useEffect(() => setFilas((leerBorrador().integrantes || []).map((c) => nuevaFila(c))), []);
 
-  const actualizar = (lista) => {
-    setIntegrantes(lista);
-    guardarBorrador({ integrantes: lista });
-  };
+  // El cursor va solo al hueco recién añadido
+  useEffect(() => {
+    if (ultimaAnadida.current !== null) document.getElementById(`integrante-${ultimaAnadida.current}`)?.focus();
+    ultimaAnadida.current = null;
+  }, [filas]);
 
-  const total = integrantes.length + 1;
-  const iconos = iconosDe([lider, ...integrantes]); // icono de perfil de cada persona (el primero es el líder)
+  const correos = filas.map((f) => f.correo.trim().toLowerCase()).filter(Boolean);
+  const total = correos.length + 1;
 
-  function anadir(e) {
-    e.preventDefault();
-    const correo = campo.trim().toLowerCase();
-    let mensaje = "";
-    if (!CORREO_VALIDO.test(correo)) mensaje = t.correoMal;
-    else if (correo === lider || integrantes.includes(correo)) mensaje = t.repetido;
-    else if (total >= MAX_PERSONAS) mensaje = t.maximo;
-    setError(mensaje);
-    if (mensaje) return;
-    actualizar([...integrantes, correo]);
-    setCampo("");
+  // Guarda en el borrador solo los correos bien escritos (los usa el paso 3)
+  function cambiar(nuevas) {
+    setFilas(nuevas);
+    setError("");
+    setMalas([]);
+    const buenos = [...new Set(nuevas.map((f) => f.correo.trim().toLowerCase()).filter((c) => CORREO_VALIDO.test(c) && c !== lider))];
+    guardarBorrador({ integrantes: buenos });
+  }
+
+  function anadir() {
+    if (filas.length + 1 >= MAX_PERSONAS) return setError(t.maximo);
+    const fila = nuevaFila();
+    ultimaAnadida.current = fila.id;
+    cambiar([...filas, fila]);
+  }
+
+  // Antes de seguir: cada correo escrito tiene que estar bien y sin repetir; los huecos vacíos, fuera
+  function continuar() {
+    const vistos = new Set([lider]);
+    for (const f of filas) {
+      const c = f.correo.trim().toLowerCase();
+      let mensaje = "";
+      if (!c) mensaje = t.hueco;
+      else if (!CORREO_VALIDO.test(c)) mensaje = t.correoMal;
+      else if (vistos.has(c)) mensaje = t.repetido;
+      vistos.add(c);
+      if (mensaje) {
+        setError(mensaje);
+        setMalas([f.id]);
+        return document.getElementById(`integrante-${f.id}`)?.focus();
+      }
+    }
+    guardarBorrador({ integrantes: correos });
+    router.push("/reserva/hora");
   }
 
   if (!lider) return <Cargando error={errorSesion} />;
@@ -80,48 +116,55 @@ export default function Integrantes() {
           <p>{t.intro}</p>
         </section>
 
-        {/* El grupo: aparece en cuanto se añade a alguien (al principio solo se ve el hueco del correo, como en el diseño) */}
-        {integrantes.length > 0 && (
-          <section className="int-grupo" aria-label={t.integrantes}>
-            <div className="int-grupo__cabecera">
-              <div className="int-lider">
-                <img src={iconos[0]} width="94" height="94" alt="" />
-                <div>
-                  <p className="int-lider__nombre">{t.tuLider}</p>
-                  <p className="int-lider__correo">{lider}</p>
-                </div>
+        <section className="int-grupo" aria-label={t.integrantes}>
+          {/* Tú (líder) con el «+» para añadir a otra persona */}
+          <div className="int-grupo__cabecera">
+            <div className="int-lider">
+              <span className="int-lider__icono" aria-hidden="true">
+                <img src="/assets/img/icono-lirio.webp" width="99" height="80" alt="" />
+              </span>
+              <div>
+                <p className="int-lider__nombre">{t.tuLider}</p>
+                <p className="int-lider__correo">{lider}</p>
               </div>
-              <p className="int-grupo__contador" aria-live="polite"><b>{total}</b>/{MAX_PERSONAS} <span>{t.personas}</span></p>
             </div>
-            <ul className="int-lista">
-              {integrantes.map((correo, i) => (
-                <li className="int-fila" key={correo}>
-                  <img src={iconos[i + 1]} width="46" height="46" alt="" />
-                  <p className="int-fila__correo">{correo}</p>
-                  <button className="int-quitar" type="button" aria-label={`${t.quitar} ${correo}`}
-                    onClick={() => actualizar(integrantes.filter((x) => x !== correo))}>
+            <button className="boton-mas int-mas" type="button" onClick={anadir} aria-label={t.anadir} disabled={filas.length + 1 >= MAX_PERSONAS}>
+              <IconoMas />
+            </button>
+          </div>
+
+          {/* Un hueco por cada persona añadida */}
+          {filas.length > 0 && (
+            <ul className="int-huecos">
+              {filas.map((f, i) => (
+                <li className="int-hueco" key={f.id}>
+                  <label className="visually-hidden" htmlFor={`integrante-${f.id}`}>{`${t.correoIntegrante} ${i + 1}`}</label>
+                  <input
+                    className="campo int-hueco__campo"
+                    id={`integrante-${f.id}`}
+                    type="email"
+                    autoComplete="off"
+                    placeholder={t.pista}
+                    value={f.correo}
+                    aria-invalid={malas.includes(f.id) ? "true" : undefined}
+                    aria-describedby="integrante-error"
+                    onChange={(e) => cambiar(filas.map((x) => (x.id === f.id ? { ...x, correo: e.target.value } : x)))}
+                    onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), anadir())}
+                  />
+                  <button className="int-quitar" type="button" aria-label={`${t.quitar} ${f.correo || `${t.integrante} ${i + 1}`}`}
+                    onClick={() => cambiar(filas.filter((x) => x.id !== f.id))}>
                     <IconoCruz tamano={18} />
                   </button>
                 </li>
               ))}
             </ul>
-          </section>
-        )}
+          )}
+          <p className="error int-error" id="integrante-error" role="alert">{error}</p>
+        </section>
 
-        <form className="int-form" onSubmit={anadir} noValidate>
-          <label className="visually-hidden" htmlFor="correo-integrante">{t.correoIntegrante}</label>
-          <input className="campo int-form__campo" id="correo-integrante" type="email" autoComplete="off" aria-describedby="integrante-error"
-            placeholder={total >= MAX_PERSONAS ? t.completo : "E-mail"} disabled={total >= MAX_PERSONAS}
-            value={campo} onChange={(e) => setCampo(e.target.value)} aria-invalid={error ? "true" : undefined} />
-          <button className="boton-mas int-form__mas" type="submit" aria-label={t.anadir} disabled={total >= MAX_PERSONAS}>
-            <IconoMas />
-          </button>
-        </form>
-        <p className="error int-error" id="integrante-error" role="alert">{error}</p>
-
-        <Link className="boton integrantes-continuar" href="/reserva/hora">
+        <button className="boton integrantes-continuar" type="button" onClick={continuar}>
           {total >= MIN_SALA_NUEVA ? t.abrirSala : t.unirme}
-        </Link>
+        </button>
 
         <p className="int-aviso">
           <b>{t.avisoTitulo}</b>
