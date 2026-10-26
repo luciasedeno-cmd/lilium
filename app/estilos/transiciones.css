@@ -101,6 +101,29 @@
   animation: carga-linea 1.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
+/* En la Home la línea la llena el código, a la vez que sube el porcentaje (sin la animación de arriba) */
+.carga__linea--progreso span {
+  transform: scaleX(0);
+  animation: none;
+}
+
+/* Porcentaje de carga (0 % → 100 %): números de la misma anchura para que no «baile» al cambiar */
+.carga__porcentaje {
+  margin-top: -6px;
+  font-family: var(--font-baskervville);
+  font-size: 30px;
+  line-height: 1;
+  font-variant-numeric: lining-nums tabular-nums;
+  letter-spacing: 0.04em;
+  animation: carga-aparece 0.9s ease 0.3s both;
+}
+
+.carga__porcentaje span {
+  margin-left: 2px;
+  font-size: 0.6em;
+  opacity: 0.8;
+}
+
 .carga__texto {
   font-family: var(--font-baskervville);
   font-style: italic;
