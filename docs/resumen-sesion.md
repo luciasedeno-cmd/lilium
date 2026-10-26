@@ -45,4 +45,4 @@ Resumen para quien siga con la web. Los detalles técnicos están en `CLAUDE.md`
 - **Correos automáticos**: Vercel llama a `/api/cron` una vez al día a las 10:00 (`vercel.json`). Comprobar que existe la variable `CRON_SECRET` en Vercel. Opcional: los secretos `LILIUM_URL` y `CRON_SECRET` en GitHub para que además se ejecute cada hora.
 - Imágenes exportadas como captura desde Figma (el lirio, el retrato de la joven con lirios…): si se tienen los originales, cambiarlos para que se vean más nítidos.
 - En el móvil la historia de la Home es algo más alta que una pantalla (texto + retrato no caben).
-- **Antes del 30 de octubre**: borrar las reservas de prueba pegando `db/borrar-reservas.sql` en el SQL Editor de Supabase.
+- **Antes del 30 de octubre**: borrar las reservas de prueba desde `/admin` → «Borrar reservas de prueba» (escribir BORRAR para confirmar; solo funciona antes de la apertura). También se puede pegar `db/borrar-reservas.sql` en el SQL Editor de Supabase.

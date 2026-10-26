@@ -377,3 +377,66 @@ main.panel {
     color: var(--ink-muted);
   }
 }
+
+/* ---------- Borrar reservas de prueba (solo antes de la apertura) ---------- */
+.panel-borrar {
+  max-width: var(--container-narrow);
+  margin: var(--space-12) auto 0;
+  padding: var(--space-6) var(--space-8);
+  border: 1px dashed var(--ink);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.panel-borrar__titulo {
+  font: 600 22px/1.3 var(--font-serif);
+}
+
+.panel-borrar__texto,
+.panel-borrar__aviso,
+.panel-borrar__escribe,
+.panel-borrar__casilla {
+  margin-top: var(--space-2);
+  font: 400 15px/1.5 var(--font-sans);
+}
+
+.panel-borrar__aviso {
+  font-weight: 600;
+}
+
+.panel-borrar__casilla {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.panel-borrar__boton,
+.panel-borrar__confirmar {
+  margin-top: var(--space-4);
+}
+
+.panel-borrar__confirmar .panel__busqueda {
+  margin-top: var(--space-2);
+}
+
+.panel-borrar__botones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+/* El botón de borrar desactivado hasta escribir BORRAR */
+.panel-borrar__peligro:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.panel-borrar__hecho {
+  margin-top: var(--space-4);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  font: 600 15px/1.5 var(--font-sans);
+}

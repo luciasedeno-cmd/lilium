@@ -38,6 +38,15 @@ const TEXTOS = {
     si: "Sí", no: "No", valorado: "Sí", noValorado: "Todavía no", correoEnviado: "Correo enviado",
     errorGuardar: "No se ha podido guardar. Inténtalo de nuevo.",
     leyenda: "«¿Ha valorado?» se marca sola cuando la persona rellena el cuestionario (QR de la sala). Si no lo hace, al día siguiente del retiro le llega un correo pidiéndoselo.",
+    // Borrar reservas de prueba (solo antes de la apertura)
+    borrarTitulo: "Borrar reservas de prueba",
+    borrarTexto: "Antes de abrir la web, vacía todas las reservas de prueba para empezar de cero. Los turnos se quedan igual. Este recuadro desaparece solo el 30 de octubre a las 12:00.",
+    borrarBoton: "Borrar reservas de prueba",
+    borrarAviso: (n) => `Vas a borrar ${n === 1 ? "1 persona apuntada" : `${n} personas apuntadas`}, todas las reservas, la lista de espera y los nombres de equipo. No se puede deshacer.`,
+    borrarCuestionario: "Borrar también las respuestas del cuestionario",
+    borrarEscribe: "Para confirmar, escribe BORRAR en mayúsculas:",
+    borrarSi: "Sí, borrar todo", borrando: "Borrando…", borrarNo: "Cancelar",
+    borrado: (n, r) => `Listo: se han borrado ${n === 1 ? "1 persona" : `${n} personas`} de las reservas${r ? ` y ${r === 1 ? "1 respuesta" : `${r} respuestas`} del cuestionario` : ""}. La web está vacía para la apertura.`,
   },
   en: {
     etiqueta: "LILIUM TEAM", titulo: "Team only",
@@ -60,6 +69,14 @@ const TEXTOS = {
     si: "Yes", no: "No", valorado: "Yes", noValorado: "Not yet", correoEnviado: "Email sent",
     errorGuardar: "Couldn't save. Try again.",
     leyenda: "“Rated?” is ticked automatically when the person fills in the questionnaire (QR in the room). If they don't, they get an email the day after the retreat asking them to.",
+    borrarTitulo: "Delete test bookings",
+    borrarTexto: "Before opening the website, empty all test bookings to start from scratch. Sessions stay the same. This box disappears on 30 October at 12:00.",
+    borrarBoton: "Delete test bookings",
+    borrarAviso: (n) => `You're about to delete ${n === 1 ? "1 booked person" : `${n} booked people`}, every booking, the waiting list and team names. This can't be undone.`,
+    borrarCuestionario: "Also delete the questionnaire answers",
+    borrarEscribe: "To confirm, type BORRAR in capitals:",
+    borrarSi: "Yes, delete everything", borrando: "Deleting…", borrarNo: "Cancel",
+    borrado: (n, r) => `Done: ${n === 1 ? "1 person" : `${n} people`} removed from bookings${r ? ` and ${r === 1 ? "1 answer" : `${r} answers`} from the questionnaire` : ""}. The website is empty for the opening.`,
   },
 };
 
@@ -303,9 +320,76 @@ function Panel({ t, datos, aviso, marcar, actualizar, salir }) {
         </div>
 
         <p className="panel__leyenda">{t.leyenda}</p>
+
+        {/* Solo antes de la apertura: vaciar las reservas de prueba */}
+        {antesDeAbrir && <BorrarPruebas t={t} personas={totales.ocupadas} alBorrar={actualizar} />}
       </main>
       <PiePagina />
     </>
+  );
+}
+
+/**
+ * Recuadro «Borrar reservas de prueba» (solo se enseña antes de la apertura; el servidor también lo comprueba).
+ * Pide confirmación en dos pasos: pulsar el botón y luego escribir BORRAR.
+ */
+function BorrarPruebas({ t, personas, alBorrar }) {
+  const [abierto, setAbierto] = useState(false);
+  const [palabra, setPalabra] = useState("");
+  const [cuestionario, setCuestionario] = useState(false);
+  const [borrando, setBorrando] = useState(false);
+  const [mensaje, setMensaje] = useState("");
+  const [fallo, setFallo] = useState("");
+
+  function cerrar() {
+    setAbierto(false);
+    setPalabra("");
+    setCuestionario(false);
+    setFallo("");
+  }
+
+  async function borrar(e) {
+    e.preventDefault();
+    if (palabra !== "BORRAR") return;
+    setBorrando(true);
+    const r = await api("/api/admin/borrar-pruebas", { metodo: "POST", datos: { confirmacion: palabra, cuestionario } });
+    setBorrando(false);
+    if (!r.ok) return setFallo(r.mensaje || t.errorGuardar);
+    cerrar();
+    setMensaje(t.borrado(r.personas, r.respuestas));
+    alBorrar(); // se vuelve a pedir la lista: ya sale vacía
+  }
+
+  return (
+    <section className="panel-borrar" aria-labelledby="borrar-titulo">
+      <h2 id="borrar-titulo" className="panel-borrar__titulo">{t.borrarTitulo}</h2>
+      <p className="panel-borrar__texto">{t.borrarTexto}</p>
+      {mensaje && <p className="panel-borrar__hecho" role="status">{mensaje}</p>}
+
+      {!abierto ? (
+        <button className="ll-btn ll-btn--md ll-btn--secondary panel-borrar__boton" type="button" onClick={() => { setMensaje(""); setAbierto(true); }}>
+          {t.borrarBoton}
+        </button>
+      ) : (
+        <form className="panel-borrar__confirmar" onSubmit={borrar}>
+          <p className="panel-borrar__aviso">{t.borrarAviso(personas)}</p>
+          <label className="panel-borrar__casilla">
+            <input type="checkbox" checked={cuestionario} onChange={(e) => setCuestionario(e.target.checked)} />
+            {t.borrarCuestionario}
+          </label>
+          <label className="panel-borrar__escribe" htmlFor="borrar-palabra">{t.borrarEscribe}</label>
+          <input id="borrar-palabra" className="panel__busqueda" value={palabra} onChange={(e) => setPalabra(e.target.value)}
+            autoComplete="off" placeholder="BORRAR" autoFocus />
+          <div className="panel-borrar__botones">
+            <button className="ll-btn ll-btn--md ll-btn--primary panel-borrar__peligro" type="submit" disabled={palabra !== "BORRAR" || borrando}>
+              {borrando ? t.borrando : t.borrarSi}
+            </button>
+            <button className="ll-btn ll-btn--md ll-btn--secondary" type="button" onClick={cerrar} disabled={borrando}>{t.borrarNo}</button>
+          </div>
+          {fallo && <p className="panel__aviso" role="alert">{fallo}</p>}
+        </form>
+      )}
+    </section>
   );
 }
 
