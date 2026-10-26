@@ -3,7 +3,7 @@
 // la respuesta es la misma aunque el correo no esté en la lista (en ese caso, simplemente no llega nada).
 import { normalizarCorreo, esCorreoAdmin } from "@/lib/config";
 import { nuevoCodigo } from "@/lib/codigos";
-import { correoCodigo } from "@/lib/correo";
+import { correoCodigoAdmin } from "@/lib/correo";
 import { ok, error, manejar, leerJson } from "@/lib/respuestas";
 
 export const POST = manejar(async (req) => {
@@ -16,7 +16,7 @@ export const POST = manejar(async (req) => {
   const res = await nuevoCodigo(`admin:${correo}`);
   if (!res.ok) return error(`Espera ${res.espera} s para pedir otro código.`, 429);
   try {
-    await correoCodigo(correo, res.codigo);
+    await correoCodigoAdmin(correo, res.codigo);
   } catch (e) {
     console.error("Error enviando el código del panel:", e);
     return error("No hemos podido enviar el correo con el código. Inténtalo de nuevo en un minuto.", 502);
