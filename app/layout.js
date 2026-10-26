@@ -8,6 +8,7 @@ import "./estilos/cuestionario.css";
 import "./estilos/admin.css";
 import "./estilos/transiciones.css";
 import { IdiomaProvider } from "@/components/Idioma";
+import Cursor from "@/components/Cursor";
 import { idiomaActual } from "@/lib/idiomaServidor";
 
 export const metadata = {
@@ -41,6 +42,8 @@ export default async function RootLayout({ children }) {
       </head>
       <body>
         <IdiomaProvider inicial={idioma}>{children}</IdiomaProvider>
+        {/* Cursor de Lilium (solo con ratón) */}
+        <Cursor />
       </body>
     </html>
   );

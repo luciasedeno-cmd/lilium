@@ -164,3 +164,127 @@
     animation: none;
   }
 }
+
+/* ---------- Cursor de Lilium (components/Cursor.js) ----------
+   Solo se activa con ratón: el código pone la clase .cursor-lilium en <html>. Sin ella (móvil,
+   «reducir movimiento»…) no se ve nada y queda el cursor normal. */
+.cursor {
+  display: none;
+}
+
+.cursor-lilium .cursor {
+  display: block;
+}
+
+/* Se esconde la flecha normal; en los huecos para escribir se deja la rayita de texto */
+.cursor-lilium,
+.cursor-lilium * {
+  cursor: none !important;
+}
+
+.cursor-lilium input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]),
+.cursor-lilium textarea {
+  cursor: text !important;
+}
+
+/* Punto y aro: van en una capa fija por encima de todo y no se pueden pulsar.
+   El código los mueve (transform); el <span> de dentro es el que cambia de tamaño y color. */
+.cursor__punto,
+.cursor__aro {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 10000;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  will-change: transform;
+}
+
+.cursor-visible .cursor__punto,
+.cursor-visible .cursor__aro {
+  opacity: 1;
+}
+
+.cursor__punto span,
+.cursor__aro span {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: block;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s cubic-bezier(0.2, 0.7, 0.2, 1), height 0.3s cubic-bezier(0.2, 0.7, 0.2, 1),
+    background-color 0.3s ease, border-color 0.3s ease, opacity 0.3s ease, scale 0.15s ease;
+}
+
+/* Punto terracota con un borde crema fino: se ve sobre cualquier fondo */
+.cursor__punto span {
+  width: 7px;
+  height: 7px;
+  background: var(--terracota);
+  box-shadow: 0 0 0 1.5px rgba(255, 250, 242, 0.85);
+}
+
+/* Aro fino que sigue al punto con retraso */
+.cursor__aro span {
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(115, 47, 35, 0.7);
+  box-shadow: 0 0 0 1px rgba(255, 250, 242, 0.35);
+}
+
+/* Dentro del aro, el lirio (solo se ve al pasar por algo que se puede pulsar) */
+.cursor__aro span::after {
+  content: "";
+  position: absolute;
+  inset: 22%;
+  background: var(--terracota);
+  -webkit-mask: url("/assets/img/icono-lirio.webp") center / contain no-repeat;
+  mask: url("/assets/img/icono-lirio.webp") center / contain no-repeat;
+  opacity: 0;
+  scale: 0.6;
+  transition: opacity 0.3s ease, scale 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Sobre botones y enlaces: el aro crece, se rellena un poco y aparece el lirio; el punto se esconde */
+.cursor-sobre .cursor__aro span {
+  width: 52px;
+  height: 52px;
+  background: rgba(255, 250, 242, 0.3);
+  border-color: var(--terracota);
+}
+
+.cursor-sobre .cursor__aro span::after {
+  opacity: 1;
+  scale: 1;
+}
+
+.cursor-sobre .cursor__punto span {
+  opacity: 0;
+}
+
+/* Al hacer clic, el aro se encoge un momento */
+.cursor-pulsado .cursor__aro span {
+  scale: 0.8;
+}
+
+/* Sobre fondos oscuros, todo en crema */
+.cursor-oscuro .cursor__punto span {
+  background: var(--fondo);
+  box-shadow: 0 0 0 1.5px rgba(41, 47, 32, 0.5);
+}
+
+.cursor-oscuro .cursor__aro span {
+  border-color: rgba(255, 250, 242, 0.8);
+  box-shadow: 0 0 0 1px rgba(41, 47, 32, 0.3);
+}
+
+.cursor-oscuro.cursor-sobre .cursor__aro span {
+  background: rgba(41, 47, 32, 0.2);
+  border-color: var(--fondo);
+}
+
+.cursor-oscuro .cursor__aro span::after {
+  background: var(--fondo);
+}
