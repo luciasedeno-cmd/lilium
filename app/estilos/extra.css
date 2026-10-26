@@ -1284,3 +1284,14 @@ main.previa {
   font-size: 15px;
   color: var(--verde-oscuro);
 }
+
+/* Panel de admin: mensaje mientras se cargan los datos (sobre el cuadro oscuro de fondo) */
+.previa__cargando {
+  padding: 14px 24px;
+  border-radius: 999px;
+  background: rgba(41, 47, 32, 0.6);
+  color: var(--fondo);
+  font-family: var(--font-baskervville);
+  font-style: italic;
+  font-size: 20px;
+}

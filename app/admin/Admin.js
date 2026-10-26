@@ -25,6 +25,8 @@ const TEXTOS = {
     reenviar: "Reenviar código", reenviarEn: (n) => `Podrás pedir otro código en ${n} s`,
     codigoEnviado: (c) => `Si ${c} tiene acceso al panel, le acabamos de enviar un correo con el asunto «Código para el panel del equipo de Lilium». Escribe aquí ese código (caduca en 10 minutos).`,
     correo: "Tu correo", clave: "Contraseña", comprobando: "Comprobando…", entrar: "Entrar",
+    entrando: "Entrando en el panel…", cargandoPanel: "Cargando el panel…", reintentar: "Reintentar",
+    sinPanel: (m) => `Has entrado bien, pero el panel no ha cargado: ${m}`,
     volver: "← Volver a la web", falta: "Escribe el correo y la contraseña.",
     panelEtiqueta: "ADMIN", panelTitulo: "Panel del retiro",
     plazas: "Plazas totales", ocupadas: "Reservadas", libres: "Libres", confirmadas: "Confirmadas",
@@ -56,6 +58,8 @@ const TEXTOS = {
     reenviar: "Resend code", reenviarEn: (n) => `You can ask for another code in ${n} s`,
     codigoEnviado: (c) => `If ${c} has access to the dashboard, we've just sent it an email with the subject “Código para el panel del equipo de Lilium”. Type that code here (it expires in 10 minutes).`,
     correo: "Your email", clave: "Password", comprobando: "Checking…", entrar: "Sign in",
+    entrando: "Opening the dashboard…", cargandoPanel: "Loading the dashboard…", reintentar: "Try again",
+    sinPanel: (m) => `You're signed in, but the dashboard didn't load: ${m}`,
     volver: "← Back to the website", falta: "Type the email and the password.",
     panelEtiqueta: "ADMIN", panelTitulo: "Retreat dashboard",
     plazas: "Total places", ocupadas: "Booked", libres: "Free", confirmadas: "Confirmed",
@@ -89,14 +93,20 @@ export default function Admin() {
   const [datos, setDatos] = useState(null);
   const [aviso, setAviso] = useState("");
 
+  // Pide los datos del panel. Devuelve la respuesta para que quien llama sepa si ha ido bien.
+  //  · Sin llave (no ha entrado): se enseña el formulario para entrar.
+  //  · Otro fallo (servidor lento, sin conexión…): si ya se veía el panel, se queda; si no, el
+  //    formulario lo explica con un mensaje (antes se quedaba callado y parecía que no dejaba entrar).
   const cargar = useCallback(async () => {
     const r = await api("/api/admin/panel");
     if (r.ok) {
       setDatos(r);
       setEstado("dentro");
     } else {
-      setEstado((e) => (e === "dentro" && r.mensaje && !/equipo/.test(r.mensaje) ? e : "fuera"));
+      const sinLlave = /equipo/.test(r.mensaje || "");
+      setEstado((e) => (e === "dentro" && !sinLlave ? e : "fuera"));
     }
+    return r;
   }, []);
 
   useEffect(() => {
@@ -126,7 +136,13 @@ export default function Admin() {
     } else setAviso("");
   }
 
-  if (estado === "cargando") return <main className="previa" />;
+  if (estado === "cargando") {
+    return (
+      <main className="previa">
+        <p className="previa__cargando" role="status">{t.cargandoPanel}</p>
+      </main>
+    );
+  }
   if (estado === "fuera") return <Entrar t={t} alEntrar={cargar} />;
   return <Panel t={t} datos={datos} aviso={aviso} marcar={marcar} actualizar={cargar} salir={salir} />;
 }
@@ -157,6 +173,8 @@ function Entrar({ t, alEntrar }) {
   const [demo, setDemo] = useState(""); // solo en pruebas en el ordenador
   const [error, setError] = useState("");
   const [enviando, setEnviando] = useState(false);
+  const [entrando, setEntrando] = useState(false); // ya ha entrado y se está cargando el panel
+  const [dentroSinPanel, setDentroSinPanel] = useState(false); // entró, pero el panel falló: botón «Reintentar»
   const [espera, empezarEspera] = useEspera(); // segundos para poder pedir otro código
   const conClave = correo.trim().toLowerCase() === ADMIN_CORREO;
 
@@ -170,16 +188,37 @@ function Entrar({ t, alEntrar }) {
       if (!clave) return setError(t.falta);
       setEnviando(true);
       const res = await api("/api/acceso/admin", { metodo: "POST", datos: { email: correo.trim(), clave } });
-      setEnviando(false);
-      return res.ok ? alEntrar() : setError(res.mensaje);
+      if (!res.ok) {
+        setEnviando(false);
+        return setError(res.mensaje);
+      }
+      return abrirPanel();
     }
 
     // 2) Otro correo: primero se pide el código…
     if (!codigoEnviado) return pedirCodigo();
     // …y luego se comprueba
+    setEnviando(true);
     const res = await api("/api/acceso/admin/verificar", { metodo: "POST", datos: { email: correo.trim(), codigo: codigo.trim() } });
+    if (!res.ok) {
+      setEnviando(false);
+      return setError(res.mensaje);
+    }
+    return abrirPanel();
+  }
+
+  // La contraseña (o el código) es correcta: se cargan los datos del panel. Mientras, el botón dice
+  // «Entrando en el panel…»; si fallan, se explica y se puede reintentar sin volver a escribir nada.
+  async function abrirPanel() {
+    setEntrando(true);
+    setError("");
+    const r = await alEntrar();
     setEnviando(false);
-    return res.ok ? alEntrar() : setError(res.mensaje);
+    setEntrando(false);
+    if (!r.ok) {
+      setDentroSinPanel(true);
+      setError(t.sinPanel(r.mensaje || t.errorGuardar));
+    }
   }
 
   async function pedirCodigo() {
@@ -221,9 +260,15 @@ function Entrar({ t, alEntrar }) {
             </>
           )}
           <p className="error" id="admin-error" role="alert">{error}</p>
-          <button className="boton" type="submit" disabled={enviando}>
-            {enviando ? t.comprobando : conClave || codigoEnviado ? t.entrar : t.pedirCodigo}
-          </button>
+          {dentroSinPanel ? (
+            <button className="boton" type="button" disabled={enviando} onClick={() => { setEnviando(true); abrirPanel(); }}>
+              {enviando ? t.entrando : t.reintentar}
+            </button>
+          ) : (
+            <button className="boton" type="submit" disabled={enviando}>
+              {entrando ? t.entrando : enviando ? t.comprobando : conClave || codigoEnviado ? t.entrar : t.pedirCodigo}
+            </button>
+          )}
         </form>
         {codigoEnviado ? (
           <p className="previa__enlaces">
