@@ -1,6 +1,7 @@
 "use client";
 // Página del equipo (/admin).
-// 1) Sin la llave: tarjeta para entrar con el correo del equipo (lilium@esada.es) y la contraseña.
+// 1) Sin la llave: tarjeta para entrar con el correo del equipo (lilium@esada.es) y la contraseña,
+//    o con otro correo de la lista ADMIN_CORREOS de Vercel y un código que le llega por correo.
 // 2) Con la llave: el panel del día del retiro → plazas, y cada sala con sus grupos y personas.
 //    En cada persona: «¿Ha venido?» (Sí / No, lo marca el equipo en la puerta) y «¿Ha valorado?»
 //    (se apunta solo cuando rellena el cuestionario; si no, al día siguiente le llega un correo).
@@ -11,14 +12,16 @@ import NavReserva from "@/components/NavReserva";
 import PiePagina from "@/components/PiePagina";
 import { api } from "@/lib/borrador";
 import { iconosDe } from "@/lib/fotos";
-import { APERTURA, EVENTO, MAX_PERSONAS } from "@/lib/config";
+import { ADMIN_CORREO, APERTURA, EVENTO, MAX_PERSONAS } from "@/lib/config";
 import { useTextos } from "@/components/Idioma";
 
 const TEXTOS = {
   es: {
     etiqueta: "EQUIPO LILIUM", titulo: "Solo para el equipo",
-    intro: "Entra con el correo y la contraseña del equipo para ver el panel del retiro.",
-    correo: "Correo del equipo", clave: "Contraseña", comprobando: "Comprobando…", entrar: "Entrar",
+    intro: "Escribe tu correo. Con el del equipo (lilium@esada.es) se pide la contraseña; con el tuyo, si tienes acceso, te llega un código.",
+    codigo: "Código de 6 cifras", pedirCodigo: "Enviarme un código", otroCorreo: "Usar otro correo", demo: "Código de prueba:",
+    codigoEnviado: (c) => `Si ${c} tiene acceso al panel, le acabamos de enviar un código. Escríbelo aquí (caduca en 10 minutos).`,
+    correo: "Tu correo", clave: "Contraseña", comprobando: "Comprobando…", entrar: "Entrar",
     volver: "← Volver a la web", falta: "Escribe el correo y la contraseña.",
     panelEtiqueta: "ADMIN", panelTitulo: "Panel del retiro",
     plazas: "Plazas totales", ocupadas: "Reservadas", libres: "Libres", confirmadas: "Confirmadas",
@@ -35,8 +38,10 @@ const TEXTOS = {
   },
   en: {
     etiqueta: "LILIUM TEAM", titulo: "Team only",
-    intro: "Sign in with the team email and password to see the retreat dashboard.",
-    correo: "Team email", clave: "Password", comprobando: "Checking…", entrar: "Sign in",
+    intro: "Type your email. The team one (lilium@esada.es) asks for the password; with yours, if you have access, you'll get a code.",
+    codigo: "6-digit code", pedirCodigo: "Send me a code", otroCorreo: "Use another email", demo: "Test code:",
+    codigoEnviado: (c) => `If ${c} has access to the dashboard, we've just sent it a code. Type it here (it expires in 10 minutes).`,
+    correo: "Your email", clave: "Password", comprobando: "Checking…", entrar: "Sign in",
     volver: "← Back to the website", falta: "Type the email and the password.",
     panelEtiqueta: "ADMIN", panelTitulo: "Retreat dashboard",
     plazas: "Total places", ocupadas: "Booked", libres: "Free", confirmadas: "Confirmed",
@@ -120,20 +125,46 @@ function cambiarPersona(datos, email, cambios) {
 }
 
 /* ---------- Entrar ---------- */
+// Con lilium@esada.es se pide la contraseña. Con cualquier otro correo del equipo (lista ADMIN_CORREOS
+// de Vercel) no hay contraseña: le llega un código de 6 cifras al correo y lo escribe aquí.
 function Entrar({ t, alEntrar }) {
   const [correo, setCorreo] = useState("");
   const [clave, setClave] = useState("");
+  const [codigo, setCodigo] = useState("");
+  const [codigoEnviado, setCodigoEnviado] = useState(false);
+  const [demo, setDemo] = useState(""); // solo en pruebas en el ordenador
   const [error, setError] = useState("");
   const [enviando, setEnviando] = useState(false);
+  const conClave = correo.trim().toLowerCase() === ADMIN_CORREO;
 
   async function entrar(e) {
     e.preventDefault();
-    if (!correo.trim() || !clave) return setError(t.falta);
+    setError("");
+    if (!correo.trim()) return setError(t.falta);
+
+    // 1) Correo del equipo con contraseña
+    if (conClave) {
+      if (!clave) return setError(t.falta);
+      setEnviando(true);
+      const res = await api("/api/acceso/admin", { metodo: "POST", datos: { email: correo.trim(), clave } });
+      setEnviando(false);
+      return res.ok ? alEntrar() : setError(res.mensaje);
+    }
+
+    // 2) Otro correo: primero se pide el código…
     setEnviando(true);
-    const res = await api("/api/acceso/admin", { metodo: "POST", datos: { email: correo.trim(), clave } });
+    if (!codigoEnviado) {
+      const res = await api("/api/acceso/admin/codigo", { metodo: "POST", datos: { email: correo.trim() } });
+      setEnviando(false);
+      if (!res.ok) return setError(res.mensaje);
+      setCodigoEnviado(true);
+      if (res.codigoDemo) setDemo(res.codigoDemo);
+      return;
+    }
+    // …y luego se comprueba
+    const res = await api("/api/acceso/admin/verificar", { metodo: "POST", datos: { email: correo.trim(), codigo: codigo.trim() } });
     setEnviando(false);
-    if (!res.ok) return setError(res.mensaje);
-    alEntrar();
+    return res.ok ? alEntrar() : setError(res.mensaje);
   }
 
   return (
@@ -142,18 +173,36 @@ function Entrar({ t, alEntrar }) {
         <img className="previa__logo" src="/assets/img/logo-lilium.png" width="198" height="118" alt="Lilium" />
         <p className="acceso__etiqueta">{t.etiqueta}</p>
         <h1 className="acceso__titulo" id="previa-titulo">{t.titulo}</h1>
-        <p className="acceso__intro">{t.intro}</p>
+        <p className="acceso__intro">{codigoEnviado ? t.codigoEnviado(correo.trim()) : t.intro}</p>
         <form onSubmit={entrar} noValidate>
           <label htmlFor="admin-correo">{t.correo}</label>
           <input className="campo" id="admin-correo" type="email" autoComplete="username" placeholder="E-mail"
-            value={correo} onChange={(e) => setCorreo(e.target.value)} />
-          <label htmlFor="admin-clave">{t.clave}</label>
-          <input className="campo" id="admin-clave" type="password" autoComplete="current-password" placeholder={t.clave}
-            value={clave} onChange={(e) => setClave(e.target.value)} aria-describedby="admin-error" />
+            value={correo} disabled={codigoEnviado} onChange={(e) => setCorreo(e.target.value)} />
+          {conClave && (
+            <>
+              <label htmlFor="admin-clave">{t.clave}</label>
+              <input className="campo" id="admin-clave" type="password" autoComplete="current-password" placeholder={t.clave}
+                value={clave} onChange={(e) => setClave(e.target.value)} aria-describedby="admin-error" />
+            </>
+          )}
+          {codigoEnviado && (
+            <>
+              <label htmlFor="admin-codigo">{t.codigo}</label>
+              <input className="campo" id="admin-codigo" inputMode="numeric" autoComplete="one-time-code" maxLength={6} placeholder="000000"
+                value={codigo} onChange={(e) => setCodigo(e.target.value)} aria-describedby="admin-error" />
+              {demo && <p className="acceso__demo">{t.demo} {demo}</p>}
+            </>
+          )}
           <p className="error" id="admin-error" role="alert">{error}</p>
-          <button className="boton" type="submit" disabled={enviando}>{enviando ? t.comprobando : t.entrar}</button>
+          <button className="boton" type="submit" disabled={enviando}>
+            {enviando ? t.comprobando : conClave || codigoEnviado ? t.entrar : t.pedirCodigo}
+          </button>
         </form>
-        <Link className="previa__volver" href="/">{t.volver}</Link>
+        {codigoEnviado ? (
+          <button type="button" className="previa__volver" onClick={() => { setCodigoEnviado(false); setCodigo(""); setDemo(""); }}>{t.otroCorreo}</button>
+        ) : (
+          <Link className="previa__volver" href="/">{t.volver}</Link>
+        )}
       </section>
     </main>
   );

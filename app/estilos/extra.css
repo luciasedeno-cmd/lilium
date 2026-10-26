@@ -1141,6 +1141,10 @@ main.previa {
 
 .previa__volver {
   align-self: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
   font-family: var(--font-inter);
   font-size: 14px;
   color: var(--terracota);

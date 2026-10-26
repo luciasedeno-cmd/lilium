@@ -6,7 +6,8 @@ import { createHash, timingSafeEqual } from "node:crypto";
 import { ADMIN_CORREO, normalizarCorreo } from "@/lib/config";
 import { cookies } from "next/headers";
 import { comprobarLlaveSesion } from "@/lib/sesion";
-import { COOKIE_PREVIA, DIAS_PREVIA, crearLlavePrevia } from "@/lib/previa";
+import { COOKIE_PREVIA } from "@/lib/previa";
+import { darLlavePrevia } from "@/lib/previaServidor";
 import { ok, error, manejar, leerJson } from "@/lib/respuestas";
 
 // Freno contra quien pruebe contraseñas sin parar: tras 10 fallos, 15 minutos de bloqueo
@@ -40,14 +41,7 @@ export const POST = manejar(async (req) => {
 
   fallos.n = 0;
   comprobarLlaveSesion();
-  const almacen = await cookies();
-  almacen.set(COOKIE_PREVIA, await crearLlavePrevia(), {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: DIAS_PREVIA * 24 * 3600,
-  });
+  await darLlavePrevia();
   return ok();
 });
 
