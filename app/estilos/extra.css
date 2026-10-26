@@ -1206,3 +1206,12 @@ main.previa {
     padding-bottom: 100px;
   }
 }
+
+/* «✓ Código correcto. Entrando…» debajo del código */
+.acceso__correcto {
+  min-height: 22px;
+  font-family: var(--font-inter);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--verde-oscuro);
+}

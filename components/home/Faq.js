@@ -49,7 +49,7 @@ export default function Faq() {
           {PREGUNTAS[idioma].map(([pregunta, respuesta], i) => (
             <div
               className={`faq__item${abierta === i ? " is-open" : ""}`}
-              key={pregunta}
+              key={i}
               data-revelar="derecha"
               style={{ "--retardo": `${0.15 + i * 0.06}s` }}
             >

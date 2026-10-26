@@ -255,7 +255,7 @@ function Panel({ t, datos, aviso, marcar, actualizar, salir }) {
           <div className="panel__acciones">
             <button type="button" className="ll-btn ll-btn--md ll-btn--secondary" onClick={actualizar}>{t.actualizar}</button>
             {/* Ir a la web: si ya hay sesión (entró con su código) va directa al inicio; si no, middleware la manda a /acceso */}
-            <Link className="ll-btn ll-btn--md ll-btn--secondary" href="/inicio">{antesDeAbrir ? t.probar : t.irWeb}</Link>
+            <a className="ll-btn ll-btn--md ll-btn--secondary" href="/inicio">{antesDeAbrir ? t.probar : t.irWeb}</a>
             <button type="button" className="ll-btn ll-btn--md ll-btn--primary" onClick={salir}>{t.salir}</button>
           </div>
         </header>

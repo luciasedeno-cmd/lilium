@@ -23,7 +23,7 @@ export default function RetratoOjos({ alt }) {
       const dx = x - (r.left + r.width / 2);
       const dy = y - (r.top + r.height * 0.29);
       const distancia = Math.hypot(dx, dy) || 1;
-      const fuerza = Math.min(1, distancia / 260); // muy cerca de la cara, mira casi de frente
+      const fuerza = Math.min(1, distancia / 140); // en cuanto el ratón se aleja un poco, mira del todo hacia él
       el.style.setProperty("--ox", ((dx / distancia) * fuerza).toFixed(3));
       el.style.setProperty("--oy", ((dy / distancia) * fuerza).toFixed(3));
     }

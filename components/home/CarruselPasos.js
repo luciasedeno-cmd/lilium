@@ -1,9 +1,10 @@
 "use client";
-// Carrusel «Cómo funciona»: los 5 pasos de la reserva (variantes del componente de Figma)
-// La barrita se va rellenando hasta el siguiente punto; al llenarse, pasa sola al paso siguiente.
-// En cada paso la mano hace algo distinto y el fondo de toda la sección cambia de color
-// (el color se guarda en --paso-color, en la raíz de la página, para que lo use también el encaje de arriba).
-import { Fragment, useEffect, useRef, useState } from "react";
+// «Cómo funciona»: los 5 pasos de la reserva, con scroll horizontal.
+// La sección se queda fija en la pantalla y, al bajar con la rueda o el dedo, las tarjetas de los
+// pasos se desplazan hacia un lado (no cambian solas con el tiempo). Cada paso se detiene un momento.
+// La barrita de puntos se va llenando con el avance y los puntos se pueden pulsar para ir a ese paso.
+// En cada paso la mano hace algo distinto y el fondo cambia de color (--paso-color, en la raíz de la página).
+import { useEffect, useRef, useState } from "react";
 import { useIdioma } from "@/components/Idioma";
 
 // Imagen y color de fondo de cada paso (colores de la paleta de Lilium; el texto crema se lee en todos)
@@ -35,30 +36,47 @@ const PASOS = {
 export default function CarruselPasos() {
   const { idioma } = useIdioma();
   const lista = PASOS[idioma];
+  const n = lista.length;
   const [actual, setActual] = useState(0);
-  const [cambiando, setCambiando] = useState(false);
-  const [pausado, setPausado] = useState(true); // empieza parado hasta que la sección se ve en pantalla
-  const seccion = useRef(null);
+  const pista = useRef(null);
+  const relleno = useRef(null);
 
-  // Cambia de paso con un pequeño fundido del texto
-  function mostrar(indice) {
-    const siguiente = (indice + lista.length) % lista.length;
-    setCambiando(true);
-    setTimeout(() => {
-      setActual(siguiente);
-      setCambiando(false);
-    }, 250);
-  }
-
-  // La barrita solo avanza mientras la sección se ve en pantalla (si no, se para donde esté).
-  // Quien tiene activado «reducir movimiento» en su móvil u ordenador no ve animaciones
-  // ni cambios automáticos (el CSS quita la animación y por eso nunca termina).
+  // El avance (0 al principio, n-1 al final) sale de cuánto se ha bajado dentro del bloque alto
   useEffect(() => {
-    const sinMovimiento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const vigia = new IntersectionObserver(([e]) => setPausado(sinMovimiento || !e.isIntersecting), { threshold: 0.4 });
-    vigia.observe(seccion.current);
-    return () => vigia.disconnect();
-  }, []);
+    const bloque = pista.current.closest(".como-bloque");
+    // Navegadores antiguos sin «overflow: clip»: la parte fija no funciona; las tarjetas se deslizan con el dedo
+    if (!CSS.supports("overflow-x", "clip")) {
+      bloque.classList.add("como-bloque--simple");
+      return;
+    }
+    let pendiente = false;
+    function pintar() {
+      pendiente = false;
+      const r = bloque.getBoundingClientRect();
+      const recorrido = bloque.offsetHeight - window.innerHeight;
+      const avance = Math.min(1, Math.max(0, -r.top / Math.max(1, recorrido))) * (n - 1);
+      // Cada paso se queda quieto un rato y luego pasa suave al siguiente
+      const i = Math.min(n - 2, Math.floor(avance));
+      const f = Math.min(1, Math.max(0, (avance - i - 0.3) / 0.4));
+      const pos = i + f * f * (3 - 2 * f);
+      pista.current.style.transform = `translateX(${(-pos * 100) / n}%)`;
+      relleno.current.style.transform = `scaleX(${pos / (n - 1)})`;
+      setActual(Math.round(pos));
+    }
+    const alBajar = () => {
+      if (!pendiente) {
+        pendiente = true;
+        requestAnimationFrame(pintar);
+      }
+    };
+    pintar();
+    window.addEventListener("scroll", alBajar, { passive: true });
+    window.addEventListener("resize", alBajar);
+    return () => {
+      window.removeEventListener("scroll", alBajar);
+      window.removeEventListener("resize", alBajar);
+    };
+  }, [n]);
 
   // El fondo de la sección toma el color del paso actual (el cambio es suave: ver --paso-color en home.css)
   useEffect(() => {
@@ -66,56 +84,47 @@ export default function CarruselPasos() {
   }, [actual]);
   useEffect(() => () => document.documentElement.style.removeProperty("--paso-color"), []);
 
-  const paso = lista[actual];
+  // Pulsar un punto: baja (o sube) hasta donde se ve ese paso
+  function irA(i) {
+    const bloque = pista.current.closest(".como-bloque");
+    if (bloque.classList.contains("como-bloque--simple")) {
+      return pista.current.parentElement.scrollTo({ left: (i * pista.current.parentElement.scrollWidth) / n, behavior: "smooth" });
+    }
+    const recorrido = bloque.offsetHeight - window.innerHeight;
+    const arriba = bloque.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo({ top: arriba + (recorrido * i) / (n - 1), behavior: "smooth" });
+  }
+
   return (
-    <section
-      className={`pasos${cambiando ? " is-cambiando" : ""}${pausado ? " is-pausado" : ""}`}
-      aria-roledescription="carrusel"
-      aria-label={idioma === "en" ? "Booking steps" : "Pasos de la reserva"}
-      ref={seccion}
-      onKeyDown={(e) => {
-        if (e.key === "ArrowRight") mostrar(actual + 1);
-        if (e.key === "ArrowLeft") mostrar(actual - 1);
-      }}
-    >
-      {/* Las 5 manos están una encima de otra: solo se ve la del paso actual, que sube desde abajo */}
-      <div className="pasos__imagen" data-revelar="izquierda">
-        {ESCENAS.map((e, i) => (
-          <img
-            key={e.imagen}
-            loading="lazy"
-            decoding="async"
-            className={`pasos__mano${i === actual ? " is-activa" : ""}`}
-            src={`/assets/img/pasos/${e.imagen}`}
-            alt={i === actual ? e.alt[idioma] : ""}
-            aria-hidden={i === actual ? undefined : true}
-          />
+    <section className="pasos" aria-roledescription="carrusel" aria-label={idioma === "en" ? "Booking steps" : "Pasos de la reserva"}>
+      {/* Barrita de progreso: puntos (se pueden pulsar) sobre una línea que se va llenando */}
+      <div className="pasos__barra" role="tablist" aria-label={idioma === "en" ? "Choose step" : "Elegir paso"}>
+        <span className="pasos__linea" aria-hidden="true"><span className="pasos__relleno" ref={relleno} /></span>
+        {lista.map((_, i) => (
+          <button key={i} type="button" role="tab" aria-label={`${idioma === "en" ? "Step" : "Paso"} ${i + 1}`} aria-selected={i === actual}
+            className={`pasos__punto${i < actual ? " is-hecho" : ""}${i === actual ? " is-actual" : ""}`}
+            onClick={() => irA(i)} />
         ))}
       </div>
 
-      <div className="pasos__texto" aria-live="polite" data-revelar="derecha" style={{ "--retardo": "0.15s" }}>
-        {/* Barrita de progreso: puntos (se pueden pulsar) unidos por líneas */}
-        <div className="pasos__barra" role="tablist" aria-label={idioma === "en" ? "Choose step" : "Elegir paso"}>
-          {lista.map((_, i) => (
-            <Fragment key={i}>
-              {i > 0 && (
-                <span className={`pasos__linea${i <= actual ? " is-llena" : ""}`} aria-hidden="true">
-                  {/* La línea que va hacia el siguiente punto se rellena poco a poco */}
-                  {i === actual + 1 && <span key={actual} className="pasos__relleno" />}
-                </span>
-              )}
-              <button type="button" role="tab" aria-label={`${idioma === "en" ? "Step" : "Paso"} ${i + 1}`} aria-selected={i === actual}
-                className={`pasos__punto${i < actual ? " is-hecho" : ""}${i === actual ? " is-actual" : ""}`}
-                onClick={() => mostrar(i)} />
-            </Fragment>
+      {/* Las 5 tarjetas, una al lado de otra: se desplazan de lado al bajar */}
+      <div className="pasos__ventana">
+        <div className="pasos__pista" ref={pista} style={{ width: `${n * 100}%` }}>
+          {lista.map((paso, i) => (
+            <article key={i} className={`pasos__tarjeta${i === actual ? " is-actual" : ""}`} aria-hidden={i !== actual}>
+              <div className="pasos__imagen">
+                <img className="pasos__mano" src={`/assets/img/pasos/${ESCENAS[i].imagen}`} alt={ESCENAS[i].alt[idioma]}
+                  loading={i === 0 ? undefined : "lazy"} decoding="async" />
+              </div>
+              <div className="pasos__texto">
+                <p className="pasos__numero">/0{i + 1}</p>
+                <h3 className="pasos__titulo">{paso.titulo}</h3>
+                <div className="pasos__descripcion">
+                  {paso.descripcion.map((t) => <p key={t}>{t}</p>)}
+                </div>
+              </div>
+            </article>
           ))}
-          {/* Reloj invisible: dura lo mismo que el relleno y, al acabar, pasa al siguiente paso */}
-          <span key={`reloj-${actual}`} className="pasos__reloj" aria-hidden="true" onAnimationEnd={() => mostrar(actual + 1)} />
-        </div>
-        <p className="pasos__numero">/0{actual + 1}</p>
-        <h3 className="pasos__titulo">{paso.titulo}</h3>
-        <div className="pasos__descripcion">
-          {paso.descripcion.map((t) => <p key={t}>{t}</p>)}
         </div>
       </div>
     </section>

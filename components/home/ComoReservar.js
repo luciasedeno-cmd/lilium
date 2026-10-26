@@ -45,12 +45,16 @@ export default function ComoReservar({ children }) {
   }, []);
 
   return (
+    // El bloque es muy alto (una pantalla por paso) y dentro todo se queda fijo en la pantalla
+    // mientras se baja: al bajar, los pasos se desplazan de lado (ver CarruselPasos).
     <div className="como-bloque" ref={bloque}>
-      <section className="como-reservar" id="como-funciona">
-        <h2 className="como-reservar__titulo" data-revelar="escala">{t.titulo}</h2>
-        <p className="como-reservar__subtitulo" data-revelar="arriba" style={{ "--retardo": "0.15s" }}>{t.subtitulo}</p>
-      </section>
-      {children}
+      <div className="como-fijo">
+        <section className="como-reservar" id="como-funciona">
+          <h2 className="como-reservar__titulo" data-revelar="escala">{t.titulo}</h2>
+          <p className="como-reservar__subtitulo" data-revelar="arriba" style={{ "--retardo": "0.15s" }}>{t.subtitulo}</p>
+        </section>
+        {children}
+      </div>
     </div>
   );
 }

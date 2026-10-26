@@ -40,9 +40,21 @@ export default function Animaciones() {
           }
         }
       },
-      { threshold: 0.12, rootMargin: "0px 0px -6% 0px" }
+      { threshold: 0.05 }
     );
     document.querySelectorAll("[data-revelar]").forEach((el) => observador.observe(el));
+    // Si aparecen elementos nuevos (por ejemplo, al cambiar de idioma se vuelven a crear los textos),
+    // también se vigilan; si no, se quedarían invisibles
+    const nuevos = new MutationObserver((cambios) => {
+      for (const c of cambios) {
+        for (const nodo of c.addedNodes) {
+          if (nodo.nodeType !== 1) continue;
+          if (nodo.matches("[data-revelar]:not([data-visible])")) observador.observe(nodo);
+          nodo.querySelectorAll?.("[data-revelar]:not([data-visible])").forEach((el) => observador.observe(el));
+        }
+      }
+    });
+    nuevos.observe(document.body, { childList: true, subtree: true });
 
     // 2) Parallax, escala y salida de la portada: se miden las posiciones y se actualizan al bajar
     const parallax = [...document.querySelectorAll("[data-parallax]")].map((el) => ({ el, f: parseFloat(el.dataset.parallax) || 0 }));
@@ -119,6 +131,7 @@ export default function Animaciones() {
     return () => {
       raiz.classList.remove("anim");
       observador.disconnect();
+      nuevos.disconnect();
       vigilante.disconnect();
       window.removeEventListener("scroll", alBajar);
       window.removeEventListener("resize", medir);

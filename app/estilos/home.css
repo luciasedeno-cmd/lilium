@@ -258,8 +258,8 @@ body:has(.hero) {
 }
 
 /* Encajes de unión: van en lo alto de una sección, con su mismo color, y tapan el corte con la de arriba.
-   Al bajar, «suben» desde dentro de su sección (--sub de 0 a 1, lo calcula Animaciones.js).
-   Quedan por debajo del contenido de su sección (z-index -1) pero encima de la sección anterior. */
+   Siempre pegados a su sección (sin moverse al bajar). Quedan por debajo del contenido de su sección
+   (z-index -1) pero encima de la sección anterior. */
 .union {
   position: absolute;
   left: 50%;
@@ -269,7 +269,6 @@ body:has(.hero) {
   height: 176px;
   max-width: none;
   transform: translateX(-50%);
-  translate: 0 calc((1 - var(--sub, 1)) * 100%);
   background: var(--union-color);
   -webkit-mask: url("/assets/svg/banner-encaje-reserva.svg") center / 100% 100% no-repeat;
   mask: url("/assets/svg/banner-encaje-reserva.svg") center / 100% 100% no-repeat;
@@ -280,12 +279,7 @@ body:has(.hero) {
 .union--crudo { --union-color: var(--crudo); }
 .union--terracota { --union-color: var(--terracota); }
 
-/* El encaje del color de «¿Cómo reservar?» también crece hacia arriba al bajar
-   (se estira desde su borde de abajo, así nunca tapa el título de la sección) */
-.encaje--como {
-  transform-origin: 50% 100%;
-  scale: 1 calc(0.2 + var(--sub, 1) * 0.8);
-}
+
 
 /* ---------- Historia ---------- */
 /* Ocupa justo la pantalla: el retrato se encoge en pantallas bajas para que todo quepa */
@@ -345,7 +339,7 @@ body:has(.hero) {
 
 /* Ojos que siguen al ratón (components/home/RetratoOjos.js).
    Cada .ojo es el hueco del ojo (posición en % del retrato de 696 × 1018 px) con los bordes difuminados;
-   dentro, el iris se desplaza según --ox y --oy (de -1 a 1): hasta 7 px a los lados y 3 px arriba/abajo
+   dentro, el iris se desplaza según --ox y --oy (de -1 a 1): hasta 12 px a los lados y 5 px arriba/abajo
    (medidos en el retrato original). */
 .ojo {
   position: absolute;
@@ -361,7 +355,7 @@ body:has(.hero) {
 .ojo img {
   position: absolute;
   max-width: none;
-  translate: calc(var(--ox, 0) * 22%) calc(var(--oy, 0) * 9.5%);
+  translate: calc(var(--ox, 0) * 38%) calc(var(--oy, 0) * 17%);
   transition: translate 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
@@ -417,14 +411,23 @@ body:has(.hero) {
   --como-texto: color-mix(in srgb, var(--fondo-oscuro) calc(var(--pt) * 100%), var(--terracota));
 }
 
-/* «¿Cómo reservar?» + los pasos ocupan justo una pantalla */
+/* «¿Cómo reservar?» + los pasos: un bloque alto (una pantalla por paso) con una parte fija
+   (.como-fijo) que ocupa justo la pantalla mientras se baja */
 .como-bloque {
   position: relative;
+  height: 500vh;
+  height: 500svh;
+  background: var(--como-fondo);
+}
+
+.como-fijo {
+  position: sticky;
+  top: 0;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  min-height: 100svh;
-  background: var(--como-fondo);
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
 }
 
 /* El encaje que cuelga sobre «¿Cómo reservar?» se pinta con el mismo color que la sección
@@ -464,118 +467,55 @@ body:has(.hero) {
   font-size: 24px;
 }
 
-/* ---------- Cómo funciona (carrusel) ---------- */
-/* Dos columnas: la mano (que sale desde abajo del todo) y el texto del paso.
-   Ocupa el resto de la pantalla que deja el título. */
+/* ---------- Cómo funciona (pasos con scroll horizontal) ---------- */
+/* .como-bloque es alto (una pantalla por paso, ver arriba) y .como-fijo se queda pegado arriba
+   mientras tanto. Dentro, la pista con las 5 tarjetas se desplaza de lado (CarruselPasos.js). */
 .pasos {
   position: relative;
   flex: 1;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  grid-template-rows: 1fr;
-  align-items: center;
-  column-gap: 64px;
-  width: 100%;
-  max-width: 1240px;
-  margin: 0 auto;
-  padding: 0 24px;
-  overflow: hidden;
-}
-
-.pasos__imagen {
-  position: relative;
-  align-self: end;
-  height: clamp(320px, calc(100svh - 230px), 680px);
-}
-
-/* Las 5 manos, una encima de otra. La del paso actual sube desde abajo y se endereza;
-   la anterior se va hundiendo mientras se desvanece. Siempre se ven enteras (no se recortan). */
-.pasos__mano {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  max-width: none;
-  object-fit: contain;
-  object-position: center bottom;
-  opacity: 0;
-  transform: translateY(70px) rotate(-5deg) scale(0.96);
-  transform-origin: 50% 100%;
-  transition: opacity 0.5s ease, transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-
-.pasos__mano.is-activa {
-  opacity: 1;
-  transform: none;
-  transition-delay: 0.2s;
-}
-
-.pasos__texto {
-  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 28px;
-  max-width: 575px;
-  padding: 24px 0;
-  color: var(--fondo-oscuro);
+  min-height: 0;
+  width: 100%;
 }
 
 .pasos__barra {
   position: relative;
   display: flex;
   align-items: center;
-  width: 316px;
-  height: 12px;
+  justify-content: space-between;
+  width: min(316px, 70vw);
+  height: 24px;
+  margin: 18px auto 0;
 }
 
-/* Líneas entre puntos: tenues de fondo, y se llenan al avanzar */
+/* Línea de fondo tenue y relleno crema que crece con el avance */
 .pasos__linea {
-  position: relative;
-  flex: 1;
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  top: 50%;
   height: 2px;
   background: rgba(255, 250, 242, 0.35);
-  overflow: hidden;
-}
-
-.pasos__linea.is-llena,
-.pasos__relleno {
-  background: var(--fondo-oscuro);
+  transform: translateY(-50%);
 }
 
 .pasos__relleno {
   position: absolute;
   inset: 0;
+  background: var(--fondo-oscuro);
+  transform: scaleX(0);
   transform-origin: left;
-  animation: pasos-carga 6s linear forwards;
 }
 
-/* Reloj invisible que marca cuándo cambiar de paso (mismo tiempo que el relleno) */
-.pasos__reloj {
-  position: absolute;
-  width: 0;
-  height: 0;
-  animation: pasos-carga 6s linear forwards;
-}
-
-@keyframes pasos-carga {
-  from { transform: scaleX(0); }
-  to { transform: scaleX(1); }
-}
-
-/* Parado mientras la sección no se ve en pantalla */
-.pasos.is-pausado .pasos__relleno,
-.pasos.is-pausado .pasos__reloj {
-  animation-play-state: paused;
-}
-
-/* Puntos: botón de 24 px para pulsar cómodo, con un círculo de 12 px dentro */
+/* Puntos: botón de 24 px con un círculo de 12 px dentro */
 .pasos__punto {
   position: relative;
   flex: none;
   width: 24px;
   height: 24px;
-  margin: 0 -6px;
   border-radius: 50%;
+  cursor: pointer;
 }
 
 .pasos__punto::before {
@@ -584,7 +524,8 @@ body:has(.hero) {
   inset: 6px;
   border: 1px solid var(--fondo-oscuro);
   border-radius: 50%;
-  transition: background-color 0.4s, transform 0.4s;
+  background: var(--como-fondo);
+  transition: background-color 0.3s, transform 0.3s;
 }
 
 .pasos__punto.is-hecho::before,
@@ -593,40 +534,64 @@ body:has(.hero) {
 }
 
 .pasos__punto.is-actual::before {
-  transform: scale(1.3);
-  animation: pasos-latido 0.5s ease-out, pasos-respira 2s ease-in-out 0.5s infinite;
-}
-
-/* Brillo suave alrededor del punto actual mientras se espera al siguiente paso */
-@keyframes pasos-respira {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 250, 242, 0.5); }
-  50% { box-shadow: 0 0 0 5px rgba(255, 250, 242, 0); }
-}
-
-@keyframes pasos-latido {
-  0% { transform: scale(0.6); }
-  60% { transform: scale(1.6); }
-  100% { transform: scale(1.3); }
+  transform: scale(1.35);
 }
 
 .pasos__punto:focus-visible {
   outline: 2px solid var(--melocoton);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  :root {
-    transition: none;
-  }
+.pasos__ventana {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
 
-  .pasos__mano {
-    transition: none;
-  }
+.pasos__pista {
+  display: flex;
+  height: 100%;
+  will-change: transform;
+}
 
-  .pasos__relleno,
-  .pasos__reloj,
-  .pasos__punto.is-actual::before {
-    animation: none;
-  }
+/* Cada tarjeta: la mano (sale desde abajo del todo) y el texto del paso */
+.pasos__tarjeta {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  column-gap: 64px;
+  flex: 1 1 0;
+  min-width: 0;
+  height: 100%;
+  /* Contenido centrado en 1240 px como mucho, aunque la tarjeta ocupe todo el ancho */
+  padding: 0 max(24px, calc((100vw - 1240px) / 2 + 24px));
+}
+
+.pasos__imagen {
+  position: relative;
+  align-self: end;
+  height: clamp(300px, calc(100svh - 260px), 680px);
+}
+
+.pasos__mano {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.6s ease;
+}
+
+/* La mano del paso que se está viendo sube un poco; las de los lados quedan más bajas */
+.pasos__tarjeta:not(.is-actual) .pasos__mano {
+  transform: translateY(40px);
+  opacity: 0.6;
+}
+
+.pasos__texto {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 575px;
+  color: var(--fondo-oscuro);
 }
 
 .pasos__numero,
@@ -647,12 +612,24 @@ body:has(.hero) {
   color: var(--fondo);
 }
 
-.pasos__texto > * {
-  transition: opacity 0.3s;
+/* Navegadores antiguos: sin parte fija; las tarjetas se deslizan de lado con el dedo */
+.como-bloque--simple {
+  height: auto !important;
 }
 
-.pasos.is-cambiando .pasos__texto > :not(.pasos__barra) {
-  opacity: 0;
+.como-bloque--simple .como-fijo {
+  position: relative;
+  height: auto;
+  min-height: 100svh;
+}
+
+.como-bloque--simple .pasos__ventana {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+}
+
+.como-bloque--simple .pasos__tarjeta {
+  scroll-snap-align: start;
 }
 
 /* ---------- ¿Qué necesita el ritual? ---------- */
@@ -1233,7 +1210,7 @@ body:has(.hero) {
   }
 
 
-  .pasos {
+  .pasos__tarjeta {
     column-gap: 32px;
   }
 
@@ -1461,24 +1438,22 @@ body:has(.hero) {
   }
 
   /* En el móvil, una sola columna: el texto del paso arriba y la mano abajo, saliendo del borde */
-  .pasos {
+  .pasos__tarjeta {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
     padding: 0 20px;
   }
 
   .pasos__texto {
-    gap: 16px;
-    padding: 20px 0 8px;
+    gap: 12px;
+    padding: 16px 0 8px;
   }
 
-  /* La mano ocupa todo el hueco que queda debajo del texto (sin pasarse de 460 px) */
   .pasos__imagen {
     order: 2;
     align-self: stretch;
     height: auto;
-    min-height: 240px;
-    max-height: 460px;
+    min-height: 0;
   }
 
   .cuadro {
@@ -1486,32 +1461,37 @@ body:has(.hero) {
     max-width: 362px;
   }
 
-  /* En el móvil el arco se centra y el texto se ajusta a su hueco */
+  /* En el móvil, versión vertical del arco (erasmus-arco-movil.webp) a todo el ancho;
+     el texto va dentro del hueco del arco (entre el 22 % y el 78 % del ancho) */
   .erasmus {
-    height: 640px;
-    padding: 150px 40px 0;
-    background-size: auto 100%;
+    height: auto;
+    aspect-ratio: 768 / 1340;
+    padding: 47vw 23% 0;
+    background: var(--terracota) url("/assets/img/erasmus-arco-movil.webp") center top / 100% 100% no-repeat;
   }
 
   .erasmus__lirio {
-    width: 72px;
-    height: 58px;
+    width: 56px;
+    height: 45px;
   }
 
   .erasmus__titulo {
-    margin-top: 18px;
-    font-size: 72px;
-    line-height: 60px;
+    margin-top: 14px;
+    font-size: 58px;
+    line-height: 56px;
   }
 
   .erasmus__texto {
-    width: 260px;
-    font-size: 18px;
+    width: 100%;
+    margin-top: 16px;
+    font-size: 16px;
   }
 
   .erasmus__boton {
-    margin-top: 28px;
-    font-size: 20px;
+    margin-top: 22px;
+    padding: 10px 16px;
+    font-size: 17px;
+    white-space: normal;
   }
 
   .faq__titulo {

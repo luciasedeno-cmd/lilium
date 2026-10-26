@@ -26,7 +26,7 @@ const TEXTOS = {
     reenviarEn: (s) => `Podrás pedir otro código en ${s} s`,
     enviado1: "Hemos enviado un código de 6 dígitos a", enviado2: "Caduca en 10 minutos.",
     codigo: "Código de 6 cifras que te hemos enviado", seisDigitos: "Escribe los 6 dígitos del código.",
-    comprobando: "Comprobando…", entrar: "Entrar", reenviar: "Reenviar código", cambiar: "Cambiar correo",
+    comprobando: "Comprobando…", entrar: "Entrar", correcto: "Código correcto. Entrando…", entrando: "Entrando…", reenviar: "Reenviar código", cambiar: "Cambiar correo",
     hasEntrado: "Has entrado con", verReserva: "Ver mi reserva", continuar: "Continuar", otroCorreo: "Entrar con otro correo",
   },
   en: {
@@ -39,7 +39,7 @@ const TEXTOS = {
     reenviarEn: (s) => `You can ask for another code in ${s} s`,
     enviado1: "We've sent a 6-digit code to", enviado2: "It expires in 10 minutes.",
     codigo: "6-digit code we've sent you", seisDigitos: "Type the 6 digits of the code.",
-    comprobando: "Checking…", entrar: "Sign in", reenviar: "Resend code", cambiar: "Change email",
+    comprobando: "Checking…", entrar: "Sign in", correcto: "Correct code. Signing you in…", entrando: "Signing in…", reenviar: "Resend code", cambiar: "Change email",
     hasEntrado: "You're signed in as", verReserva: "See my booking", continuar: "Continue", otroCorreo: "Sign in with another email",
   },
 };
@@ -54,6 +54,7 @@ export default function Acceso() {
   const [error, setError] = useState("");
   const [aviso, setAviso] = useState("");
   const [enviando, setEnviando] = useState(false);
+  const [correcto, setCorrecto] = useState(false); // el código ya se ha comprobado y es bueno
   const [espera, empezarEspera] = useEspera(); // segundos para poder pedir otro código
   const campoCodigo = useRef(null);
 
@@ -107,7 +108,12 @@ export default function Acceso() {
     const res = await api("/api/acceso/verificar", { metodo: "POST", datos: { email: correo, codigo: codigo.trim() } });
     setEnviando(false);
     if (!res.ok) return setError(res.mensaje);
-    router.replace(res.tieneReserva ? "/mi-reserva" : "/inicio");
+    // Código correcto: mensaje, pantalla de carga y carga completa de la página siguiente.
+    // (Se recarga entera a propósito: así no se usa ninguna copia guardada de cuando aún no habías entrado,
+    // que era lo que hacía que la página «no avanzara».)
+    setError("");
+    setCorrecto(true);
+    setTimeout(() => window.location.assign(res.tieneReserva ? "/mi-reserva" : "/inicio"), 700);
   }
 
   return (
@@ -121,7 +127,7 @@ export default function Acceso() {
           {fase === "sesion" ? (
             <>
               <p className="acceso__intro">{t.hasEntrado} <b>{sesion.email}</b>.</p>
-              <button className="boton" type="button" onClick={() => router.push(sesion.destino)}>
+              <button className="boton" type="button" onClick={() => window.location.assign(sesion.destino)}>
                 {sesion.destino === "/mi-reserva" ? t.verReserva : t.continuar}
               </button>
               <p className="acceso__ayuda acceso__enlaces">
@@ -150,8 +156,13 @@ export default function Acceso() {
                 <input className="campo campo--codigo" id="codigo" ref={campoCodigo} inputMode="numeric" autoComplete="one-time-code"
                   maxLength={6} placeholder={t.pistaCodigo} value={codigo} onChange={(e) => setCodigo(e.target.value.replace(/\D/g, ""))}
                   aria-invalid={error ? "true" : undefined} aria-describedby="codigo-error" />
-                <p className="error" id="codigo-error" role="alert">{error}</p>
-                <button className="boton" type="submit" disabled={enviando}>{enviando ? t.comprobando : t.entrar}</button>
+                {/* Debajo del código: si es correcto (verde) o el error (naranja) */}
+                {correcto ? (
+                  <p className="acceso__correcto" role="status">✓ {t.correcto}</p>
+                ) : (
+                  <p className="error" id="codigo-error" role="alert">{error}</p>
+                )}
+                <button className="boton" type="submit" disabled={enviando || correcto}>{enviando ? t.comprobando : correcto ? t.entrando : t.entrar}</button>
               </form>
               <p className="acceso__ayuda acceso__enlaces">
                 {/* Reenviar: se puede pasados 10 s; mientras, se ve la cuenta atrás */}
@@ -166,6 +177,15 @@ export default function Acceso() {
         </section>
       </main>
       <PiePagina />
+      {/* Pantalla de carga mientras se abre la web tras un código correcto */}
+      {correcto && (
+        <div className="carga" role="status">
+          <img className="carga__lirio" src="/assets/img/icono-lirio.webp" width="99" height="80" alt="" />
+          <img className="carga__logo" src="/assets/img/logo-lilium.webp" width="198" height="118" alt="Lilium" />
+          <span className="carga__linea" aria-hidden="true"><span /></span>
+          <p className="carga__texto">{t.correcto}</p>
+        </div>
+      )}
     </div>
   );
 }
