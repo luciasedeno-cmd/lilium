@@ -296,16 +296,18 @@ body:has(.hero) {
   overflow-x: clip;
 }
 
-/* Retrato grande | dos cuadros pequeños | texto (como en Figma «HOME PAGE») */
+/* Retrato grande a la izquierda, texto en el centro y los dos cuadros pequeños a la derecha
+   (posiciones del Figma «HOME PAGE», en una columna de 1440 px) */
 .historia__contenido {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 48px;
+  gap: 32px;
   width: 100%;
   max-width: 1440px;
   margin: 0 auto;
-  padding: 0 40px;
+  /* a la derecha se deja libre la franja de los cuadros pequeños, para que nunca pisen el texto */
+  padding: 0 27% 0 34px;
 }
 
 .retrato {
@@ -314,7 +316,7 @@ body:has(.hero) {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  height: min(709px, calc(100svh - 280px));
+  height: min(620px, calc(100svh - 280px)); /* como en una pantalla de 1440 × 900, para que en las grandes no empuje el texto contra los cuadros */
   min-height: 380px;
   aspect-ratio: 509 / 709;
 }
@@ -364,19 +366,28 @@ body:has(.hero) {
 .ojo--izq img { left: 32.08%; top: -17.39%; width: 60.38%; height: 139.1%; }
 .ojo--der img { left: 32.14%; top: -21.74%; width: 58.93%; height: 143.48%; }
 
-/* Columna de los dos cuadros pequeños (Figma: 221 × 306, el de la mano un poco más abajo y a la derecha) */
+/* Los dos cuadros pequeños (Figma: 221 × 306): el ojo arriba a la derecha, un poco por encima del retrato,
+   y la mano más abajo y más a la derecha */
 .historia__cuadros {
-  display: flex;
-  flex-direction: column;
-  flex: none;
-  gap: 24px;
-  width: clamp(150px, 15vw, 221px);
-  margin-left: -60px; /* se monta un poco sobre el retrato, como en el diseño */
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.historia__cuadros > * {
+  position: absolute;
+  width: min(15.35%, 221px);
+  pointer-events: auto;
+}
+
+.historia__cuadros > :first-child {
+  left: 73%;
+  top: -3%;
 }
 
 .historia__cuadros > :last-child {
-  margin-left: 40px;
-  margin-top: -40px;
+  left: 82.2%;
+  top: 48%;
 }
 
 .cuadro-ojo,
@@ -442,6 +453,7 @@ body:has(.hero) {
 }
 
 .historia__texto {
+  flex: 0 1 508px; /* se encoge si falta sitio, sin pisar los cuadros de la derecha */
   padding-top: 0;
   min-width: 0;
 }
@@ -449,13 +461,14 @@ body:has(.hero) {
 /* Título fijo «¿Qué es Lilium?» (antes era una marquesina en movimiento) */
 .historia__titulo {
   font-family: var(--font-script);
-  font-size: 100px;
-  line-height: 128px;
+  font-size: clamp(64px, 6.9vw, 100px);
+  line-height: 1.28;
+  white-space: nowrap;
   color: var(--melocoton);
 }
 
 .historia__parrafos {
-  width: 520px;
+  width: 100%;
   max-width: 100%;
   font-family: var(--font-baskervville);
   font-size: 24px;
@@ -1284,18 +1297,23 @@ body:has(.hero) {
 
   /* En pantallas estrechas, los dos cuadros pequeños uno al lado del otro, debajo del retrato */
   .historia__cuadros {
-    flex-direction: row;
+    position: static;
+    display: flex;
     align-items: flex-start;
+    gap: 24px;
     width: min(100%, 460px);
-    margin: 0;
   }
 
-  .historia__cuadros > * {
+  .historia__cuadros > *,
+  .historia__cuadros > :first-child,
+  .historia__cuadros > :last-child {
+    position: static;
     flex: 1;
+    width: auto;
   }
 
   .historia__cuadros > :last-child {
-    margin: 30px 0 0;
+    margin-top: 30px;
   }
 
   .historia__texto {
