@@ -35,6 +35,7 @@ const TEXTOS = {
     sinReservas: "Todavía no hay ninguna reserva.", sinResultados: "Ningún correo coincide con la búsqueda.",
     salasVacias: (n) => (n === 1 ? "1 turno sin reservas" : `${n} turnos sin reservas`),
     salaSinNombre: "Sin nombre", erasmus: "Erasmus", grupo: (n) => `Grupo ${n}`, notas: "Anotaciones",
+    sinDueno: "Palabras de la frase que no tiene nadie (dádselas el día del retiro):",
     persona: "Persona", estado: "Estado", vino: "¿Ha venido?", valoro: "¿Ha valorado?",
     lider: "Líder", confirmada: "Confirmada", pendiente: "Sin confirmar",
     si: "Sí", no: "No", valorado: "Sí", noValorado: "Todavía no", correoEnviado: "Correo enviado",
@@ -68,6 +69,7 @@ const TEXTOS = {
     sinReservas: "There are no bookings yet.", sinResultados: "No email matches your search.",
     salasVacias: (n) => (n === 1 ? "1 session without bookings" : `${n} sessions without bookings`),
     salaSinNombre: "No name", erasmus: "Erasmus", grupo: (n) => `Group ${n}`, notas: "Notes",
+    sinDueno: "Words of the phrase nobody has (hand them out on the day):",
     persona: "Person", estado: "Status", vino: "Attended?", valoro: "Rated?",
     lider: "Leader", confirmada: "Confirmed", pendiente: "Not confirmed",
     si: "Yes", no: "No", valorado: "Yes", noValorado: "Not yet", correoEnviado: "Email sent",
@@ -360,6 +362,13 @@ function Panel({ t, datos, aviso, marcar, actualizar, salir }) {
               {s.grupos.map((g, n) => (
                 <Grupo key={g.id} t={t} grupo={g} numero={s.grupos.length > 1 ? n + 1 : null} marcar={marcar} />
               ))}
+              {/* Con menos de 6 personas, alguna palabra de la frase secreta se queda sin dueño */}
+              {s.sinDueno?.length > 0 && (
+                <p className="panel-sala__fragmentos">
+                  {t.sinDueno}{" "}
+                  {s.sinDueno.map((f) => <b key={f.numero}>{f.numero} {f.palabra}</b>).reduce((a, b) => [a, " · ", b])}
+                </p>
+              )}
             </section>
           ))}
         </div>

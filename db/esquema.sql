@@ -53,6 +53,8 @@ alter table miembros add column if not exists invitado_en timestamptz;
 alter table miembros add column if not exists recordatorio_en timestamptz;
 -- Quién apuntó a cada persona (ella misma si reservó): cada cual solo gestiona a la gente que apuntó
 alter table miembros add column if not exists apuntado_por text;
+-- La palabra de la frase secreta de cada persona (0-5 = I a VI); se guarda para que no cambie nunca
+alter table miembros add column if not exists fragmento smallint;
 -- Anotaciones de la líder al reservar
 alter table reservas add column if not exists notas text;
 

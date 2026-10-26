@@ -440,3 +440,16 @@ main.panel {
   background: var(--bg);
   font: 600 15px/1.5 var(--font-sans);
 }
+
+/* Palabras de la frase secreta que no tiene nadie de la sala */
+.panel-sala__fragmentos {
+  margin-top: var(--space-2);
+  font: 400 14px/1.5 var(--font-sans);
+  color: var(--ink-muted);
+}
+
+.panel-sala__fragmentos b {
+  color: var(--ink);
+  font-family: var(--font-serif);
+  letter-spacing: 0.04em;
+}
