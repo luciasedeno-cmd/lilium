@@ -6,6 +6,7 @@
 // - Detecta si lo que hay detrás es oscuro o claro y cambia el color del texto para que siempre se lea.
 // - Se esconde al bajar por la página y vuelve a aparecer al subir.
 // - En la Home subraya el apartado que se está viendo; en el móvil tiene un menú desplegable (☰ → ✕).
+// - En la Home, el logo de Lilium sube la página hasta arriba con una animación suave (en el resto de páginas lleva a la Home).
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -39,6 +40,33 @@ function fondoOscuro(barra) {
     if (a > 0.5) return 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.5; // brillo del color
   }
   return false;
+}
+
+/**
+ * Sube la página hasta arriba poco a poco: empieza despacio, acelera y frena al llegar.
+ * Tarda más cuanto más abajo se esté (entre 0,7 y 1,6 s). Si la persona mueve la rueda o toca la
+ * pantalla mientras tanto, se para (para no «pelearse» con ella). Sin animación si pide «reducir movimiento».
+ */
+function subirArriba() {
+  const desde = window.scrollY;
+  if (desde <= 0) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return window.scrollTo({ top: 0, behavior: "instant" });
+  const duracion = Math.min(1600, Math.max(700, desde / 4));
+  const inicio = performance.now();
+  let parado = false;
+  const parar = () => (parado = true);
+  const quitar = () => ["wheel", "touchstart", "keydown"].forEach((ev) => window.removeEventListener(ev, parar));
+  ["wheel", "touchstart", "keydown"].forEach((ev) => window.addEventListener(ev, parar, { passive: true }));
+  function paso(ahora) {
+    if (parado) return quitar();
+    const f = Math.min(1, (ahora - inicio) / duracion);
+    const suave = f < 0.5 ? 4 * f * f * f : 1 - Math.pow(-2 * f + 2, 3) / 2; // acelera y frena
+    // «instant»: la suavidad la pone esta animación (la página tiene scroll-behavior: smooth, que se pelearía con ella)
+    window.scrollTo({ top: Math.round(desde * (1 - suave)), behavior: "instant" });
+    if (f < 1) requestAnimationFrame(paso);
+    else quitar();
+  }
+  requestAnimationFrame(paso);
 }
 
 export default function HomeHeader() {
@@ -124,7 +152,14 @@ export default function HomeHeader() {
 
   return (
     <header ref={cabecera} className={clases}>
-        <Link className="logo" href="/inicio" aria-label={t.inicio} onClick={cerrar}>
+        <Link className="logo" href="/inicio" aria-label={t.inicio} onClick={(e) => {
+          cerrar();
+          // Ya en la Home: en vez de recargar, sube hasta arriba con la animación
+          if (enHome) {
+            e.preventDefault();
+            subirArriba();
+          }
+        }}>
           <img src="/assets/img/logo-lilium.webp" alt="Lilium" />
         </Link>
         <button className="header__menu" type="button" aria-expanded={abierto} aria-controls="menu"
