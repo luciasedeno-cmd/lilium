@@ -368,26 +368,26 @@ body:has(.hero) {
 
 /* Los dos cuadros pequeños (Figma: 221 × 306): el ojo arriba a la derecha, un poco por encima del retrato,
    y la mano más abajo y más a la derecha */
+/* Columna de la derecha, centrada en altura con el retrato: el ojo arriba y la mano debajo y más a la derecha,
+   siempre separados (24 px). Su tamaño baja en pantallas poco altas para que los dos quepan sin montarse. */
 .historia__cuadros {
   position: absolute;
-  inset: 0;
-  pointer-events: none;
+  top: 50%;
+  right: 2.4%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 24px;
+  transform: translateY(-50%);
 }
 
 .historia__cuadros > * {
-  position: absolute;
-  width: min(15.35%, 221px);
-  pointer-events: auto;
+  width: min(221px, calc((100svh - 230px) / 2.95));
 }
 
+/* El ojo, más a la izquierda (en el Figma, 133 px) */
 .historia__cuadros > :first-child {
-  left: 73%;
-  top: -3%;
-}
-
-.historia__cuadros > :last-child {
-  left: 82.2%;
-  top: 48%;
+  margin-right: min(133px, calc((100svh - 230px) / 4.9));
 }
 
 .cuadro-ojo,
@@ -461,7 +461,7 @@ body:has(.hero) {
 /* Título fijo «¿Qué es Lilium?» (antes era una marquesina en movimiento) */
 .historia__titulo {
   font-family: var(--font-script);
-  font-size: clamp(64px, 6.9vw, 100px);
+  font-size: clamp(60px, 6vw, 86px);
   line-height: 1.28;
   white-space: nowrap;
   color: var(--melocoton);
@@ -471,7 +471,8 @@ body:has(.hero) {
   width: 100%;
   max-width: 100%;
   font-family: var(--font-baskervville);
-  font-size: 24px;
+  font-size: 20px;
+  line-height: 1.45;
   color: var(--fondo-oscuro);
 }
 
@@ -1299,7 +1300,9 @@ body:has(.hero) {
   .historia__cuadros {
     position: static;
     display: flex;
+    flex-direction: row;
     align-items: flex-start;
+    transform: none;
     gap: 24px;
     width: min(100%, 460px);
   }
@@ -1310,6 +1313,7 @@ body:has(.hero) {
     position: static;
     flex: 1;
     width: auto;
+    margin-right: 0;
   }
 
   .historia__cuadros > :last-child {
