@@ -698,21 +698,6 @@ main.mi-reserva {
   overflow-wrap: anywhere;
 }
 
-/* Gente de otros grupos que comparte la sala: más clara y sin acciones */
-.mr-otros__titulo {
-  margin-top: 22px;
-  font-family: var(--font-inter);
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  opacity: 0.55;
-}
-
-.mr-miembro.is-ajeno {
-  opacity: 0.5;
-}
-
 .mi-reserva__avisos {
   width: 916px;
   max-width: 100%;

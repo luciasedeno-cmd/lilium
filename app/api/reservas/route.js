@@ -1,6 +1,7 @@
-// POST /api/reservas · { otros: [correos], turnoId, equipo? } → crea la reserva del líder (la sesión)
+// POST /api/reservas · { otros: [correos], turnoId, equipo? } → apunta a quien reserva (la sesión) y a su gente
+// en la sala: si la sala está vacía se crea su grupo; si ya tiene grupo, entran en ese mismo grupo.
 import { correoDeSesion } from "@/lib/sesion";
-import { crearReserva, limiteDe, fragmentosDe } from "@/lib/reservas";
+import { crearReserva, fragmentosDe } from "@/lib/reservas";
 import { correoInvitacion, correoEntrada, urlSitio } from "@/lib/correo";
 import { reservasAbiertas, MIN_SALA_NUEVA, MAX_PERSONAS, DOMINIO } from "@/lib/config";
 import { ok, error, manejar, leerJson } from "@/lib/respuestas";
@@ -30,8 +31,8 @@ export const POST = manejar(async (req) => {
 
   // Correos: invitación a cada integrante y entrada al líder (ya confirmado).
   // Si falla un envío la reserva sigue creada; se informa para avisar a mano.
-  const { turno, miembros, reserva } = res;
-  const limite = limiteDe(reserva.creada);
+  // (miembros = solo las personas que se acaban de apuntar; si la sala ya tenía grupo, entran en él)
+  const { turno, miembros, limite } = res;
   const base = urlSitio();
   const fragmentosLider = await fragmentosDe(lider);
   const envios = miembros.map((m) =>
