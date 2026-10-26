@@ -2123,4 +2123,24 @@ main.paso > :nth-child(n + 5) { animation-delay: 0.24s; }
     font-size: 26px;
     line-height: 34px;
   }
+
+  /* Móvil: emblema en columna → icono grande, debajo el nombre y debajo los dos botones */
+  .rev-emblema {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: var(--space-3);
+  }
+
+  .rev-emblema__icono {
+    width: 180px;
+    height: 180px;
+  }
+
+  .rev-emblema__nombre {
+    margin: var(--space-2) 0;
+  }
+
+  .rev-emblema .ll-btn {
+    width: 210px;
+  }
 }
