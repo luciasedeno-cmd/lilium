@@ -422,9 +422,10 @@ body:has(.hero) {
   width: 39.71%;
   height: 101.48%;
   max-width: none;
-  /* Hacia la izquierda hay más sitio dentro del párpado que hacia la derecha: se mueve más (55 % frente a 35 %) */
+  /* Hacia la izquierda hay más sitio dentro del párpado que hacia la derecha: llega hasta el rabillo
+     izquierdo (85 %) y a la derecha se mueve menos (45 %). Lo que se sale del ojo lo tapa el párpado. */
   translate:
-    calc(min(var(--ox, 0), 0) * 55% + max(var(--ox, 0), 0) * 35%)
+    calc(min(var(--ox, 0), 0) * 85% + max(var(--ox, 0), 0) * 45%)
     calc(var(--oy, 0) * 12%);
   transition: translate 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
