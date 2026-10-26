@@ -146,7 +146,7 @@ export default async function AvisoLegal() {
     <>
       <NavReserva />
       <main>
-        <article className="columna terminos aviso">
+        <article className="columna terminos aviso-legal">
           <p className="etiqueta">{t.etiqueta}</p>
           <h1 className="titular">{t.titulo}</h1>
 

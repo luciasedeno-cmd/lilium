@@ -504,7 +504,8 @@ body:has(.pagina-acceso) {
   margin-top: 32px;
 }
 
-/* ---------- Página de Aviso Legal (usa los estilos de .terminos y añade esto) ---------- */
+/* ---------- Página de Aviso Legal (usa los estilos de .terminos y añade esto) ----------
+   Ojo: las clases empiezan por «aviso__» / «aviso-legal»; «.aviso» a secas ya existe en reserva.css */
 .aviso__destacado {
   margin-bottom: 8px;
   font-family: var(--font-baskervville);
@@ -514,9 +515,10 @@ body:has(.pagina-acceso) {
 
 /* Cada sección en una tarjeta de papel, con su número en un círculo terracota */
 .aviso__seccion {
-  padding: 24px 28px;
+  /* Igual que el recuadro del aviso de luces de «Términos y Condiciones» */
+  padding: 20px 24px;
   border-radius: 15px;
-  background: rgba(255, 250, 242, 0.94);
+  background: var(--fondo-oscuro);
   box-shadow: var(--sombra);
   /* Alineado a la izquierda: las listas largas se leen mucho mejor así que centradas */
   text-align: left;
@@ -577,12 +579,6 @@ body:has(.pagina-acceso) {
 }
 
 @media (max-width: 760px) {
-  /* En el móvil, menos margen dentro del recuadro naranja para que las tarjetas sean más anchas */
-  article.columna.aviso {
-    padding-left: 12px;
-    padding-right: 12px;
-  }
-
   .aviso__seccion {
     padding: 20px 18px;
   }
