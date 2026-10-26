@@ -1,4 +1,5 @@
-// POST /api/mi-reserva/cancelar · { grupo: boolean } → cancela mi plaza o (si soy líder) la del grupo
+// POST /api/mi-reserva/cancelar · { grupo: boolean } → cancela mi plaza o (si reservé yo) mi reserva:
+// mi plaza y la de las personas que apunté. La gente que apuntaron otras personas de la sala sigue.
 import { correoDeSesion } from "@/lib/sesion";
 import { cancelarAsistencia, cancelarGrupo } from "@/lib/reservas";
 import { correoCancelacion } from "@/lib/correo";
@@ -21,9 +22,9 @@ export const POST = manejar(async (req) => {
   }
 
   const res = await cancelarGrupo(email);
-  if (!res.ok) return error("Solo la persona líder puede cancelar la reserva del grupo.", 403);
+  if (!res.ok) return error("Solo quien hizo la reserva puede anularla.", 403);
   await Promise.allSettled(res.avisar.map((para) =>
-    correoCancelacion({ para, turno: res.turno, motivo: `${email} ha cancelado la reserva del grupo.` })
+    correoCancelacion({ para, turno: res.turno, motivo: `${email} ha anulado la reserva en la que te apuntó.` })
   ));
   await avisar();
   return ok();

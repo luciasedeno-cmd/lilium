@@ -23,14 +23,14 @@ const TEXTOS = {
     avisoNueva: "Reserva creada. Hemos enviado un correo a cada integrante para que confirme su plaza, y a ti tu entrada.",
     avisoConfirmado: "¡Plaza confirmada! Te hemos enviado la entrada por correo.",
     avisoFallidos: (c) => `Reserva creada, pero no pudimos enviar el correo a: ${c}. Avísales de que entren en la web con su correo para confirmar.`,
-    preguntaGrupo: "¿Anular la reserva de TODO el grupo? Avisaremos por correo al resto. No se puede deshacer.",
+    preguntaGrupo: "¿Anular tu reserva? Se cancelará tu plaza y la de las personas que apuntaste tú (les avisaremos por correo). El resto de la sala mantiene la suya. No se puede deshacer.",
     preguntaPlaza: "¿Cancelar tu plaza? El resto del grupo mantiene la suya.",
     correoMal: "El correo debe ser nombreapellido@alumnado.esada.es", repetido: "Ese correo ya está en el grupo.",
     noCaben: `En vuestro turno ya no caben más personas (máximo ${MAX_PERSONAS}).`,
     guardadoFallidos: (c) => `Cambios guardados, pero no pudimos enviar la invitación a: ${c}. Avísales de que entren en la web con su correo.`,
     guardadoInvitados: "Cambios guardados. Hemos enviado la invitación a las personas nuevas: tienen 48 h para confirmar.", guardado: "Cambios guardados.",
     cargando: "Cargando tu reserva…", nuevo: "Nuevo · recibirá la invitación al guardar", seQuitara: "Se quitará del grupo al guardar",
-    lider: "Líder", invitado: "Invitado", confirmado: "Confirmado", pendienteHasta: (f) => `Pendiente (hasta el ${f})`,
+    lider: "Líder", invitado: "Invitado", apuntadoPor: (c) => `Apuntado por ${c}`, porSuCuenta: "Reservó por su cuenta", confirmado: "Confirmado", pendienteHasta: (f) => `Pendiente (hasta el ${f})`,
     miReserva: "Mi reserva", numero: "Nº", tuReserva: "Tu reserva", qrAlt: "QR de tu entrada: enséñalo en la puerta",
     sinQr: "Tu entrada (el código QR) aparecerá aquí cuando confirmes tu plaza desde el enlace de tu correo.",
     pendiente: "Pendiente de confirmación", confirmada: "Confirmada", llegad: "llegad 15 min antes", soloErasmus: "Solo Erasmus",
@@ -52,14 +52,14 @@ const TEXTOS = {
     avisoNueva: "Booking created. We've emailed each member so they can confirm their place, and sent you your ticket.",
     avisoConfirmado: "Place confirmed! We've emailed you your ticket.",
     avisoFallidos: (c) => `Booking created, but we couldn't send the email to: ${c}. Tell them to sign in to the website with their email to confirm.`,
-    preguntaGrupo: "Cancel the booking for the WHOLE group? We'll email the rest. This can't be undone.",
+    preguntaGrupo: "Cancel your booking? Your place and those of the people you added will be cancelled (we'll email them). Everyone else in the room keeps theirs. This can't be undone.",
     preguntaPlaza: "Cancel your place? The rest of the group keeps theirs.",
     correoMal: "The email must be nameSurname@alumnado.esada.es", repetido: "That email is already in the group.",
     noCaben: `No more people fit in your session (maximum ${MAX_PERSONAS}).`,
     guardadoFallidos: (c) => `Changes saved, but we couldn't send the invitation to: ${c}. Tell them to sign in to the website with their email.`,
     guardadoInvitados: "Changes saved. We've sent the invitation to the new people: they have 48 h to confirm.", guardado: "Changes saved.",
     cargando: "Loading your booking…", nuevo: "New · will get the invitation when you save", seQuitara: "Will be removed from the group when you save",
-    lider: "Leader", invitado: "Guest", confirmado: "Confirmed", pendienteHasta: (f) => `Pending (until ${f})`,
+    lider: "Leader", invitado: "Guest", apuntadoPor: (c) => `Added by ${c}`, porSuCuenta: "Booked on their own", confirmado: "Confirmed", pendienteHasta: (f) => `Pending (until ${f})`,
     miReserva: "My booking", numero: "No.", tuReserva: "Your booking", qrAlt: "Your ticket's QR: show it at the door",
     sinQr: "Your ticket (the QR code) will appear here once you confirm your place from the link in your email.",
     pendiente: "Pending confirmation", confirmada: "Confirmed", llegad: "arrive 15 min early", soloErasmus: "Erasmus only",
@@ -98,7 +98,7 @@ function MiReservaContenido() {
   const [aviso, setAviso] = useState("");
   const [cambiando, setCambiando] = useState(null); // lista de turnos al cambiar de hora
   const [ocupado, setOcupado] = useState(false);
-  // Modo editar (solo líder): a quién se quita y a quién se añade antes de «Guardar cambios»
+  // Modo editar (quien reservó, solo con su gente): a quién se quita y a quién se añade antes de «Guardar cambios»
   const [editando, setEditando] = useState(false);
   const [quitar, setQuitar] = useState([]);
   const [anadir, setAnadir] = useState([]);
@@ -147,7 +147,7 @@ function MiReservaContenido() {
     router.replace("/inicio");
   }
 
-  // ----- Editar el grupo (líder) -----
+  // ----- Editar a mi gente (quien reservó) -----
   function empezarEdicion() {
     setEditando(true);
     setQuitar([]);
@@ -198,7 +198,10 @@ function MiReservaContenido() {
   if (!email || !reserva) return <Cargando error={errorSesion || error} texto={t.cargando} />;
 
   const { turno, miembros, yo, lider } = reserva;
-  const esLider = lider === yo.email;
+  // Quien reservó ella misma (la líder o alguien que se unió después) gestiona SOLO a la gente que apuntó:
+  // puede editar a esas personas y anular su reserva; las apuntadas por otras personas no tienen ✕.
+  const gestiona = Boolean(yo.responsable);
+  const esMia = (m) => m.nuevo || (m.apuntadoPor === yo.email && m.email !== yo.email);
   const pendientes = miembros.filter((m) => !m.confirmado).length;
   // Plazas libres en el turno teniendo en cuenta los cambios sin guardar
   const hueco = MAX_PERSONAS - turno.ocupadas + quitar.length - anadir.length;
@@ -211,7 +214,11 @@ function MiReservaContenido() {
   const estadoDe = (m) => {
     if (m.nuevo) return t.nuevo;
     if (quitar.includes(m.email)) return t.seQuitara;
-    const papel = m.email === lider ? t.lider : t.invitado;
+    // Líder (quien abrió la sala); quien reservó por su cuenta; o «Invitado» (y, si no lo apunté yo, quién lo apuntó)
+    let papel = m.email === lider ? t.lider : m.apuntadoPor === m.email ? t.porSuCuenta : t.invitado;
+    if (m.email !== lider && m.apuntadoPor && m.apuntadoPor !== m.email && m.apuntadoPor !== yo.email && m.apuntadoPor !== lider) {
+      papel = `${papel} · ${t.apuntadoPor(m.apuntadoPor)}`;
+    }
     return m.confirmado ? `${papel} · ${t.confirmado}` : `${papel} · ${t.pendienteHasta(fechaHora(m.limite, idioma))}`;
   };
 
@@ -264,15 +271,15 @@ function MiReservaContenido() {
               <img className="mr-equipo__icono" src={iconoEquipo} width="250" height="250" alt="" />
               <p className="mr-equipo__nombre">{turno.equipo ? `“${turno.equipo}”` : t.hermandad}</p>
               <p className="mr-equipo__tipo">{turno.ocupadas < MIN_SALA_NUEVA ? t.formacion : t.sala} · {turno.ocupadas}/{MAX_PERSONAS} {t.personas}</p>
-              {esLider && !editando && (
+              {gestiona && !editando && (
                 <button className="mr-boton mr-boton--lleno" type="button" onClick={empezarEdicion} disabled={ocupado}>{t.editar}</button>
               )}
-              {esLider ? (
+              {gestiona ? (
                 <button className="mr-boton" type="button" onClick={() => cancelar(true)} disabled={ocupado}>{t.anular}</button>
               ) : (
                 <button className="mr-boton" type="button" onClick={() => cancelar(false)} disabled={ocupado}>{t.cancelarPlaza}</button>
               )}
-              {esLider && <button className="mr-enlace" type="button" onClick={() => cancelar(false)} disabled={ocupado}>{t.cancelarAsistencia}</button>}
+              {gestiona && <button className="mr-enlace" type="button" onClick={() => cancelar(false)} disabled={ocupado}>{t.cancelarAsistencia}</button>}
             </div>
 
             <div className="mr-equipo__lista">
@@ -295,8 +302,8 @@ function MiReservaContenido() {
                       </div>
                       <div className="mr-miembro__acciones">
                         {m.confirmado && !quitado && <span className="mr-icono mr-icono--si" role="img" aria-label={t.confirmado}><IconoCheck /></span>}
-                        {/* La ✕ solo aparece al editar, y nunca en la fila de la persona líder */}
-                        {editando && m.email !== lider && (
+                        {/* La ✕ solo aparece al editar, y solo en las personas que apuntaste tú */}
+                        {editando && esMia(m) && (
                           <button type="button" className={`mr-icono mr-icono--quitar${quitado ? " is-deshacer" : ""}`}
                             aria-label={quitado ? `${t.noQuitar} ${m.email}` : `${t.quitar} ${m.email}`}
                             onClick={() => (m.nuevo ? setAnadir(anadir.filter((c) => c !== m.email)) : alternarQuitar(m.email))}>

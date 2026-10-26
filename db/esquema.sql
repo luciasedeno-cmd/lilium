@@ -51,6 +51,8 @@ alter table miembros add column if not exists terminos_en timestamptz;
 -- Plazo de 48 h de cada persona (vacío = desde que se creó la reserva) y recordatorio enviado
 alter table miembros add column if not exists invitado_en timestamptz;
 alter table miembros add column if not exists recordatorio_en timestamptz;
+-- Quién apuntó a cada persona (ella misma si reservó): cada cual solo gestiona a la gente que apuntó
+alter table miembros add column if not exists apuntado_por text;
 -- Anotaciones de la líder al reservar
 alter table reservas add column if not exists notas text;
 

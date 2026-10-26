@@ -1,5 +1,6 @@
 // POST /api/mi-reserva/integrantes · { anadir: [correos], quitar: [correos] }
-// Solo la persona líder: añade y/o quita integrantes de su grupo (botón «Guardar cambios» de Mi reserva).
+// Quien reservó: añade y/o quita a la gente que apuntó ella (botón «Guardar cambios» de Mi reserva).
+// A la gente que apuntaron otras personas de la sala no la puede quitar.
 import { correoDeSesion } from "@/lib/sesion";
 import { editarIntegrantes, limiteDe } from "@/lib/reservas";
 import { correoInvitacion, correoCancelacion, urlSitio } from "@/lib/correo";
@@ -10,9 +11,9 @@ import { avisarListaEspera } from "@/lib/avisos";
 const MENSAJES = {
   correo: (r) => `${r.email} no es un correo válido (nombreapellido@${DOMINIO}).`,
   sin_reserva: () => "No tienes ninguna reserva.",
-  no_lider: () => "Solo la persona líder puede cambiar el grupo.",
+  no_lider: () => "Solo quien hizo la reserva puede cambiar a las personas que apuntó.",
   quitar_lider: () => "No puedes quitarte a ti: usa «Cancelar solo mi asistencia».",
-  no_es_del_grupo: (r) => `${r.email} no está en tu grupo.`,
+  no_es_del_grupo: (r) => `No puedes quitar a ${r.email}: solo a las personas que apuntaste tú.`,
   ya_en_grupo: (r) => `${r.email} ya está en tu grupo.`,
   inscrito: (r) => `${r.email} ya está en otra reserva. Cada correo solo puede estar en una.`,
   sin_hueco: (r) => `En vuestro turno solo caben ${MAX_PERSONAS} personas: podéis añadir ${Math.max(0, r.hueco)} como mucho.`,
