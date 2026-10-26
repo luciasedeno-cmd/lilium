@@ -1,0 +1,143 @@
+/* ==========================================================
+   Lilium · Transición entre páginas (app/template.js) y pantalla de carga de la Home (components/PantallaCarga.js)
+   ========================================================== */
+
+/* ---------- Transición: velo crema que se retira hacia arriba ---------- */
+.transicion {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  background: var(--fondo);
+  pointer-events: none;
+  animation: transicion-sale 0.8s cubic-bezier(0.7, 0, 0.3, 1) 0.18s forwards;
+}
+
+.transicion__lirio {
+  width: 56px;
+  height: auto;
+  opacity: 0.9;
+  animation: transicion-lirio 0.5s ease forwards;
+}
+
+@keyframes transicion-sale {
+  from { clip-path: inset(0 0 0 0); }
+  to { clip-path: inset(0 0 100% 0); visibility: hidden; }
+}
+
+@keyframes transicion-lirio {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 0.9; }
+}
+
+/* ---------- Pantalla de carga de la Home ---------- */
+.carga {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  background: var(--verde-oscuro) url("/assets/img/faq-fondo.webp") center / cover no-repeat;
+  background-blend-mode: multiply;
+  color: var(--fondo);
+  transition: opacity 0.7s ease, visibility 0s 0.7s;
+  /* Por si algo fallara: se quita sola a los 6 s */
+  animation: carga-seguro 0s 6s forwards;
+}
+
+.carga::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(41, 47, 32, 0.55), rgba(41, 47, 32, 0.92));
+}
+
+.carga > * {
+  position: relative;
+}
+
+.carga.is-fuera {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.carga.is-oculta {
+  display: none;
+}
+
+/* El lirio (terracota en el dibujo) se vuelve crema y «respira» */
+.carga__lirio {
+  width: 72px;
+  height: auto;
+  filter: brightness(0) invert(96%) sepia(8%) saturate(300%);
+  animation: carga-respira 1.8s ease-in-out infinite;
+}
+
+.carga__logo {
+  width: 170px;
+  height: auto;
+  filter: brightness(0) invert(96%) sepia(8%) saturate(300%);
+  animation: carga-aparece 0.9s ease 0.2s both;
+}
+
+.carga__linea {
+  display: block;
+  width: 160px;
+  height: 1px;
+  background: rgba(255, 250, 242, 0.25);
+  overflow: hidden;
+}
+
+.carga__linea span {
+  display: block;
+  height: 100%;
+  background: var(--fondo);
+  transform-origin: left;
+  animation: carga-linea 1.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.carga__texto {
+  font-family: var(--font-baskervville);
+  font-style: italic;
+  font-size: 18px;
+  letter-spacing: 0.04em;
+  animation: carga-aparece 0.9s ease 0.4s both;
+}
+
+@keyframes carga-respira {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+@keyframes carga-aparece {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes carga-linea {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes carga-seguro {
+  to { opacity: 0; visibility: hidden; pointer-events: none; }
+}
+
+/* Quien prefiere menos movimiento: sin velo y la carga quieta */
+@media (prefers-reduced-motion: reduce) {
+  .transicion {
+    display: none;
+  }
+
+  .carga__lirio,
+  .carga__logo,
+  .carga__texto,
+  .carga__linea span {
+    animation: none;
+  }
+}

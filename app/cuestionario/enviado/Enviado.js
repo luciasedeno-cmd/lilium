@@ -31,7 +31,7 @@ export default function Enviado() {
       <NavReserva />
       <main className="cues-enviado" data-fondo="oscuro" data-principal>
         <div className="cues-enviado__tarjeta">
-          <img className="cues-enviado__lirio" src="/assets/img/icono-lirio.png" width="99" height="80" alt="" />
+          <img className="cues-enviado__lirio" src="/assets/img/icono-lirio.webp" width="99" height="80" alt="" />
           <p className="cues__etiqueta">{t.etiqueta}</p>
           <h1 className="cues-enviado__titulo">{t.titulo}</h1>
           <p className="cues-enviado__texto">{t.texto}</p>

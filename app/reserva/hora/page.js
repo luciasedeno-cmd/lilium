@@ -220,7 +220,7 @@ export default function Hora() {
 
           {escogido?.estado === "libre" && (
             <div className="hora-equipo">
-              <img src="/assets/img/icono-lirio.png" width="50" height="40" alt="" />
+              <img src="/assets/img/icono-lirio.webp" width="50" height="40" alt="" />
               <label htmlFor="equipo">{t.primeros}</label>
               <input className="campo" id="equipo" maxLength={40} placeholder={t.ejemplo}
                 value={borrador.equipo || ""} onChange={(e) => actualizar({ equipo: e.target.value })} />

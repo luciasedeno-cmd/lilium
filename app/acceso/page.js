@@ -6,8 +6,14 @@ import NavReserva from "@/components/NavReserva";
 import PiePagina from "@/components/PiePagina";
 import { useTextos } from "@/components/Idioma";
 import { api, leerBorrador, guardarBorrador } from "@/lib/borrador";
+import { useEspera } from "@/lib/useEspera";
 
-const CORREO_VALIDO = /^[a-z0-9._-]+@alumnado\.esada\.es$/i;
+// Segundos que hay que esperar para pedir otro código (los mismos que en lib/codigos.js)
+const ESPERA_REENVIO = 10;
+
+// En el navegador solo se mira que tenga forma de correo: el servidor decide si se puede entrar
+// (alumnado de ESADA o, como excepción, los correos autorizados por el equipo, como el del profesor)
+const CORREO_VALIDO = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const TEXTOS = {
   es: {
@@ -16,8 +22,10 @@ const TEXTOS = {
     correo: "Correo institucional", formato: "Formato: nombreapellido@alumnado.esada.es",
     correoMal: "Usa tu correo institucional: nombreapellido@alumnado.esada.es",
     enviando: "Enviando…", enviar: "Enviar código", demo: "Modo pruebas (sin Gmail configurado): tu código es",
+    pistaCorreo: "nombreapellido@alumnado.esada.es", pistaCodigo: "******",
+    reenviarEn: (s) => `Podrás pedir otro código en ${s} s`,
     enviado1: "Hemos enviado un código de 6 dígitos a", enviado2: "Caduca en 10 minutos.",
-    codigo: "Código de verificación", seisDigitos: "Escribe los 6 dígitos del código.",
+    codigo: "Código de 6 cifras que te hemos enviado", seisDigitos: "Escribe los 6 dígitos del código.",
     comprobando: "Comprobando…", entrar: "Entrar", reenviar: "Reenviar código", cambiar: "Cambiar correo",
     hasEntrado: "Has entrado con", verReserva: "Ver mi reserva", continuar: "Continuar", otroCorreo: "Entrar con otro correo",
   },
@@ -27,8 +35,10 @@ const TEXTOS = {
     correo: "University email", formato: "Format: nameSurname@alumnado.esada.es",
     correoMal: "Use your university email: nameSurname@alumnado.esada.es",
     enviando: "Sending…", enviar: "Send code", demo: "Test mode (Gmail not set up): your code is",
+    pistaCorreo: "namesurname@alumnado.esada.es", pistaCodigo: "******",
+    reenviarEn: (s) => `You can ask for another code in ${s} s`,
     enviado1: "We've sent a 6-digit code to", enviado2: "It expires in 10 minutes.",
-    codigo: "Verification code", seisDigitos: "Type the 6 digits of the code.",
+    codigo: "6-digit code we've sent you", seisDigitos: "Type the 6 digits of the code.",
     comprobando: "Checking…", entrar: "Sign in", reenviar: "Resend code", cambiar: "Change email",
     hasEntrado: "You're signed in as", verReserva: "See my booking", continuar: "Continue", otroCorreo: "Sign in with another email",
   },
@@ -44,6 +54,7 @@ export default function Acceso() {
   const [error, setError] = useState("");
   const [aviso, setAviso] = useState("");
   const [enviando, setEnviando] = useState(false);
+  const [espera, empezarEspera] = useEspera(); // segundos para poder pedir otro código
   const campoCodigo = useRef(null);
 
   // Si el navegador ya te recuerda, no se salta la página: se ofrece continuar o entrar con otro correo
@@ -76,11 +87,13 @@ export default function Acceso() {
       setError(t.correoMal);
       return;
     }
+    if (espera > 0) return;
     setEnviando(true);
     const res = await api("/api/acceso/codigo", { metodo: "POST", datos: { email: limpio } });
     setEnviando(false);
     if (!res.ok) return setError(res.mensaje);
     setError("");
+    empezarEspera(ESPERA_REENVIO);
     setCorreo(limpio);
     guardarBorrador({ correo: limpio });
     setAviso(res.codigoDemo ? `${t.demo} ${res.codigoDemo}` : "");
@@ -120,7 +133,7 @@ export default function Acceso() {
               <p className="acceso__intro">{t.intro}</p>
               <form onSubmit={pedirCodigo} noValidate>
                 <label htmlFor="correo">{t.correo}</label>
-                <input className="campo" id="correo" type="email" placeholder="E-mail" autoComplete="email" required
+                <input className="campo" id="correo" type="email" placeholder={t.pistaCorreo} autoComplete="email" required
                   value={correo} onChange={(e) => setCorreo(e.target.value)}
                   aria-invalid={error ? "true" : undefined} aria-describedby="correo-ayuda correo-error" />
                 <p className="acceso__ayuda" id="correo-ayuda">{t.formato}</p>
@@ -135,13 +148,16 @@ export default function Acceso() {
               <form onSubmit={verificar} noValidate>
                 <label htmlFor="codigo">{t.codigo}</label>
                 <input className="campo campo--codigo" id="codigo" ref={campoCodigo} inputMode="numeric" autoComplete="one-time-code"
-                  maxLength={6} placeholder="000000" value={codigo} onChange={(e) => setCodigo(e.target.value.replace(/\D/g, ""))}
+                  maxLength={6} placeholder={t.pistaCodigo} value={codigo} onChange={(e) => setCodigo(e.target.value.replace(/\D/g, ""))}
                   aria-invalid={error ? "true" : undefined} aria-describedby="codigo-error" />
                 <p className="error" id="codigo-error" role="alert">{error}</p>
                 <button className="boton" type="submit" disabled={enviando}>{enviando ? t.comprobando : t.entrar}</button>
               </form>
               <p className="acceso__ayuda acceso__enlaces">
-                <button type="button" onClick={() => pedirCodigo()}>{t.reenviar}</button>
+                {/* Reenviar: se puede pasados 10 s; mientras, se ve la cuenta atrás */}
+                <button type="button" onClick={() => pedirCodigo()} disabled={espera > 0} aria-live="polite">
+                  {espera > 0 ? t.reenviarEn(espera) : t.reenviar}
+                </button>
                 {" · "}
                 <button type="button" onClick={() => { setFase("correo"); setCodigo(""); setError(""); }}>{t.cambiar}</button>
               </p>

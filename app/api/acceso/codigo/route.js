@@ -1,5 +1,5 @@
 // POST /api/acceso/codigo · { email } → envía un código de 6 dígitos al correo
-import { CORREO_VALIDO, DOMINIO, normalizarCorreo, reservasAbiertas } from "@/lib/config";
+import { correoPermitido, DOMINIO, normalizarCorreo, reservasAbiertas } from "@/lib/config";
 import { nuevoCodigo } from "@/lib/codigos";
 import { correoCodigo } from "@/lib/correo";
 import { ok, error, manejar, leerJson } from "@/lib/respuestas";
@@ -8,10 +8,11 @@ import { conLlavePrevia } from "@/lib/previaServidor";
 export const POST = manejar(async (req) => {
   const { email } = await leerJson(req);
   const correo = normalizarCorreo(email);
-  if (!CORREO_VALIDO.test(correo)) {
+  // Alumnado de ESADA o, como excepción, los correos de ADMIN_CORREOS (por ejemplo, el profesor)
+  if (!correoPermitido(correo)) {
     return error(`Usa tu correo institucional: nombreapellido@${DOMINIO}`);
   }
-  if (!reservasAbiertas(correo) && !(await conLlavePrevia())) return error("Las reservas abren el 30 de octubre.", 403);
+  if (!reservasAbiertas(correo) && !(await conLlavePrevia())) return error("Las reservas abren el 30 de octubre a las 12:00.", 403);
 
   const res = await nuevoCodigo(correo);
   if (!res.ok) return error(`Espera ${res.espera} s para pedir otro código.`, 429);

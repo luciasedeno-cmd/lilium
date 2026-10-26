@@ -5,10 +5,10 @@ export default function RetratosPaso() {
   return (
     <div className="retratos-paso" aria-hidden="true">
       <span className="retrato-paso retrato-paso--izq">
-        <img className="retrato-paso__marco" src="/assets/img/marco-retrato.png" alt="" />
-        <img className="retrato-paso__foto" src="/assets/img/retrato.png" alt="" />
+        <img className="retrato-paso__marco" src="/assets/img/marco-retrato.webp" alt="" />
+        <img className="retrato-paso__foto" src="/assets/img/retrato.webp" alt="" />
       </span>
-      <img className="retrato-paso retrato-paso--der" src="/assets/img/retrato-lirios.png" width="145" height="191" alt="" />
+      <img className="retrato-paso retrato-paso--der" src="/assets/img/retrato-lirios.webp" width="145" height="191" alt="" />
     </div>
   );
 }

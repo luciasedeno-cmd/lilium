@@ -17,21 +17,23 @@ function partes(restante, nombres) {
   ];
 }
 
-export default function CuentaAtras({ apertura }) {
+export default function CuentaAtras({ apertura, ahoraServidor }) {
   const objetivo = new Date(apertura).getTime();
+  // Diferencia entre el reloj de este dispositivo y el del servidor (se calcula una vez al cargar)
+  const [desfase] = useState(() => (ahoraServidor ? ahoraServidor - Date.now() : 0));
   // Primer pintado sin la hora del navegador para que servidor y cliente coincidan
   const [restante, setRestante] = useState(null);
 
   useEffect(() => {
     const actualizar = () => {
-      const r = objetivo - Date.now();
+      const r = objetivo - (Date.now() + desfase);
       setRestante(r);
       if (r <= 0) window.location.replace("/acceso");
     };
     actualizar();
     const intervalo = setInterval(actualizar, 1000);
     return () => clearInterval(intervalo);
-  }, [objetivo]);
+  }, [objetivo, desfase]);
 
   const { idioma } = useIdioma();
   const grupos = partes(restante === null ? 0 : restante, UNIDADES[idioma]);

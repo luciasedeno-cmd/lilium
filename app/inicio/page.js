@@ -11,6 +11,7 @@ import BotonErasmus from "@/components/home/BotonErasmus";
 import PiePagina from "@/components/PiePagina";
 import Animaciones from "@/components/home/Animaciones";
 import RetratoOjos from "@/components/home/RetratoOjos";
+import PantallaCarga from "@/components/PantallaCarga";
 
 export const metadata = {
   title: "Lilium · Escape Room ESADA",
@@ -72,7 +73,7 @@ const TEXTOS = {
   },
 };
 
-const IMAGENES = ["ritual-correo.png", "ritual-personas.png", "ritual-confirmar.png"];
+const IMAGENES = ["ritual-correo.webp", "ritual-personas.webp", "ritual-confirmar.webp"];
 
 export default async function Inicio() {
   const idioma = await idiomaActual();
@@ -81,6 +82,8 @@ export default async function Inicio() {
 
   return (
     <>
+      {/* Pantalla de carga (la primera vez en cada visita) */}
+      <PantallaCarga />
       <HomeHeader />
 
       <main>
@@ -102,7 +105,7 @@ export default async function Inicio() {
 
           <div className="historia__contenido">
             <div className="retrato" data-revelar="izquierda" data-parallax="-0.06">
-              <img className="retrato__marco" src="/assets/img/marco-retrato.png" alt="" />
+              <img loading="lazy" decoding="async" className="retrato__marco" src="/assets/img/marco-retrato.webp" alt="" />
               {/* Los ojos siguen al ratón (o miran hacia donde se toca en el móvil) */}
               <RetratoOjos alt={t.retratoAlt} />
             </div>
@@ -141,7 +144,7 @@ export default async function Inicio() {
                 style={{ "--retardo": `${i * 0.15}s` }}
               >
                 <div className="polaroid">
-                  <img src={`/assets/img/${IMAGENES[i]}`} alt={c.alt} />
+                  <img loading="lazy" decoding="async" src={`/assets/img/${IMAGENES[i]}`} alt={c.alt} />
                 </div>
                 <div className="cuadro__texto">
                   <h3>{c.titulo}</h3>
@@ -155,7 +158,7 @@ export default async function Inicio() {
 
         {/* Cuándo y dónde */}
         <section className="ubicacion" data-fondo="claro">
-          <img className="ubicacion__mapa" src="/assets/img/mapa-ancho.webp" width="1440" height="551" alt={t.mapaAlt} data-escala="1.08" />
+          <img loading="lazy" decoding="async" className="ubicacion__mapa" src="/assets/img/mapa-ancho.webp" width="1440" height="551" alt={t.mapaAlt} data-escala="1.08" />
           <div className="ubicacion__dato ubicacion__dato--cuando" data-revelar="derecha">
             <h2><span className="ubicacion__pin" aria-hidden="true" />{t.cuando}</h2>
             <p>{evento.fechaTexto}</p>
@@ -171,7 +174,7 @@ export default async function Inicio() {
         <section className="erasmus" id="erasmus" data-fondo="oscuro">
           {/* Unión con el mapa */}
           <div className="union union--terracota" data-subir aria-hidden="true" />
-          <img className="erasmus__lirio" src="/assets/img/icono-lirio.png" width="99" height="79" alt="" data-revelar="girar" />
+          <img loading="lazy" decoding="async" className="erasmus__lirio" src="/assets/img/icono-lirio.webp" width="99" height="79" alt="" data-revelar="girar" />
           <h2 className="erasmus__titulo" data-revelar="escala" style={{ "--retardo": "0.1s" }}>{t.erasmusTitulo}</h2>
           <p className="erasmus__texto" data-revelar="arriba" style={{ "--retardo": "0.2s" }}>{t.erasmusTexto}</p>
           <div data-revelar="arriba" style={{ "--retardo": "0.3s" }}>
@@ -188,10 +191,10 @@ export default async function Inicio() {
           <img className="encaje encaje--arriba" src="/assets/svg/banner-encaje.svg" width="1612" height="176" alt="" />
           {/* El paisaje se mueve más despacio y se va acercando al bajar */}
           <div className="cta__marco" aria-hidden="true">
-            <img className="cta__paisaje" src="/assets/img/final-paisaje.webp" width="1440" height="494" alt="" data-parallax="0.18" />
+            <img loading="lazy" decoding="async" className="cta__paisaje" src="/assets/img/final-paisaje.webp" width="1440" height="494" alt="" data-parallax="0.18" />
           </div>
           <div className="cta__contenido">
-            <img className="cta__lirio" src="/assets/img/icono-lirio.png" width="99" height="79" alt="" data-revelar="girar" />
+            <img loading="lazy" decoding="async" className="cta__lirio" src="/assets/img/icono-lirio.webp" width="99" height="79" alt="" data-revelar="girar" />
             <p className="cta__etiqueta" data-revelar="arriba" style={{ "--retardo": "0.1s" }}>{t.finalEtiqueta}</p>
             <h2 className="cta__titulo" id="cta-titulo" data-revelar="escala" style={{ "--retardo": "0.2s" }}>{t.finalTitulo}</h2>
             <p className="cta__texto" data-revelar="arriba" style={{ "--retardo": "0.3s" }}>{t.finalTexto}</p>

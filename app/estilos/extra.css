@@ -23,6 +23,19 @@
   color: var(--terracota);
 }
 
+/* «Podrás pedir otro código en 8 s»: sin subrayar y más suave mientras espera */
+.acceso__enlaces button:disabled,
+.previa__volver:disabled {
+  text-decoration: none;
+  color: var(--gris-texto);
+  cursor: default;
+}
+
+/* Los textos de ayuda dentro de los huecos (correo y código), un poco más suaves que lo escrito */
+.campo::placeholder {
+  color: rgba(115, 47, 35, 0.5);
+}
+
 .boton:disabled {
   opacity: 0.6;
   cursor: progress;
@@ -1137,6 +1150,13 @@ main.previa {
 
 .previa__tarjeta .acceso__intro {
   font-size: 20px;
+}
+
+.previa__enlaces {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 20px;
 }
 
 .previa__volver {

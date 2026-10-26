@@ -1,8 +1,9 @@
 // POST /api/acceso/admin/verificar · { email, codigo } → si el código es bueno, este navegador recibe
 // la llave del equipo (la misma que con la contraseña de lilium@esada.es) y ya puede ver el panel.
+// También se abre su sesión normal, así puede ir a reservar sin volver a confirmar el correo.
 import { normalizarCorreo, esCorreoAdmin } from "@/lib/config";
 import { comprobarCodigo } from "@/lib/codigos";
-import { comprobarLlaveSesion } from "@/lib/sesion";
+import { comprobarLlaveSesion, iniciarSesion } from "@/lib/sesion";
 import { darLlavePrevia } from "@/lib/previaServidor";
 import { ok, error, manejar, leerJson } from "@/lib/respuestas";
 
@@ -21,5 +22,7 @@ export const POST = manejar(async (req) => {
   const res = await comprobarCodigo(`admin:${correo}`, codigo);
   if (!res.ok) return error(MENSAJES[res.error]);
   await darLlavePrevia();
+  // Además queda dentro de la web con su correo: puede reservar sin pasar por /acceso
+  await iniciarSesion(correo);
   return ok();
 });

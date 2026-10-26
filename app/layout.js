@@ -6,6 +6,7 @@ import "./estilos/extra.css";
 import "./estilos/lilium-ds.css";
 import "./estilos/cuestionario.css";
 import "./estilos/admin.css";
+import "./estilos/transiciones.css";
 import { IdiomaProvider } from "@/components/Idioma";
 import { idiomaActual } from "@/lib/idiomaServidor";
 

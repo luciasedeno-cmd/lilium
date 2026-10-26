@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Cuenta atrás · Lilium",
-  description: "Lilium, el escape room de ESADA, abre el 30 de octubre.",
+  description: "Lilium, el escape room de ESADA, abre el 30 de octubre a las 12:00.",
 };
 
 export default async function Portada() {
@@ -22,9 +22,10 @@ export default async function Portada() {
   return (
     <main className="cuenta">
       {/* Título para buscadores y lectores de pantalla (no se ve) */}
-      <h1 className="visually-hidden">{en ? "Lilium · Bookings open on Friday 30 October" : "Lilium · Las reservas abren el viernes 30 de octubre"}</h1>
+      <h1 className="visually-hidden">{en ? "Lilium · Bookings open on Friday 30 October at 12:00" : "Lilium · Las reservas abren el viernes 30 de octubre a las 12:00"}</h1>
       <div className="cuenta__idioma"><SelectorIdioma /></div>
-      <CuentaAtras apertura={APERTURA.toISOString()} />
+      {/* Se pasa también la hora del servidor: así un móvil con el reloj mal puesto no se adelanta */}
+      <CuentaAtras apertura={APERTURA.toISOString()} ahoraServidor={Date.now()} />
       {/* Entrada del equipo: hasta el día 30 es la única forma de ver el resto de la web (pide contraseña) */}
       <Link className="cuenta__admin" href="/admin">Admin</Link>
     </main>

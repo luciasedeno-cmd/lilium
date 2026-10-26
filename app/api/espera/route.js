@@ -8,7 +8,7 @@ import { conLlavePrevia } from "@/lib/previaServidor";
 export const POST = manejar(async (req) => {
   const email = await correoDeSesion();
   if (!email) return error("Tu sesión ha caducado. Vuelve a entrar con tu correo.", 401);
-  if (!reservasAbiertas(email) && !(await conLlavePrevia())) return error("Las reservas abren el 30 de octubre.", 403);
+  if (!reservasAbiertas(email) && !(await conLlavePrevia())) return error("Las reservas abren el 30 de octubre a las 12:00.", 403);
 
   const { turnoId } = await leerJson(req);
   const res = await apuntarListaEspera(Number(turnoId), email);

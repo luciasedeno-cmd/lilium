@@ -19,7 +19,7 @@ const MENSAJES = {
 export const POST = manejar(async (req) => {
   const lider = await correoDeSesion();
   if (!lider) return error("Tu sesión ha caducado. Vuelve a entrar con tu correo.", 401);
-  if (!reservasAbiertas(lider) && !(await conLlavePrevia())) return error("Las reservas abren el 30 de octubre.", 403);
+  if (!reservasAbiertas(lider) && !(await conLlavePrevia())) return error("Las reservas abren el 30 de octubre a las 12:00.", 403);
 
   const { otros = [], turnoId, equipo, notas, aceptaTerminos } = await leerJson(req);
   if (!Array.isArray(otros)) return error("Datos no válidos.");

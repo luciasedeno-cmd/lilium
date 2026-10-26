@@ -83,6 +83,8 @@ export default function CarruselPasos() {
         {ESCENAS.map((e, i) => (
           <img
             key={e.imagen}
+            loading="lazy"
+            decoding="async"
             className={`pasos__mano${i === actual ? " is-activa" : ""}`}
             src={`/assets/img/pasos/${e.imagen}`}
             alt={i === actual ? e.alt[idioma] : ""}

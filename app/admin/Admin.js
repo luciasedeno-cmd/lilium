@@ -11,6 +11,7 @@ import Link from "next/link";
 import NavReserva from "@/components/NavReserva";
 import PiePagina from "@/components/PiePagina";
 import { api } from "@/lib/borrador";
+import { useEspera } from "@/lib/useEspera";
 import { iconosDe } from "@/lib/fotos";
 import { ADMIN_CORREO, APERTURA, EVENTO, MAX_PERSONAS } from "@/lib/config";
 import { useTextos } from "@/components/Idioma";
@@ -20,13 +21,15 @@ const TEXTOS = {
     etiqueta: "EQUIPO LILIUM", titulo: "Solo para el equipo",
     intro: "Escribe tu correo. Con el del equipo (lilium@esada.es) se pide la contraseña; con el tuyo, si tienes acceso, te llega un código.",
     codigo: "Código de 6 cifras", pedirCodigo: "Enviarme un código", otroCorreo: "Usar otro correo", demo: "Código de prueba:",
+    pistaCorreo: "tu correo (por ejemplo, lilium@esada.es)", pistaClave: "contraseña del equipo", pistaCodigo: "******",
+    reenviar: "Reenviar código", reenviarEn: (n) => `Podrás pedir otro código en ${n} s`,
     codigoEnviado: (c) => `Si ${c} tiene acceso al panel, le acabamos de enviar un correo con el asunto «Código para el panel del equipo de Lilium». Escribe aquí ese código (caduca en 10 minutos).`,
     correo: "Tu correo", clave: "Contraseña", comprobando: "Comprobando…", entrar: "Entrar",
     volver: "← Volver a la web", falta: "Escribe el correo y la contraseña.",
     panelEtiqueta: "ADMIN", panelTitulo: "Panel del retiro",
     plazas: "Plazas totales", ocupadas: "Reservadas", libres: "Libres", confirmadas: "Confirmadas",
     asistieron: "Han venido", valoraron: "Han valorado", grupos: "grupos",
-    buscar: "Buscar por correo…", actualizar: "Actualizar", salir: "Salir", probar: "Probar la web",
+    buscar: "Buscar por correo…", actualizar: "Actualizar", salir: "Salir", probar: "Probar la web", irWeb: "Ir a la web",
     sinReservas: "Todavía no hay ninguna reserva.", sinResultados: "Ningún correo coincide con la búsqueda.",
     salasVacias: (n) => (n === 1 ? "1 turno sin reservas" : `${n} turnos sin reservas`),
     salaSinNombre: "Sin nombre", erasmus: "Erasmus", grupo: (n) => `Grupo ${n}`, notas: "Anotaciones",
@@ -40,13 +43,15 @@ const TEXTOS = {
     etiqueta: "LILIUM TEAM", titulo: "Team only",
     intro: "Type your email. The team one (lilium@esada.es) asks for the password; with yours, if you have access, you'll get a code.",
     codigo: "6-digit code", pedirCodigo: "Send me a code", otroCorreo: "Use another email", demo: "Test code:",
+    pistaCorreo: "your email (for example, lilium@esada.es)", pistaClave: "team password", pistaCodigo: "******",
+    reenviar: "Resend code", reenviarEn: (n) => `You can ask for another code in ${n} s`,
     codigoEnviado: (c) => `If ${c} has access to the dashboard, we've just sent it an email with the subject “Código para el panel del equipo de Lilium”. Type that code here (it expires in 10 minutes).`,
     correo: "Your email", clave: "Password", comprobando: "Checking…", entrar: "Sign in",
     volver: "← Back to the website", falta: "Type the email and the password.",
     panelEtiqueta: "ADMIN", panelTitulo: "Retreat dashboard",
     plazas: "Total places", ocupadas: "Booked", libres: "Free", confirmadas: "Confirmed",
     asistieron: "Attended", valoraron: "Rated", grupos: "groups",
-    buscar: "Search by email…", actualizar: "Refresh", salir: "Sign out", probar: "Try the website",
+    buscar: "Search by email…", actualizar: "Refresh", salir: "Sign out", probar: "Try the website", irWeb: "Go to the website",
     sinReservas: "There are no bookings yet.", sinResultados: "No email matches your search.",
     salasVacias: (n) => (n === 1 ? "1 session without bookings" : `${n} sessions without bookings`),
     salaSinNombre: "No name", erasmus: "Erasmus", grupo: (n) => `Group ${n}`, notas: "Notes",
@@ -135,6 +140,7 @@ function Entrar({ t, alEntrar }) {
   const [demo, setDemo] = useState(""); // solo en pruebas en el ordenador
   const [error, setError] = useState("");
   const [enviando, setEnviando] = useState(false);
+  const [espera, empezarEspera] = useEspera(); // segundos para poder pedir otro código
   const conClave = correo.trim().toLowerCase() === ADMIN_CORREO;
 
   async function entrar(e) {
@@ -152,43 +158,47 @@ function Entrar({ t, alEntrar }) {
     }
 
     // 2) Otro correo: primero se pide el código…
-    setEnviando(true);
-    if (!codigoEnviado) {
-      const res = await api("/api/acceso/admin/codigo", { metodo: "POST", datos: { email: correo.trim() } });
-      setEnviando(false);
-      if (!res.ok) return setError(res.mensaje);
-      setCodigoEnviado(true);
-      if (res.codigoDemo) setDemo(res.codigoDemo);
-      return;
-    }
+    if (!codigoEnviado) return pedirCodigo();
     // …y luego se comprueba
     const res = await api("/api/acceso/admin/verificar", { metodo: "POST", datos: { email: correo.trim(), codigo: codigo.trim() } });
     setEnviando(false);
     return res.ok ? alEntrar() : setError(res.mensaje);
   }
 
+  async function pedirCodigo() {
+    if (espera > 0) return;
+    setEnviando(true);
+    const res = await api("/api/acceso/admin/codigo", { metodo: "POST", datos: { email: correo.trim() } });
+    setEnviando(false);
+    if (!res.ok) return setError(res.mensaje);
+    setError("");
+    setCodigoEnviado(true);
+    empezarEspera(10);
+    if (res.codigoDemo) setDemo(res.codigoDemo);
+  }
+
   return (
     <main className="previa">
       <section className="acceso previa__tarjeta" aria-labelledby="previa-titulo">
-        <img className="previa__logo" src="/assets/img/logo-lilium.png" width="198" height="118" alt="Lilium" />
+        <img className="previa__logo" src="/assets/img/logo-lilium.webp" width="198" height="118" alt="Lilium" />
         <p className="acceso__etiqueta">{t.etiqueta}</p>
         <h1 className="acceso__titulo" id="previa-titulo">{t.titulo}</h1>
         <p className="acceso__intro">{codigoEnviado ? t.codigoEnviado(correo.trim()) : t.intro}</p>
         <form onSubmit={entrar} noValidate>
           <label htmlFor="admin-correo">{t.correo}</label>
-          <input className="campo" id="admin-correo" type="email" autoComplete="username" placeholder="E-mail"
+          <input className="campo" id="admin-correo" type="email" autoComplete="username" placeholder={t.pistaCorreo}
             value={correo} disabled={codigoEnviado} onChange={(e) => setCorreo(e.target.value)} />
           {conClave && (
             <>
               <label htmlFor="admin-clave">{t.clave}</label>
-              <input className="campo" id="admin-clave" type="password" autoComplete="current-password" placeholder={t.clave}
+              <input className="campo" id="admin-clave" type="password" autoComplete="current-password" placeholder={t.pistaClave}
                 value={clave} onChange={(e) => setClave(e.target.value)} aria-describedby="admin-error" />
             </>
           )}
           {codigoEnviado && (
             <>
               <label htmlFor="admin-codigo">{t.codigo}</label>
-              <input className="campo" id="admin-codigo" inputMode="numeric" autoComplete="one-time-code" maxLength={6} placeholder="000000"
+              <input className="campo campo--codigo" id="admin-codigo" inputMode="numeric" autoComplete="one-time-code" maxLength={6} placeholder={t.pistaCodigo}
                 value={codigo} onChange={(e) => setCodigo(e.target.value)} aria-describedby="admin-error" />
               {demo && <p className="acceso__demo">{t.demo} {demo}</p>}
             </>
@@ -199,7 +209,12 @@ function Entrar({ t, alEntrar }) {
           </button>
         </form>
         {codigoEnviado ? (
-          <button type="button" className="previa__volver" onClick={() => { setCodigoEnviado(false); setCodigo(""); setDemo(""); }}>{t.otroCorreo}</button>
+          <p className="previa__enlaces">
+            <button type="button" className="previa__volver" onClick={pedirCodigo} disabled={espera > 0} aria-live="polite">
+              {espera > 0 ? t.reenviarEn(espera) : t.reenviar}
+            </button>
+            <button type="button" className="previa__volver" onClick={() => { setCodigoEnviado(false); setCodigo(""); setDemo(""); }}>{t.otroCorreo}</button>
+          </p>
         ) : (
           <Link className="previa__volver" href="/">{t.volver}</Link>
         )}
@@ -239,7 +254,8 @@ function Panel({ t, datos, aviso, marcar, actualizar, salir }) {
           <h1 className="panel__titulo">{t.panelTitulo}</h1>
           <div className="panel__acciones">
             <button type="button" className="ll-btn ll-btn--md ll-btn--secondary" onClick={actualizar}>{t.actualizar}</button>
-            {antesDeAbrir && <Link className="ll-btn ll-btn--md ll-btn--secondary" href="/acceso">{t.probar}</Link>}
+            {/* Ir a la web: si ya hay sesión (entró con su código) va directa al inicio; si no, middleware la manda a /acceso */}
+            <Link className="ll-btn ll-btn--md ll-btn--secondary" href="/inicio">{antesDeAbrir ? t.probar : t.irWeb}</Link>
             <button type="button" className="ll-btn ll-btn--md ll-btn--primary" onClick={salir}>{t.salir}</button>
           </div>
         </header>

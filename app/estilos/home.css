@@ -919,7 +919,7 @@ body:has(.hero) {
   z-index: -1;
   background:
     linear-gradient(134.83deg, rgba(41, 47, 32, 0.31) 12.318%, rgba(255, 245, 230, 0.31) 29.818%, rgba(115, 47, 35, 0.31) 50.965%),
-    url("/assets/img/faq-fondo.jpg") center / cover no-repeat;
+    url("/assets/img/faq-fondo.webp") center / cover no-repeat;
 }
 
 .faq__bloque {

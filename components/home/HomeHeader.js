@@ -125,7 +125,7 @@ export default function HomeHeader() {
   return (
     <header ref={cabecera} className={clases}>
         <Link className="logo" href="/inicio" aria-label={t.inicio} onClick={cerrar}>
-          <img src="/assets/img/logo-lilium.png" alt="Lilium" />
+          <img src="/assets/img/logo-lilium.webp" alt="Lilium" />
         </Link>
         <button className="header__menu" type="button" aria-expanded={abierto} aria-controls="menu"
           aria-label={abierto ? t.cerrar : t.abrir} onClick={() => setAbierto(!abierto)}>

@@ -43,7 +43,7 @@ export async function middleware(req) {
     const conLlave = await llavePreviaValida(req.cookies.get(COOKIE_PREVIA)?.value);
     if (!conLlave) {
       if (ruta.startsWith("/api/")) {
-        return NextResponse.json({ ok: false, mensaje: "La web abre el 30 de octubre." }, { status: 403 });
+        return NextResponse.json({ ok: false, mensaje: "La web abre el 30 de octubre a las 12:00." }, { status: 403 });
       }
       return NextResponse.redirect(new URL("/", req.url));
     }
