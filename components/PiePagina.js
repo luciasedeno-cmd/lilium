@@ -19,7 +19,7 @@ export default function PiePagina() {
       <p>Lilium · Escape Room ESADA · 2026</p>
       <a href={`mailto:${CONTACTO}`}>{CONTACTO}</a>
       <Link href="/terminos">{t.terminos}</Link>
-      <a href="#">{t.legal}</a>
+      <Link href="/aviso-legal">{t.legal}</Link>
       {/* Panel del equipo (con el correo y la contraseña de admin) */}
       <Link href="/admin">{t.admin}</Link>
     </footer>

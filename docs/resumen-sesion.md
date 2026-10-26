@@ -41,7 +41,7 @@ Resumen para quien siga con la web. Los detalles técnicos están en `CLAUDE.md`
 ## Cosas pendientes o para revisar
 - **Términos y Condiciones**: el texto es un borrador; revisarlo.
 - **Traducciones al inglés**: escritas por Claude; conviene revisarlas. Los **correos** solo están en español, y el **fragmento secreto** también.
-- **«Aviso Legal»** del pie todavía no lleva a ninguna página.
+- **«Aviso Legal»** (`/aviso-legal`): texto del equipo; la traducción al inglés la hizo Claude, conviene revisarla.
 - **Correos automáticos**: Vercel llama a `/api/cron` una vez al día a las 10:00 (`vercel.json`). Comprobar que existe la variable `CRON_SECRET` en Vercel. Opcional: los secretos `LILIUM_URL` y `CRON_SECRET` en GitHub para que además se ejecute cada hora.
 - Imágenes exportadas como captura desde Figma (el lirio, el retrato de la joven con lirios…): si se tienen los originales, cambiarlos para que se vean más nítidos.
 - En el móvil la historia de la Home es algo más alta que una pantalla (texto + retrato no caben).
