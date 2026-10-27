@@ -513,6 +513,9 @@ body:has(.hero) {
   height: 700vh;
   height: 700svh;
   background: var(--como-fondo);
+  /* En algunos móviles la unión con la sección de arriba cae a medio píxel y asomaba una línea fina
+     del color de la página: esta franja de 2 px del mismo color la tapa (queda debajo del encaje) */
+  box-shadow: 0 -2px 0 var(--como-fondo);
 }
 
 .como-fijo {
