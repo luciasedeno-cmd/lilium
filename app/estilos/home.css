@@ -940,7 +940,7 @@ body:has(.hero) {
 
 .ubicacion__dato--donde {
   left: 63px;
-  top: 400px;
+  top: 270px; /* antes 400 px: el encaje de arriba de «¿Erasmus?» tapaba el final de la tarjeta */
 }
 
 .ubicacion__dato--donde h2 {

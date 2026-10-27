@@ -266,7 +266,7 @@ main.cues {
   border: 0;
   border-radius: 0;
   background: var(--cream-50);
-  font: 500 12px/1 var(--font-sans);
+  font: 500 14px/1 var(--font-sans); /* antes 12 px */
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--primary);
@@ -305,7 +305,8 @@ main.cues {
   .cues-tarjeta__titulo { font-size: 16px; }
   .cues-estrellas { gap: 0; justify-content: space-between; width: 100%; max-width: 300px; }
   .cues-escala { gap: 0; justify-content: space-between; width: 100%; max-width: 320px; }
-  .cues-escala__palabra { font-size: 10px; }
+  /* Antes 10 px: ahora 13 px y, si no cabe, en dos líneas (centrado bajo su número) */
+  .cues-escala__palabra { font-size: 13px; white-space: normal; text-align: center; line-height: 1.15; }
 }
 
 /* ---------- «Respuesta enviada» ---------- */

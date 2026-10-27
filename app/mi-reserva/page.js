@@ -40,7 +40,7 @@ const TEXTOS = {
     editar: "Editar reserva", anular: "Anular reserva", cancelarPlaza: "Cancelar mi plaza", cancelarAsistencia: "Cancelar solo mi asistencia",
     miEquipo: "Mi equipo", anadirIntegrante: "+ Añadir integrante", tu: "(tú)", noQuitar: "No quitar a", quitar: "Quitar a",
     correoNuevo: "Correo de la persona que quieres añadir", anadir: "Añadir",
-    quedan: (n) => `Quedan ${n} ${n === 1 ? "plaza" : "plazas"} en vuestro turno. Mínimo ${MIN_SALA_NUEVA} y máximo ${MAX_PERSONAS} personas.`,
+    quedan: (n) => `${n === 1 ? "Queda" : "Quedan"} ${n} ${n === 1 ? "plaza" : "plazas"} en vuestro turno. Mínimo ${MIN_SALA_NUEVA} y máximo ${MAX_PERSONAS} personas.`,
     guardando: "Guardando…", guardar: "Guardar cambios", cancelarCambios: "Cancelar cambios",
     cambioTexto: `Solo te mueves tú; tu grupo se queda en su turno. Puedes unirte a un grupo en formación con hueco (para abrir una sala libre hacen falta ${MIN_SALA_NUEVA} personas).`,
     quedanN: (n) => `quedan ${n}`, salaLibre: "sala libre", completo: "completo", cerrar: "Cerrar",

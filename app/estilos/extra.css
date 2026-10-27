@@ -860,7 +860,7 @@ main.mi-reserva {
   background: transparent;
   font-family: var(--font-inter);
   font-weight: 500;
-  font-size: 12px;
+  font-size: 14px; /* antes 12 px: se leía mal en el móvil */
   color: var(--terracota);
   text-transform: uppercase;
   cursor: pointer;
@@ -955,7 +955,8 @@ main.mi-reserva {
 
 .mr-miembro__estado {
   margin-top: 4px;
-  font-size: 12px;
+  font-size: 14px;
+  line-height: 1.35;
 }
 
 /* Persona marcada para quitar: se ve tachada y más clara hasta que se guarda */
@@ -1042,7 +1043,7 @@ main.mi-reserva {
   margin-top: 19px;
   font-family: var(--font-inter);
   font-weight: 500;
-  font-size: 12px;
+  font-size: 14px;
   text-align: center;
 }
 
@@ -1097,8 +1098,8 @@ main.mi-reserva {
 }
 
 .mr-antes__lista p {
-  font-size: 12px;
-  line-height: 1.35;
+  font-size: 14px;
+  line-height: 1.45;
 }
 
 .mr-antes__lista .mr-antes__titulo {
@@ -1179,6 +1180,11 @@ main.mi-reserva {
 
   .mr-tarjeta__titulo {
     font-size: 26px;
+  }
+
+  /* «Tu reserva» igual de ancha que «Mi equipo» (antes quedaba un poco más estrecha y descuadrada) */
+  .mr-entrada {
+    width: 100%;
   }
 
   .mr-equipo__botones {

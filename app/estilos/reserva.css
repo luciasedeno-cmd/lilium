@@ -1384,7 +1384,7 @@ main.paso > :nth-child(n + 5) { animation-delay: 0.24s; }
 
 .paso--hora .sala.is-bloqueada > :not(.sala__cabeza),
 .paso--hora .sala.is-llena > :not(.sala__cabeza) {
-  opacity: 0.6;
+  opacity: 0.75; /* apagadas, pero se siguen leyendo (antes 0.6) */
 }
 
 .sala__cabeza {
@@ -1486,7 +1486,7 @@ main.paso > :nth-child(n + 5) { animation-delay: 0.24s; }
 
 .paso--hora .sala__plazas {
   font-family: var(--font-inter);
-  font-weight: 400;
+  font-weight: 500;
   font-size: 14px;
   white-space: nowrap;
 }
@@ -1497,8 +1497,7 @@ main.paso > :nth-child(n + 5) { animation-delay: 0.24s; }
 }
 
 .sala__perfecto {
-  font-size: 13px;
-  opacity: 0.8;
+  font-size: 14px; /* antes 13 px y más transparente: se leía muy poco */
 }
 
 .paso--hora .sala__espera {

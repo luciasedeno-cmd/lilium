@@ -467,6 +467,22 @@ main.panel {
 }
 
 .panel-palabra small {
-  font-size: 10px;
-  opacity: 0.75;
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+/* En el móvil, la palabra va en su propia línea debajo del correo (antes salía pegada al final) */
+@media (max-width: 760px) {
+  .panel-tabla td.panel-tabla__persona { /* «td.» para ganar a la regla «.panel-tabla td» del móvil */
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr);
+    column-gap: var(--space-3);
+    row-gap: 6px;
+  }
+
+  .panel-palabra {
+    grid-column: 2; /* debajo del correo, alineada con él */
+    justify-self: start;
+    margin-left: 0;
+  }
 }
