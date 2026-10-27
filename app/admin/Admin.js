@@ -51,6 +51,17 @@ const TEXTOS = {
     borrarEscribe: "Para confirmar, escribe BORRAR en mayúsculas:",
     borrarSi: "Sí, borrar todo", borrando: "Borrando…", borrarNo: "Cancelar",
     borrado: (n, r) => `Listo: se han borrado ${n === 1 ? "1 persona" : `${n} personas`} de las reservas${r ? ` y ${r === 1 ? "1 respuesta" : `${r} respuestas`} del cuestionario` : ""}. La web está vacía para la apertura.`,
+    // Valoraciones (respuestas del cuestionario)
+    valTitulo: "Valoraciones", valCargando: "Cargando las valoraciones…",
+    valIntro: "Respuestas del cuestionario de después de la experiencia. Son anónimas: no se sabe quién ha contestado qué.",
+    valNinguna: "Todavía no ha respondido nadie al cuestionario.",
+    valRespuestas: (n) => (n === 1 ? "1 respuesta" : `${n} respuestas`), valMedia: "Media",
+    valDescargar: "Descargar respuestas (Excel)", valError: "No se han podido cargar las valoraciones.",
+    valPersonas: (n) => (n === 1 ? "1 persona" : `${n} personas`),
+    preguntas: { general: "Experiencia en general", ambientacion: "Ambientación y decoración", dificultad: "Dificultad de las pruebas",
+      originalidad: "Originalidad de las pruebas", inmersion: "Inmersión en la historia", duracion: "Duración" },
+    escalas: { dificultad: "0 = muy fácil · 5 = muy difícil", duracion: "0 = muy corta · 3 = genial · 5 = muy larga" },
+    columnas: { creada: "Fecha", idioma: "Idioma" },
   },
   en: {
     etiqueta: "LILIUM TEAM", titulo: "Team only",
@@ -85,6 +96,16 @@ const TEXTOS = {
     borrarEscribe: "To confirm, type BORRAR in capitals:",
     borrarSi: "Yes, delete everything", borrando: "Deleting…", borrarNo: "Cancel",
     borrado: (n, r) => `Done: ${n === 1 ? "1 person" : `${n} people`} removed from bookings${r ? ` and ${r === 1 ? "1 answer" : `${r} answers`} from the questionnaire` : ""}. The website is empty for the opening.`,
+    valTitulo: "Ratings", valCargando: "Loading the ratings…",
+    valIntro: "Answers to the after-experience questionnaire. They're anonymous: there's no way to know who answered what.",
+    valNinguna: "Nobody has answered the questionnaire yet.",
+    valRespuestas: (n) => (n === 1 ? "1 answer" : `${n} answers`), valMedia: "Average",
+    valDescargar: "Download answers (Excel)", valError: "Couldn't load the ratings.",
+    valPersonas: (n) => (n === 1 ? "1 person" : `${n} people`),
+    preguntas: { general: "Overall experience", ambientacion: "Atmosphere and set design", dificultad: "Difficulty of the challenges",
+      originalidad: "Originality of the challenges", inmersion: "Immersion in the story", duracion: "Length" },
+    escalas: { dificultad: "0 = very easy · 5 = very hard", duracion: "0 = too short · 3 = just right · 5 = too long" },
+    columnas: { creada: "Date", idioma: "Language" },
   },
 };
 
@@ -387,6 +408,9 @@ function Panel({ t, datos, aviso, marcar, actualizar, salir }) {
 
         <p className="panel__leyenda">{t.leyenda}</p>
 
+        {/* Respuestas del cuestionario: medias, reparto y descarga */}
+        <Valoraciones t={t} />
+
         {/* Solo antes de la apertura: vaciar las reservas de prueba */}
         {antesDeAbrir && <BorrarPruebas t={t} personas={totales.ocupadas} alBorrar={actualizar} />}
       </main>
@@ -454,6 +478,121 @@ function BorrarPruebas({ t, personas, alBorrar }) {
           </div>
           {fallo && <p className="panel__aviso" role="alert">{fallo}</p>}
         </form>
+      )}
+    </section>
+  );
+}
+
+// Las 6 preguntas del cuestionario, en el mismo orden que en /cuestionario.
+// «estrellas» van de 1 a 5; «escala» de 0 a 5 (en la escala, más alto no es «mejor»).
+const PREGUNTAS = [
+  { clave: "general", desde: 1 },
+  { clave: "ambientacion", desde: 1 },
+  { clave: "dificultad", desde: 0, escala: true },
+  { clave: "originalidad", desde: 1 },
+  { clave: "inmersion", desde: 1 },
+  { clave: "duracion", desde: 0, escala: true },
+];
+
+/**
+ * Apartado «Valoraciones»: cuántas respuestas hay, la media de cada pregunta, cuántas personas
+ * eligieron cada número (barras) y un botón para descargarlas todas en un archivo que abre Excel.
+ * Pide los datos a /api/admin/valoraciones (solo con la llave del equipo) y los refresca cada 30 s.
+ */
+function Valoraciones({ t }) {
+  const [respuestas, setRespuestas] = useState(null); // null = cargando
+  const [fallo, setFallo] = useState("");
+
+  useEffect(() => {
+    let vivo = true;
+    async function cargar() {
+      const r = await api("/api/admin/valoraciones");
+      if (!vivo) return;
+      if (r.ok) {
+        setRespuestas(r.respuestas);
+        setFallo("");
+      } else setFallo(r.mensaje || t.valError);
+    }
+    cargar();
+    const id = setInterval(cargar, REFRESCO_MS);
+    return () => {
+      vivo = false;
+      clearInterval(id);
+    };
+  }, [t]);
+
+  const n = respuestas?.length || 0;
+  const coma = (x) => x.toFixed(1).replace(".", ","); // 4.6 → «4,6»
+
+  // Descarga: un archivo .csv (tabla de texto que abre Excel o Google Sheets) con una fila por respuesta
+  function descargar() {
+    const cabecera = [t.columnas.creada, ...PREGUNTAS.map((p) => t.preguntas[p.clave]), t.columnas.idioma];
+    const filas = respuestas.map((r) => [
+      new Date(r.creada).toLocaleString("es-ES", { timeZone: "Europe/Madrid" }),
+      ...PREGUNTAS.map((p) => r[p.clave]),
+      r.idioma || "",
+    ]);
+    // Punto y coma entre columnas y la marca «﻿» al principio: así Excel en español lo abre bien, con tildes
+    const texto = "﻿" + [cabecera, ...filas].map((f) => f.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(";")).join("\r\n");
+    const enlace = document.createElement("a");
+    enlace.href = URL.createObjectURL(new Blob([texto], { type: "text/csv;charset=utf-8" }));
+    enlace.download = `valoraciones-lilium-${new Date().toISOString().slice(0, 10)}.csv`;
+    enlace.click();
+    URL.revokeObjectURL(enlace.href);
+  }
+
+  return (
+    <section className="panel-val" aria-labelledby="val-titulo">
+      <header className="panel-val__cabecera">
+        <div>
+          <h2 id="val-titulo" className="panel-val__titulo">{t.valTitulo}</h2>
+          <p className="panel-val__intro">{t.valIntro}</p>
+        </div>
+        {n > 0 && (
+          <div className="panel-val__acciones">
+            <p className="panel-val__total">{t.valRespuestas(n)}</p>
+            <button type="button" className="ll-btn ll-btn--md ll-btn--secondary" onClick={descargar}>{t.valDescargar}</button>
+          </div>
+        )}
+      </header>
+
+      {fallo && <p className="panel__aviso" role="alert">{fallo}</p>}
+      {!respuestas && !fallo && <p className="panel-val__nada" role="status">{t.valCargando}</p>}
+      {respuestas && n === 0 && <p className="panel-val__nada">{t.valNinguna}</p>}
+
+      {n > 0 && (
+        <div className="panel-val__preguntas">
+          {PREGUNTAS.map((p) => {
+            const valores = respuestas.map((r) => r[p.clave]);
+            const media = valores.reduce((a, b) => a + b, 0) / n;
+            const numeros = Array.from({ length: 6 - p.desde }, (_, i) => p.desde + i); // 1…5 o 0…5
+            const cuenta = (x) => valores.filter((v) => v === x).length;
+            const maximo = Math.max(...numeros.map(cuenta));
+            return (
+              <article className="panel-val__pregunta" key={p.clave}>
+                <h3>{t.preguntas[p.clave]}</h3>
+                <p className="panel-val__media">
+                  {!p.escala && <span className="panel-val__estrella" aria-hidden="true">★ </span>}
+                  {coma(media)}
+                  <small> / 5 · {t.valMedia}</small>
+                </p>
+                {p.escala && <p className="panel-val__escala">{t.escalas[p.clave]}</p>}
+                {/* Reparto: una barra por número, más larga cuanta más gente lo eligió */}
+                <ul className="panel-val__reparto">
+                  {numeros.map((x) => (
+                    <li key={x} title={t.valPersonas(cuenta(x))}>
+                      <span className="panel-val__num">{p.escala ? x : `${x}★`}</span>
+                      <span className="panel-val__barra">
+                        <span style={{ width: maximo ? `${(cuenta(x) / maximo) * 100}%` : 0 }} />
+                      </span>
+                      <span className="panel-val__cuenta">{cuenta(x)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            );
+          })}
+        </div>
       )}
     </section>
   );
