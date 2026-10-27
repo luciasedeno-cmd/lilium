@@ -287,8 +287,129 @@
   line-height: 1;
 }
 
+/* ---------- Pop-up «Antes de irte…» de Mi reserva (al terminar la reserva) ---------- */
+/* Tarjeta naranja de Lilium con letra crema: lirio, título en Baskerville, frase y botón «Entendido» */
+.pop-confirmar {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(41, 47, 32, 0.55);
+  animation: pop-confirmar-fondo 0.35s ease both;
+}
+
+.pop-confirmar__caja {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: min(560px, 100%);
+  padding: 48px 48px 40px;
+  border: 1px solid rgba(255, 245, 230, 0.35);
+  border-radius: 18px;
+  /* Un borde fino de encaje: segundo marco crema por dentro */
+  outline: 1px solid rgba(255, 245, 230, 0.55);
+  outline-offset: -12px;
+  background: var(--naranja);
+  color: var(--fondo-oscuro);
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(41, 20, 10, 0.35);
+  animation: pop-confirmar-entra 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.pop-confirmar__lirio {
+  width: 64px;
+  height: auto;
+  /* El lirio en crema, como en el pie */
+  filter: brightness(0) invert(94%) sepia(12%) saturate(500%) hue-rotate(330deg);
+}
+
+.pop-confirmar__titulo {
+  font-family: var(--font-baskervville);
+  font-weight: 400;
+  font-size: 40px;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.pop-confirmar__texto {
+  max-width: 420px;
+  font-family: var(--font-baskervville);
+  font-size: 21px;
+  line-height: 1.35;
+}
+
+.pop-confirmar__boton {
+  min-width: 200px;
+  margin-top: 8px;
+  padding: 12px 28px;
+  border: 1.2px solid var(--fondo-oscuro);
+  border-radius: 2px;
+  background: var(--fondo-oscuro);
+  color: var(--naranja);
+  font-family: var(--font-baskervville);
+  font-size: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.pop-confirmar__boton:hover {
+  background: transparent;
+  color: var(--fondo-oscuro);
+}
+
+.pop-confirmar__boton:focus-visible,
+.pop-confirmar__cerrar:focus-visible {
+  outline: 2px solid var(--fondo-oscuro);
+  outline-offset: 3px;
+}
+
+.pop-confirmar__cerrar {
+  position: absolute;
+  top: 22px;
+  right: 22px;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--fondo-oscuro);
+  color: var(--fondo-oscuro);
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+@keyframes pop-confirmar-fondo {
+  from { opacity: 0; }
+}
+
+@keyframes pop-confirmar-entra {
+  from { opacity: 0; transform: translateY(18px) scale(0.96); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pop-confirmar,
+  .pop-confirmar__caja {
+    animation: none;
+  }
+}
+
 /* ---------- Responsive ---------- */
 @media (max-width: 760px) {
+  .pop-confirmar__caja {
+    padding: 40px 24px 32px;
+  }
+
+  .pop-confirmar__titulo {
+    font-size: 30px;
+  }
+
+  .pop-confirmar__texto {
+    font-size: 18px;
+  }
+
   .entrada__contenido {
     flex-direction: column;
     text-align: center;

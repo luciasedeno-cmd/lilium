@@ -1,7 +1,7 @@
 "use client";
 // Mi reserva (Figma: PAG RESERVA - INTEGRANTES B): «Tu reserva» con la entrada, «Mi equipo» y «Antes de venir…».
 // La persona líder puede editar el grupo: quitar (✕) y añadir integrantes, y luego «Guardar cambios».
-import { Suspense, useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import NavReserva from "@/components/NavReserva";
@@ -21,6 +21,8 @@ import { fechaHora } from "@/lib/idioma";
 const TEXTOS = {
   es: {
     avisoNueva: "Reserva creada. Hemos enviado un correo a cada integrante para que confirme su plaza, y a ti tu entrada.",
+    popTitulo: "Antes de irte", popTexto: "no olvides decirle a tus compañeros que confirmen su asistencia, si no perderán su hueco.",
+    popBoton: "Entendido", popCerrar: "Cerrar",
     avisoConfirmado: "¡Plaza confirmada! Te hemos enviado la entrada por correo.",
     avisoFallidos: (c) => `Reserva creada, pero no pudimos enviar el correo a: ${c}. Avísales de que entren en la web con su correo para confirmar.`,
     preguntaGrupo: "¿Anular tu reserva? Se cancelará tu plaza y la de las personas que apuntaste tú (les avisaremos por correo). El resto de la sala mantiene la suya. No se puede deshacer.",
@@ -50,6 +52,8 @@ const TEXTOS = {
   },
   en: {
     avisoNueva: "Booking created. We've emailed each member so they can confirm their place, and sent you your ticket.",
+    popTitulo: "Before you go", popTexto: "don't forget to tell your teammates to confirm they're coming, or they'll lose their place.",
+    popBoton: "Got it", popCerrar: "Close",
     avisoConfirmado: "Place confirmed! We've emailed you your ticket.",
     avisoFallidos: (c) => `Booking created, but we couldn't send the email to: ${c}. Tell them to sign in to the website with their email to confirm.`,
     preguntaGrupo: "Cancel your booking? Your place and those of the people you added will be cancelled (we'll email them). Everyone else in the room keeps theirs. This can't be undone.",
@@ -85,6 +89,54 @@ function Avisos({ t }) {
   if (q.get("confirmado")) return <p className="aviso-ok" role="status">{t.avisoConfirmado}</p>;
   if (q.get("fallidos")) return <p className="aviso-error" role="alert">{t.avisoFallidos(q.get("fallidos"))}</p>;
   return null;
+}
+
+/**
+ * Pop-up «Antes de irte…» (naranja de Lilium): sale al terminar la reserva (al llegar con ?nueva o ?fallidos)
+ * si quien reservó tiene gente suya sin confirmar, para que les avise de que confirmen en 48 h.
+ * Al cerrarlo se apunta en el navegador (sessionStorage) para no repetirlo si se recarga la página.
+ */
+const CLAVE_POP = "lilium-pop-confirmar";
+function PopupConfirmar({ t, hayPendientes }) {
+  const q = useSearchParams();
+  const recienReservada = Boolean(q.get("nueva") || q.get("fallidos"));
+  const [abierto, setAbierto] = useState(false);
+  const boton = useRef(null);
+
+  useEffect(() => {
+    if (!recienReservada || !hayPendientes) return;
+    let visto = false;
+    try { visto = sessionStorage.getItem(CLAVE_POP) === "1"; } catch {}
+    if (visto) return;
+    const espera = setTimeout(() => setAbierto(true), 500); // deja ver primero la página
+    return () => clearTimeout(espera);
+  }, [recienReservada, hayPendientes]);
+
+  useEffect(() => {
+    if (!abierto) return;
+    boton.current?.focus();
+    const conTecla = (e) => e.key === "Escape" && cerrar();
+    document.addEventListener("keydown", conTecla);
+    return () => document.removeEventListener("keydown", conTecla);
+  }, [abierto]);
+
+  function cerrar() {
+    try { sessionStorage.setItem(CLAVE_POP, "1"); } catch {}
+    setAbierto(false);
+  }
+
+  if (!abierto) return null;
+  return (
+    <div className="pop-confirmar" onClick={(e) => e.target === e.currentTarget && cerrar()}>
+      <div className="pop-confirmar__caja" role="alertdialog" aria-modal="true" aria-labelledby="pop-confirmar-titulo" aria-describedby="pop-confirmar-texto">
+        <button className="pop-confirmar__cerrar" type="button" aria-label={t.popCerrar} onClick={cerrar}>×</button>
+        <img className="pop-confirmar__lirio" src="/assets/img/icono-lirio.webp" width="99" height="79" alt="" />
+        <h2 id="pop-confirmar-titulo" className="pop-confirmar__titulo">{t.popTitulo}…</h2>
+        <p id="pop-confirmar-texto" className="pop-confirmar__texto">{t.popTexto}</p>
+        <button ref={boton} type="button" className="pop-confirmar__boton" onClick={cerrar}>{t.popBoton}</button>
+      </div>
+    </div>
+  );
 }
 
 function MiReservaContenido() {
@@ -231,6 +283,9 @@ function MiReservaContenido() {
           {/* Nombre que se le puso al grupo (si no tiene, «Vuestra hermandad») */}
           <h1 className="mi-reserva__titulo">{turno.equipo || t.hermandad}</h1>
         </header>
+
+        {/* Al terminar la reserva: recordatorio para que su gente confirme */}
+        <PopupConfirmar t={t} hayPendientes={miembros.some((m) => esMia(m) && !m.confirmado)} />
 
         <div className="mi-reserva__avisos">
           <Avisos t={t} />
