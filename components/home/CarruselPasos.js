@@ -141,7 +141,7 @@ export default function CarruselPasos() {
       <div className="pasos__ventana">
         <div className="pasos__pista" ref={pista} style={{ width: `${n * 100}%` }}>
           {lista.map((paso, i) => (
-            <article key={i} className={`pasos__tarjeta${i === actual ? " is-actual" : ""}`} aria-hidden={i !== actual}>
+            <article key={i} className={`pasos__tarjeta${i === actual ? " is-actual" : i < actual ? " is-antes" : ""}`} aria-hidden={i !== actual}>
               <div className="pasos__imagen">
                 <img className="pasos__mano" src={`/assets/img/pasos/${ESCENAS[i].imagen}`} alt={ESCENAS[i].alt[idioma]}
                   loading={i === 0 ? undefined : "lazy"} decoding="async" />

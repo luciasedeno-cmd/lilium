@@ -12,7 +12,7 @@
 import { useEffect, useRef, useState } from "react";
 
 // Parte del mapa que se ve: entero en el ordenador; en el móvil, solo la zona del recorrido
-const VISTA = { ordenador: "0 0 1440 589", movil: "310 70 660 450" };
+const VISTA = { ordenador: "0 0 1440 589", movil: "325 0 620 589" };
 
 // Camino de los pasitos (de la chincheta derecha a la izquierda), medido sobre el mapa del Figma
 const CAMINO = "M916 324 L828 134 L813 133 L362 369";

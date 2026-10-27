@@ -1769,6 +1769,60 @@ body:has(.hero) {
     min-height: 0;
   }
 
+  /* En el móvil los pasos no se deslizan de lado (en el iPhone las tarjetas se descolocaban y los
+     textos se pisaban): están todas en el mismo sitio y se cambia de una a otra con un fundido.
+     La que se va sale un poco hacia la izquierda; la nueva entra desde la derecha y su mano sube. */
+  .pasos__pista {
+    position: relative;
+    width: 100% !important;
+    transform: none !important;
+  }
+
+  .pasos__tarjeta {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    translate: 28px 0;
+    pointer-events: none;
+    /* La que se va desaparece deprisa (0,25 s)… */
+    transition: opacity 0.25s ease, translate 0.35s ease-in;
+  }
+
+  .pasos__tarjeta.is-antes {
+    translate: -28px 0;
+  }
+
+  /* …y la nueva entra cuando la otra ya no se ve, así nunca se pisan los textos */
+  .pasos__tarjeta.is-actual {
+    opacity: 1;
+    translate: 0 0;
+    pointer-events: auto;
+    transition: opacity 0.5s ease 0.28s, translate 0.75s cubic-bezier(0.22, 1, 0.36, 1) 0.28s;
+  }
+
+  .pasos__tarjeta:not(.is-actual) .pasos__texto {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Navegadores antiguos (se desliza con el dedo): las tarjetas vuelven a ir en fila */
+  .como-bloque--simple .pasos__pista {
+    width: 500% !important;
+  }
+
+  .como-bloque--simple .pasos__tarjeta {
+    position: relative;
+    opacity: 1;
+    translate: none;
+    pointer-events: auto;
+  }
+
+  /* La mano se funde con el fondo por abajo: así no se ve el corte de la muñeca */
+  .pasos__mano {
+    -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent 98%);
+    mask-image: linear-gradient(to bottom, #000 62%, transparent 98%);
+  }
+
   .cuadro {
     width: 100%;
     max-width: 362px;
@@ -1795,17 +1849,53 @@ body:has(.hero) {
     padding-bottom: 130px;
   }
 
-  /* En el móvil el dibujo enseña solo la zona del recorrido (VISTA.movil en MapaRecorrido.js: 660 × 450) */
+  /* En el móvil, como en el ordenador pero en vertical: el mapa de borde a borde (solo la zona del
+     recorrido: VISTA.movil en MapaRecorrido.js, 620 × 589) y las tarjetas montadas sobre sus esquinas:
+     «Cuándo» arriba a la izquierda y «Dónde» abajo a la derecha */
+  .ubicacion {
+    gap: 0;
+    padding: 104px 0 110px;
+  }
+
   .ubicacion__mapa {
-    aspect-ratio: 660 / 450;
+    aspect-ratio: 620 / 589;
+    border-radius: 0;
   }
 
   .ubicacion__dato {
-    width: 100%;
+    width: auto;
+    max-width: calc(100% - 32px);
+    margin: 0 16px;
+    padding: 14px 20px 16px 14px;
+    gap: 8px;
+    font-size: 14px;
   }
 
   .ubicacion__dato h2 {
-    font-size: 34px;
+    font-size: 30px;
+  }
+
+  .ubicacion__icono {
+    width: 28px;
+    height: 28px;
+  }
+
+  .ubicacion__dato--cuando {
+    align-self: flex-start;
+    margin-bottom: -48px;
+  }
+
+  .ubicacion__dato--donde {
+    align-self: flex-end;
+    margin-top: -48px;
+  }
+
+  .ubicacion__dato .ubicacion__icono {
+    margin-top: 4px;
+  }
+
+  .ubicacion__dato p {
+    padding-left: 2px;
   }
 
   .erasmus .union {
