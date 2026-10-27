@@ -992,6 +992,84 @@ body:has(.hero) {
   margin-top: 38px;
 }
 
+/* Montaje al bajar (components/home/ErasmusArco.js). Sin animación, las piezas no se usan:
+   se ve el dibujo entero de fondo, como siempre. Con animación (data-animada):
+   - el bloque es más alto que la pantalla y la sección se queda fija (sticky) mientras se baja;
+   - la sección ocupa la pantalla entera y el dibujo va en piezas superpuestas;
+   - cada pieza lee su avance (0 → 1) de una variable: --arco, --izq, --der y --t1…--t4 (textos). */
+.erasmus__capas {
+  display: none;
+}
+
+.erasmus-bloque[data-animada] {
+  --alto: max(734px, 100svh);
+  position: relative;
+  height: calc(var(--alto) + 180svh); /* 180svh = lo que hay que bajar para montarla entera */
+}
+
+.erasmus-bloque[data-animada] .erasmus {
+  --arco: 0;
+  --izq: 0;
+  --der: 0;
+  --t1: 0;
+  --t2: 0;
+  --t3: 0;
+  --t4: 0;
+  position: sticky;
+  top: 0;
+  height: var(--alto);
+  padding-top: max(192px, 26svh);
+  background-image: none;
+}
+
+.erasmus-bloque[data-animada] .erasmus__capas {
+  display: block;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: -1; /* detrás de los textos (la sección ya forma su propia capa: no se va detrás de la página) */
+}
+
+.erasmus__capa {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  will-change: opacity, translate;
+}
+
+/* 1) Columnas y arco: se descubren de abajo arriba, como si se levantaran */
+.erasmus__capa--arco {
+  clip-path: inset(calc((1 - var(--arco)) * 100%) 0 0 0);
+  opacity: calc(var(--arco) * 4);
+  translate: 0 calc((1 - var(--arco)) * 40px);
+}
+
+/* 2) y 3) Plantas y estatuas: entran desde su lado, subiendo un poco */
+.erasmus__capa--izq {
+  opacity: var(--izq);
+  translate: calc((var(--izq) - 1) * 70px) calc((1 - var(--izq)) * 30px);
+}
+
+.erasmus__capa--der {
+  opacity: var(--der);
+  translate: calc((1 - var(--der)) * 70px) calc((1 - var(--der)) * 30px);
+}
+
+/* 4) Lirio, título, frase y botón, uno detrás de otro */
+.erasmus-bloque[data-animada] .erasmus__pieza {
+  position: relative;
+  opacity: var(--t);
+  translate: 0 calc((1 - var(--t)) * 26px);
+}
+
+/* Mientras el botón casi no se ve, que no se pueda pulsar por accidente */
+.erasmus-bloque[data-animada] .erasmus:not([data-montada]) .erasmus__pieza {
+  pointer-events: none;
+}
+
 /* ---------- Preguntas frecuentes ---------- */
 .faq {
   position: relative;
@@ -1680,6 +1758,18 @@ body:has(.hero) {
     padding: 10px 16px;
     font-size: 17px;
     white-space: normal;
+  }
+
+  /* Montaje en el móvil: la sección ocupa la pantalla y el arco vertical la cubre (recortando un poco
+     los lados). El dibujo mide 768 × 1340: los textos se colocan en su hueco según cuánto se agrande
+     (lo mayor entre llenar el alto, 100svh/1340, y llenar el ancho, 100vw/768). */
+  .erasmus-bloque[data-animada] {
+    --alto: 100svh;
+  }
+
+  .erasmus-bloque[data-animada] .erasmus {
+    aspect-ratio: auto;
+    padding: max(35svh, 61vw) calc(50% - max(14.2svh, 24.7vw)) 0;
   }
 
   .faq__titulo {

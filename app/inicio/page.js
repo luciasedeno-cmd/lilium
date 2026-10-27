@@ -8,6 +8,7 @@ import CarruselPasos from "@/components/home/CarruselPasos";
 import Faq from "@/components/home/Faq";
 import ErasmusBanner from "@/components/ErasmusBanner";
 import BotonErasmus from "@/components/home/BotonErasmus";
+import ErasmusArco from "@/components/home/ErasmusArco";
 import PiePagina from "@/components/PiePagina";
 import Animaciones from "@/components/home/Animaciones";
 import RetratoOjos, { CuadroOjo, CuadroMariposa } from "@/components/home/RetratoOjos";
@@ -182,18 +183,18 @@ export default async function Inicio() {
           </div>
         </section>
 
-        {/* ¿Erasmus? (fondo: el arco con estatuas) */}
-        <section className="erasmus" id="erasmus" data-fondo="oscuro">
+        {/* ¿Erasmus? (el arco con estatuas, que se monta pieza a pieza al bajar: ver ErasmusArco.js) */}
+        <ErasmusArco>
           {/* Unión con el mapa */}
           <div className="union union--terracota" aria-hidden="true" />
-          <img loading="lazy" decoding="async" className="erasmus__lirio" src="/assets/img/icono-lirio.webp" width="99" height="79" alt="" data-revelar="girar" />
-          <h2 className="erasmus__titulo" data-revelar="escala" style={{ "--retardo": "0.1s" }}>{t.erasmusTitulo}</h2>
-          <p className="erasmus__texto" data-revelar="arriba" style={{ "--retardo": "0.2s" }}>{t.erasmusTexto}</p>
-          <div data-revelar="arriba" style={{ "--retardo": "0.3s" }}>
+          <img loading="lazy" decoding="async" className="erasmus__lirio erasmus__pieza" src="/assets/img/icono-lirio.webp" width="99" height="79" alt="" style={{ "--t": "var(--t1)" }} />
+          <h2 className="erasmus__titulo erasmus__pieza" style={{ "--t": "var(--t2)" }}>{t.erasmusTitulo}</h2>
+          <p className="erasmus__texto erasmus__pieza" style={{ "--t": "var(--t3)" }}>{t.erasmusTexto}</p>
+          <div className="erasmus__pieza" style={{ "--t": "var(--t4)" }}>
             <BotonErasmus />
           </div>
           <img className="encaje encaje--abajo" src="/assets/svg/banner-encaje-terracota.svg" width="1612" height="176" alt="" />
-        </section>
+        </ErasmusArco>
 
         {/* Preguntas frecuentes */}
         <Faq />
