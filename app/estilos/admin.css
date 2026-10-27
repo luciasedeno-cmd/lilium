@@ -379,6 +379,8 @@ main.panel {
 }
 
 /* ---------- Valoraciones (respuestas del cuestionario) ---------- */
+/* Tarjeta grande con: cabecera (título, nº de respuestas, descargar) → resumen (media general en un
+   anillo + gráfica de medias) → carrusel con una tarjeta por pregunta (flechas, puntos o dedo). */
 .panel-val {
   margin-top: var(--space-12);
   padding: var(--space-8);
@@ -401,7 +403,7 @@ main.panel {
 
 .panel-val__intro,
 .panel-val__nada,
-.panel-val__escala {
+.panel-val__nota {
   margin-top: var(--space-2);
   font: 400 15px/1.5 var(--font-sans);
   color: var(--ink-muted);
@@ -409,6 +411,10 @@ main.panel {
 
 .panel-val__nada {
   margin-top: var(--space-6);
+}
+
+.panel-val__nota {
+  font-size: 13px;
 }
 
 .panel-val__acciones {
@@ -422,50 +428,259 @@ main.panel {
   font: 600 15px/1.3 var(--font-sans);
 }
 
-.panel-val__preguntas {
+/* Etiqueta pequeña en mayúsculas encima de cada bloque */
+.panel-val__etiqueta {
+  font: 600 12px/1.3 var(--font-sans);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.panel-val__etiqueta--tarjetas {
+  margin-top: var(--space-8);
+}
+
+/* Resumen: media general (izquierda) + gráfica de medias (derecha) */
+.panel-val__resumen {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: minmax(240px, 1fr) 2.2fr;
   gap: var(--space-4);
   margin-top: var(--space-6);
 }
 
-.panel-val__pregunta {
-  padding: var(--space-4) var(--space-6) var(--space-6);
-  border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+.panel-val__bloque {
+  padding: var(--space-6);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+}
+
+.panel-val__bloque--media {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  /* La media general destaca: tarjeta granate con letras crema */
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+.panel-val__bloque--media .panel-val__etiqueta,
+.panel-val__bloque--media .panel-val__nota {
+  color: var(--cream-100);
+}
+
+/* Anillo: círculo de fondo + círculo que se llena (stroke-dashoffset) */
+.panel-val__anillo {
+  position: relative;
+  width: 168px;
+  height: 168px;
+  margin: var(--space-4) 0 var(--space-2);
+}
+
+.panel-val__anillo svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg); /* que empiece a llenarse desde arriba */
+}
+
+.panel-val__anillo circle {
+  fill: none;
+  stroke-width: 9;
+}
+
+.panel-val__anillo-fondo {
+  stroke: color-mix(in srgb, var(--on-primary) 22%, transparent);
+}
+
+.panel-val__anillo-lleno {
+  stroke: var(--brand-apricot);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s ease;
+}
+
+.panel-val__anillo p {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.panel-val__anillo b {
+  font: 400 52px/1 var(--font-serif);
+}
+
+.panel-val__anillo span {
+  margin-top: 4px;
+  font: 400 13px/1 var(--font-sans);
+  color: var(--cream-100);
+}
+
+/* Estrellas: cada una se rellena (con un degradado) según la nota */
+.panel-val__estrellas {
+  display: flex;
+  gap: 4px;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.panel-val__estrellas span {
+  background: linear-gradient(90deg, var(--brand-apricot) var(--lleno), color-mix(in srgb, var(--on-primary) 30%, transparent) var(--lleno));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Gráfica de medias: nombre · barra · número */
+.panel-val__medias {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: var(--space-4);
+  padding: 0;
+  list-style: none;
+}
+
+.panel-val__medias li {
+  display: grid;
+  grid-template-columns: minmax(150px, 1.1fr) 2fr 36px;
+  align-items: center;
+  gap: var(--space-3);
+  font: 500 14px/1.3 var(--font-sans);
+}
+
+.panel-val__medias small {
+  font-weight: 400;
+  color: var(--ink-muted);
+}
+
+.panel-val__medias b {
+  font: 400 20px/1 var(--font-serif);
+  text-align: right;
+}
+
+.panel-val__pista {
+  height: 12px;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--ink) 9%, transparent);
+  overflow: hidden;
+}
+
+.panel-val__pista span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--primary);
+  transition: width 0.8s ease;
+}
+
+/* Dificultad y duración: más alto no es «mejor», van en un tono más suave */
+.es-escala .panel-val__pista span {
+  background: var(--brand-sage);
+}
+
+/* ---- Carrusel de tarjetas ---- */
+.panel-val__carrusel {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) 48px;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+.panel-val__flecha {
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--ink);
+  border-radius: var(--radius-full);
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 22px/1 var(--font-sans);
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.panel-val__flecha:hover {
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+.panel-val__ventana {
+  overflow: hidden;
+  border-radius: var(--radius-md);
+}
+
+/* La tira con todas las tarjetas en fila; se desplaza una tarjeta entera cada vez */
+.panel-val__tira {
+  display: flex;
+  transition: translate 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.panel-val__tarjeta {
+  flex: 0 0 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-8);
+  padding: var(--space-6) var(--space-8);
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
   border-radius: var(--radius-md);
   background: var(--bg);
 }
 
-.panel-val__pregunta h3 {
-  font: 600 13px/1.3 var(--font-sans);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+.panel-val__tarjeta h3 {
+  margin-top: var(--space-2);
+  font: 400 24px/1.25 var(--font-serif);
 }
 
 .panel-val__media {
-  margin-top: var(--space-2);
-  font: 400 44px/1 var(--font-serif);
+  margin-top: var(--space-4);
+  font: 400 52px/1 var(--font-serif);
 }
 
 .panel-val__estrella {
   font-size: 0.6em;
   vertical-align: 0.15em;
+  color: var(--accent);
 }
 
 .panel-val__media small {
-  font: 400 14px/1 var(--font-sans);
+  font: 400 15px/1 var(--font-sans);
   color: var(--ink-muted);
 }
 
-.panel-val__escala {
-  margin-top: var(--space-1);
-  font-size: 13px;
+/* Tres datos pequeños: respuestas · la más elegida · el % destacado */
+.panel-val__datos {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin-top: var(--space-4);
 }
 
+.panel-val__datos p {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--space-3) var(--space-2);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  font: 400 12px/1.3 var(--font-sans);
+  color: var(--ink-muted);
+  text-align: center;
+}
+
+.panel-val__datos b {
+  font: 400 24px/1 var(--font-serif);
+  color: var(--ink);
+}
+
+/* Reparto: una barra por nota */
 .panel-val__reparto {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 10px;
   margin-top: var(--space-4);
   padding: 0;
   list-style: none;
@@ -473,25 +688,10 @@ main.panel {
 
 .panel-val__reparto li {
   display: grid;
-  grid-template-columns: 30px 1fr 28px;
+  grid-template-columns: 34px 1fr 72px;
   align-items: center;
-  gap: var(--space-2);
-  font: 500 13px/1 var(--font-sans);
-}
-
-.panel-val__barra {
-  height: 10px;
-  border-radius: var(--radius-full);
-  background: var(--surface);
-  overflow: hidden;
-}
-
-.panel-val__barra span {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: var(--primary);
-  transition: width 0.6s ease;
+  gap: var(--space-3);
+  font: 500 14px/1 var(--font-sans);
 }
 
 .panel-val__cuenta {
@@ -499,9 +699,53 @@ main.panel {
   color: var(--ink-muted);
 }
 
+/* Puntos: uno por pregunta, el de la actual relleno */
+.panel-val__puntos {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+}
+
+.panel-val__puntos button {
+  width: 24px;
+  height: 24px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  position: relative;
+}
+
+.panel-val__puntos button::before {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  border: 1px solid var(--ink);
+  border-radius: 50%;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.panel-val__puntos button.is-actual::before {
+  background: var(--ink);
+  transform: scale(1.15);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel-val__tira,
+  .panel-val__pista span,
+  .panel-val__anillo-lleno {
+    transition: none;
+  }
+}
+
 @media (max-width: 1000px) {
-  .panel-val__preguntas {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .panel-val__resumen {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .panel-val__tarjeta {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-6);
   }
 }
 
@@ -514,8 +758,56 @@ main.panel {
     font-size: 32px;
   }
 
-  .panel-val__preguntas {
-    grid-template-columns: minmax(0, 1fr);
+  .panel-val__bloque {
+    padding: var(--space-4);
+  }
+
+  .panel-val__medias li {
+    grid-template-columns: 1fr 36px;
+    gap: 4px var(--space-3);
+  }
+
+  /* En el móvil, el nombre arriba y la barra debajo */
+  .panel-val__medias .panel-val__nombre {
+    grid-column: 1 / -1;
+  }
+
+  .panel-val__medias li b {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .panel-val__tarjeta {
+    padding: var(--space-4);
+  }
+
+  .panel-val__tarjeta h3 {
+    font-size: 20px;
+  }
+
+  /* Las flechas bajan junto a los puntos para que la tarjeta use todo el ancho */
+  .panel-val__carrusel {
+    grid-template-columns: 44px 1fr 44px;
+  }
+
+  .panel-val__ventana {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+
+  .panel-val__flecha {
+    grid-row: 2;
+    width: 44px;
+    height: 44px;
+  }
+
+  .panel-val__flecha:last-of-type {
+    grid-column: 3;
+  }
+
+  .panel-val__puntos {
+    grid-column: 2;
+    grid-row: 2;
   }
 }
 

@@ -62,6 +62,15 @@ const TEXTOS = {
       originalidad: "Originalidad de las pruebas", inmersion: "Inmersión en la historia", duracion: "Duración" },
     escalas: { dificultad: "0 = muy fácil · 5 = muy difícil", duracion: "0 = muy corta · 3 = genial · 5 = muy larga" },
     columnas: { creada: "Fecha", idioma: "Idioma" },
+    mediaGeneral: "Media general", deCinco: "de 5", mediaNota: "Media de las 4 preguntas de estrellas",
+    mediasTitulo: "La media de cada pregunta", mediasNota: "Dificultad y duración van aparte: ahí más alto no es mejor.",
+    tarjetasTitulo: "Pregunta a pregunta", preguntaDe: (i, n) => `Pregunta ${i} de ${n}`,
+    anterior: "Pregunta anterior", siguiente: "Pregunta siguiente", irA: (i) => `Ir a la pregunta ${i}`,
+    repartoTitulo: "Cuántas personas eligieron cada nota", masElegida: "la más elegida",
+    datoEstrellas: "dieron 5 ★", datoDificultad: "la vieron difícil (4–5)", datoDuracion: "dijeron «genial» (3)",
+    textoPregunta: { general: "¿Cuánto te ha gustado la experiencia en general?", ambientacion: "¿Cómo valorarías la ambientación y la decoración?",
+      dificultad: "¿Qué te ha parecido la dificultad de las pruebas?", originalidad: "¿Cómo valorarías la originalidad de las pruebas?",
+      inmersion: "¿Cómo valorarías la inmersión y la sensación de estar dentro de la historia?", duracion: "¿Qué te ha parecido la duración de la experiencia?" },
   },
   en: {
     etiqueta: "LILIUM TEAM", titulo: "Team only",
@@ -106,6 +115,15 @@ const TEXTOS = {
       originalidad: "Originality of the challenges", inmersion: "Immersion in the story", duracion: "Length" },
     escalas: { dificultad: "0 = very easy · 5 = very hard", duracion: "0 = too short · 3 = just right · 5 = too long" },
     columnas: { creada: "Date", idioma: "Language" },
+    mediaGeneral: "Overall average", deCinco: "out of 5", mediaNota: "Average of the 4 star questions",
+    mediasTitulo: "Average of each question", mediasNota: "Difficulty and length are shown apart: higher isn't better there.",
+    tarjetasTitulo: "Question by question", preguntaDe: (i, n) => `Question ${i} of ${n}`,
+    anterior: "Previous question", siguiente: "Next question", irA: (i) => `Go to question ${i}`,
+    repartoTitulo: "How many people chose each rating", masElegida: "most chosen",
+    datoEstrellas: "gave 5 ★", datoDificultad: "found it hard (4–5)", datoDuracion: "said “just right” (3)",
+    textoPregunta: { general: "How much did you enjoy the experience overall?", ambientacion: "How would you rate the atmosphere and the set design?",
+      dificultad: "How difficult were the challenges?", originalidad: "How would you rate the originality of the challenges?",
+      inmersion: "How would you rate the immersion and the feeling of being inside the story?", duracion: "What did you think of the length of the experience?" },
   },
 };
 
@@ -485,18 +503,44 @@ function BorrarPruebas({ t, personas, alBorrar }) {
 
 // Las 6 preguntas del cuestionario, en el mismo orden que en /cuestionario.
 // «estrellas» van de 1 a 5; «escala» de 0 a 5 (en la escala, más alto no es «mejor»).
+// «dato»: el porcentaje destacado de su tarjeta (qué notas cuentan).
 const PREGUNTAS = [
-  { clave: "general", desde: 1 },
-  { clave: "ambientacion", desde: 1 },
-  { clave: "dificultad", desde: 0, escala: true },
-  { clave: "originalidad", desde: 1 },
-  { clave: "inmersion", desde: 1 },
-  { clave: "duracion", desde: 0, escala: true },
+  { clave: "general", desde: 1, dato: [5] },
+  { clave: "ambientacion", desde: 1, dato: [5] },
+  { clave: "dificultad", desde: 0, escala: true, dato: [4, 5] },
+  { clave: "originalidad", desde: 1, dato: [5] },
+  { clave: "inmersion", desde: 1, dato: [5] },
+  { clave: "duracion", desde: 0, escala: true, dato: [3] },
 ];
 
+const coma = (x) => x.toFixed(1).replace(".", ","); // 4.6 → «4,6»
+const porcentaje = (parte, total) => (total ? Math.round((parte / total) * 100) : 0);
+
+/** Todo lo que se enseña de una pregunta: media, cuántas eligieron cada nota y su dato destacado */
+function resumenPregunta(p, respuestas) {
+  const valores = respuestas.map((r) => r[p.clave]);
+  const n = valores.length;
+  const numeros = Array.from({ length: 6 - p.desde }, (_, i) => 5 - i).filter((x) => x >= p.desde); // 5…1 o 5…0
+  const cuentas = Object.fromEntries(numeros.map((x) => [x, valores.filter((v) => v === x).length]));
+  const maximo = Math.max(...Object.values(cuentas));
+  const masElegida = numeros.reduce((a, b) => (cuentas[b] > cuentas[a] ? b : a));
+  return {
+    n,
+    media: valores.reduce((a, b) => a + b, 0) / n,
+    numeros,
+    cuentas,
+    maximo,
+    masElegida,
+    dato: porcentaje(valores.filter((v) => p.dato.includes(v)).length, n),
+  };
+}
+
 /**
- * Apartado «Valoraciones»: cuántas respuestas hay, la media de cada pregunta, cuántas personas
- * eligieron cada número (barras) y un botón para descargarlas todas en un archivo que abre Excel.
+ * Apartado «Valoraciones» del panel (solo admins). De arriba abajo:
+ *  1) Media general (de las 4 preguntas de estrellas) en un anillo que se llena según la nota.
+ *  2) Gráfica de barras con la media de cada pregunta (dificultad y duración aparte, más suaves).
+ *  3) Una tarjeta por pregunta con todo el detalle; se pasan con las flechas, los puntos o deslizando el dedo.
+ * Arriba, el botón para descargar todas las respuestas en un archivo que abre Excel.
  * Pide los datos a /api/admin/valoraciones (solo con la llave del equipo) y los refresca cada 30 s.
  */
 function Valoraciones({ t }) {
@@ -522,7 +566,9 @@ function Valoraciones({ t }) {
   }, [t]);
 
   const n = respuestas?.length || 0;
-  const coma = (x) => x.toFixed(1).replace(".", ","); // 4.6 → «4,6»
+  const resumenes = useMemo(() => (n ? PREGUNTAS.map((p) => ({ ...p, ...resumenPregunta(p, respuestas) })) : []), [respuestas, n]);
+  const estrellas = resumenes.filter((p) => !p.escala);
+  const mediaGeneral = estrellas.length ? estrellas.reduce((a, p) => a + p.media, 0) / estrellas.length : 0;
 
   // Descarga: un archivo .csv (tabla de texto que abre Excel o Google Sheets) con una fila por respuesta
   function descargar() {
@@ -561,40 +607,137 @@ function Valoraciones({ t }) {
       {respuestas && n === 0 && <p className="panel-val__nada">{t.valNinguna}</p>}
 
       {n > 0 && (
-        <div className="panel-val__preguntas">
-          {PREGUNTAS.map((p) => {
-            const valores = respuestas.map((r) => r[p.clave]);
-            const media = valores.reduce((a, b) => a + b, 0) / n;
-            const numeros = Array.from({ length: 6 - p.desde }, (_, i) => p.desde + i); // 1…5 o 0…5
-            const cuenta = (x) => valores.filter((v) => v === x).length;
-            const maximo = Math.max(...numeros.map(cuenta));
-            return (
-              <article className="panel-val__pregunta" key={p.clave}>
-                <h3>{t.preguntas[p.clave]}</h3>
+        <>
+          <div className="panel-val__resumen">
+            {/* 1) Media general en un anillo */}
+            <div className="panel-val__bloque panel-val__bloque--media">
+              <p className="panel-val__etiqueta">{t.mediaGeneral}</p>
+              <Anillo valor={mediaGeneral} texto={coma(mediaGeneral)} sub={`${t.deCinco} ★`} />
+              <Estrellas valor={mediaGeneral} />
+              <p className="panel-val__nota">{t.mediaNota}</p>
+            </div>
+
+            {/* 2) Gráfica: la media de cada pregunta */}
+            <div className="panel-val__bloque">
+              <p className="panel-val__etiqueta">{t.mediasTitulo}</p>
+              <ul className="panel-val__medias">
+                {/* Primero las 4 de estrellas y, separadas, dificultad y duración */}
+                {[...estrellas, ...resumenes.filter((p) => p.escala)].map((p, i, lista) => (
+                  <li key={p.clave} className={p.escala ? "es-escala" : undefined} style={p.escala && !lista[i - 1]?.escala ? { marginTop: 10 } : undefined}>
+                    <span className="panel-val__nombre">
+                      {t.preguntas[p.clave]}
+                      {p.escala && <small> · {t.escalas[p.clave]}</small>}
+                    </span>
+                    <span className="panel-val__pista"><span style={{ width: `${(p.media / 5) * 100}%` }} /></span>
+                    <b>{coma(p.media)}</b>
+                  </li>
+                ))}
+              </ul>
+              <p className="panel-val__nota">{t.mediasNota}</p>
+            </div>
+          </div>
+
+          {/* 3) Tarjetas, una por pregunta */}
+          <p className="panel-val__etiqueta panel-val__etiqueta--tarjetas">{t.tarjetasTitulo}</p>
+          <Tarjetas t={t} resumenes={resumenes} />
+        </>
+      )}
+    </section>
+  );
+}
+
+/** Anillo que se llena según la nota (de 0 a 5), con el número en el centro */
+function Anillo({ valor, texto, sub }) {
+  const radio = 52;
+  const vuelta = 2 * Math.PI * radio;
+  return (
+    <div className="panel-val__anillo" role="img" aria-label={`${texto} ${sub}`}>
+      <svg viewBox="0 0 120 120" aria-hidden="true">
+        <circle className="panel-val__anillo-fondo" cx="60" cy="60" r={radio} />
+        <circle className="panel-val__anillo-lleno" cx="60" cy="60" r={radio}
+          strokeDasharray={vuelta} strokeDashoffset={vuelta * (1 - Math.min(1, valor / 5))} />
+      </svg>
+      <p><b>{texto}</b><span>{sub}</span></p>
+    </div>
+  );
+}
+
+/** Cinco estrellas rellenas según la nota (también medias estrellas) */
+function Estrellas({ valor }) {
+  return (
+    <p className="panel-val__estrellas" aria-hidden="true">
+      {[1, 2, 3, 4, 5].map((i) => (
+        <span key={i} style={{ "--lleno": `${Math.max(0, Math.min(1, valor - i + 1)) * 100}%` }}>★</span>
+      ))}
+    </p>
+  );
+}
+
+/**
+ * Carrusel de tarjetas: una por pregunta. Se pasan con ← →, con los puntos o deslizando el dedo.
+ * Las tarjetas van en una «tira» que se desplaza de lado (translateX) con una transición suave.
+ */
+function Tarjetas({ t, resumenes }) {
+  const [actual, setActual] = useState(0);
+  const total = resumenes.length;
+  const ir = (i) => setActual((i + total) % total); // al pasar de la última vuelve a la primera
+  const toque = useMemo(() => ({ x: null }), []);
+
+  return (
+    <div className="panel-val__carrusel">
+      <button type="button" className="panel-val__flecha" aria-label={t.anterior} onClick={() => ir(actual - 1)}>←</button>
+      <div className="panel-val__ventana"
+        onTouchStart={(e) => (toque.x = e.touches[0].clientX)}
+        onTouchEnd={(e) => {
+          if (toque.x === null) return;
+          const dx = e.changedTouches[0].clientX - toque.x;
+          if (Math.abs(dx) > 50) ir(actual + (dx < 0 ? 1 : -1));
+          toque.x = null;
+        }}>
+        <div className="panel-val__tira" style={{ translate: `${-actual * 100}% 0` }}>
+          {resumenes.map((p, i) => (
+            <article className="panel-val__tarjeta" key={p.clave} aria-hidden={i !== actual} inert={i !== actual}>
+              <div className="panel-val__tarjeta-texto">
+                <p className="panel-val__etiqueta">{t.preguntaDe(i + 1, total)}</p>
+                <h3>{t.textoPregunta[p.clave]}</h3>
                 <p className="panel-val__media">
                   {!p.escala && <span className="panel-val__estrella" aria-hidden="true">★ </span>}
-                  {coma(media)}
-                  <small> / 5 · {t.valMedia}</small>
+                  {coma(p.media)}<small> / 5</small>
                 </p>
-                {p.escala && <p className="panel-val__escala">{t.escalas[p.clave]}</p>}
-                {/* Reparto: una barra por número, más larga cuanta más gente lo eligió */}
+                {p.escala && <p className="panel-val__nota">{t.escalas[p.clave]}</p>}
+                <div className="panel-val__datos">
+                  <p><b>{p.n}</b>{t.valRespuestas(p.n).replace(/^\d+\s/, "")}</p>
+                  <p><b>{p.escala ? p.masElegida : `${p.masElegida} ★`}</b>{t.masElegida}</p>
+                  <p>
+                    <b>{p.dato} %</b>
+                    {p.clave === "dificultad" ? t.datoDificultad : p.clave === "duracion" ? t.datoDuracion : t.datoEstrellas}
+                  </p>
+                </div>
+              </div>
+              <div>
+                <p className="panel-val__etiqueta">{t.repartoTitulo}</p>
                 <ul className="panel-val__reparto">
-                  {numeros.map((x) => (
-                    <li key={x} title={t.valPersonas(cuenta(x))}>
-                      <span className="panel-val__num">{p.escala ? x : `${x}★`}</span>
-                      <span className="panel-val__barra">
-                        <span style={{ width: maximo ? `${(cuenta(x) / maximo) * 100}%` : 0 }} />
-                      </span>
-                      <span className="panel-val__cuenta">{cuenta(x)}</span>
+                  {p.numeros.map((x) => (
+                    <li key={x}>
+                      <span className="panel-val__num">{p.escala ? x : `${x} ★`}</span>
+                      <span className="panel-val__pista"><span style={{ width: p.maximo ? `${(p.cuentas[x] / p.maximo) * 100}%` : 0 }} /></span>
+                      <span className="panel-val__cuenta">{p.cuentas[x]} · {porcentaje(p.cuentas[x], p.n)} %</span>
                     </li>
                   ))}
                 </ul>
-              </article>
-            );
-          })}
+              </div>
+            </article>
+          ))}
         </div>
-      )}
-    </section>
+      </div>
+      <button type="button" className="panel-val__flecha" aria-label={t.siguiente} onClick={() => ir(actual + 1)}>→</button>
+      <div className="panel-val__puntos">
+        {resumenes.map((p, i) => (
+          <button type="button" key={p.clave} className={i === actual ? "is-actual" : undefined}
+            aria-label={t.irA(i + 1)} aria-current={i === actual ? "true" : undefined} onClick={() => setActual(i)} />
+        ))}
+      </div>
+    </div>
   );
 }
 
