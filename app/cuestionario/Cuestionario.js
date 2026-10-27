@@ -2,7 +2,7 @@
 // Cuestionario de Lilium (Figma «PAG ENCUESTA», sistema de diseño «Lilium DEFINITIVO»).
 // Un cuadro del retiro a todo lo alto de fondo y, encima, una tarjeta de cristal por pregunta:
 // primero «¿En qué turno has estado?» (botones con las horas del día; con el enlace del correo ya sale
-// marcado), luego 4 con estrellas (1 a 5) y 2 con una escala de 0 a 5, y al final «¿Cómo te enteraste de
+// marcado), luego 4 con estrellas (1 a 5) y 2 con una escala de 1 a 5, y al final «¿Cómo te enteraste de
 // Lilium?» (botones). Todas son obligatorias. El turno se guarda solo como hora, nunca con el nombre.
 // Al responder, la página baja sola a la siguiente. Al enviar se guarda en la tabla «cuestionario»
 // de Supabase y se pasa a /cuestionario/enviado.
@@ -32,8 +32,8 @@ const TEXTOS = {
     correoTitulo: "Tu correo de ESADA",
     correoNota: "Solo para saber que ya has respondido (y no escribirte para pedírtelo). Tus respuestas son anónimas.",
     correoMal: "Escribe tu correo de ESADA (nombreapellido@alumnado.esada.es).",
-    dificultadEtiquetas: { 0: "Muy fácil", 5: "Muy difícil" },
-    duracionEtiquetas: { 0: "Muy corta", 3: "Genial", 5: "Muy larga" },
+    dificultadEtiquetas: { 1: "Muy fácil", 5: "Muy difícil" },
+    duracionEtiquetas: { 1: "Muy corta", 3: "Genial", 5: "Muy larga" },
     turnoNota: "Solo se guarda la hora, nunca tu nombre.", erasmus: "Erasmus",
     origenes: { instagram: "Instagram", amigas: "Amigas o clase", carteles: "Carteles en ESADA", correo: "Correo de ESADA", otro: "Otro" },
     enviar: "Enviar encuesta", enviando: "Enviando…",
@@ -56,8 +56,8 @@ const TEXTOS = {
     correoTitulo: "Your ESADA email",
     correoNota: "Only so we know you've answered (and don't write to ask you). Your answers are anonymous.",
     correoMal: "Type your ESADA email (nameSurname@alumnado.esada.es).",
-    dificultadEtiquetas: { 0: "Very easy", 5: "Very hard" },
-    duracionEtiquetas: { 0: "Too short", 3: "Just right", 5: "Too long" },
+    dificultadEtiquetas: { 1: "Very easy", 5: "Very hard" },
+    duracionEtiquetas: { 1: "Too short", 3: "Just right", 5: "Too long" },
     turnoNota: "Only the time is saved, never your name.", erasmus: "Erasmus",
     origenes: { instagram: "Instagram", amigas: "Friends or classmates", carteles: "Posters at ESADA", correo: "ESADA email", otro: "Other" },
     enviar: "Send survey", enviando: "Sending…",
@@ -65,7 +65,7 @@ const TEXTOS = {
   },
 };
 
-// Orden de las preguntas y su tipo: «turno» y «opciones» (botones), «estrellas» de 1 a 5 o «escala» de 0 a 5
+// Orden de las preguntas y su tipo: «turno» y «opciones» (botones), «estrellas» de 1 a 5 o «escala» de 1 a 5
 const PREGUNTAS = [
   { clave: "turno", tipo: "turno" },
   { clave: "general", tipo: "estrellas" },
@@ -104,11 +104,11 @@ function PreguntaEstrellas({ clave, valor, alElegir, t }) {
   );
 }
 
-// Pregunta con escala de 0 a 5 y palabras debajo de algunos números
+// Pregunta con escala de 1 a 5 y palabras debajo de algunos números
 function PreguntaEscala({ clave, valor, alElegir, etiquetas }) {
   return (
     <div className="cues-escala">
-      {[0, 1, 2, 3, 4, 5].map((n) => (
+      {[1, 2, 3, 4, 5].map((n) => (
         <label key={n} className={`cues-escala__opcion ${valor === n ? "is-elegida" : ""}`}>
           <input type="radio" name={clave} value={n} required checked={valor === n} onChange={() => alElegir(n)} />
           <span className="cues-escala__numero">{n}</span>

@@ -66,8 +66,8 @@ alter table codigos  enable row level security;
 alter table lista_espera enable row level security;
 
 -- Respuestas del cuestionario de después de la experiencia (/cuestionario). Son anónimas.
--- Flores de 1 a 5 (general, ambientacion, originalidad, inmersion); escalas de 0 a 5 (dificultad: 0 muy fácil, 5 muy difícil;
--- duracion: 0 muy corta, 3 genial, 5 muy larga).
+-- Flores de 1 a 5 (general, ambientacion, originalidad, inmersion); escalas de 1 a 5 (antes de 0 a 5) (dificultad: 1 muy fácil, 5 muy difícil;
+-- duracion: 1 muy corta, 3 genial, 5 muy larga).
 create table if not exists cuestionario (
   id            serial primary key,
   creada        timestamptz not null default now(),

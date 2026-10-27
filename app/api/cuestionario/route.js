@@ -9,14 +9,14 @@ import { ok, error, manejar, leerJson } from "@/lib/respuestas";
 import { marcarValorado, turnosCuestionario } from "@/lib/retiro";
 import { CORREO_VALIDO, DOMINIO, ORIGENES, normalizarCorreo } from "@/lib/config";
 
-// Cada pregunta y sus valores permitidos: flores de 1 a 5, escalas de 0 a 5
+// Cada pregunta y sus valores permitidos: flores de 1 a 5, escalas de 1 a 5 (antes de 0 a 5)
 const PREGUNTAS = {
   general: [1, 5],
   ambientacion: [1, 5],
-  dificultad: [0, 5],
+  dificultad: [1, 5],
   originalidad: [1, 5],
   inmersion: [1, 5],
-  duracion: [0, 5],
+  duracion: [1, 5],
 };
 
 export const POST = manejar(async (req) => {

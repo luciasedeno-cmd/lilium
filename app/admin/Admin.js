@@ -60,7 +60,7 @@ const TEXTOS = {
     valPersonas: (n) => (n === 1 ? "1 persona" : `${n} personas`),
     preguntas: { general: "Experiencia en general", ambientacion: "Ambientación y decoración", dificultad: "Dificultad de las pruebas",
       originalidad: "Originalidad de las pruebas", inmersion: "Inmersión en la historia", duracion: "Duración" },
-    escalas: { dificultad: "0 = muy fácil · 5 = muy difícil", duracion: "0 = muy corta · 3 = genial · 5 = muy larga" },
+    escalas: { dificultad: "1 = muy fácil · 5 = muy difícil", duracion: "1 = muy corta · 3 = genial · 5 = muy larga" },
     columnas: { creada: "Fecha", idioma: "Idioma", turno: "Turno", origen: "Cómo se enteró" },
     datoCategoria: "eligieron esta", origenes: { instagram: "Instagram", amigas: "Amigas o clase", carteles: "Carteles en ESADA", correo: "Correo de ESADA", otro: "Otro" },
     mediaGeneral: "Media general", deCinco: "de 5", mediaNota: "Media de las 4 preguntas de estrellas",
@@ -114,7 +114,7 @@ const TEXTOS = {
     valPersonas: (n) => (n === 1 ? "1 person" : `${n} people`),
     preguntas: { general: "Overall experience", ambientacion: "Atmosphere and set design", dificultad: "Difficulty of the challenges",
       originalidad: "Originality of the challenges", inmersion: "Immersion in the story", duracion: "Length" },
-    escalas: { dificultad: "0 = very easy · 5 = very hard", duracion: "0 = too short · 3 = just right · 5 = too long" },
+    escalas: { dificultad: "1 = very easy · 5 = very hard", duracion: "1 = too short · 3 = just right · 5 = too long" },
     columnas: { creada: "Date", idioma: "Language", turno: "Session", origen: "How they heard" },
     datoCategoria: "chose this", origenes: { instagram: "Instagram", amigas: "Friends or classmates", carteles: "Posters at ESADA", correo: "ESADA email", otro: "Other" },
     mediaGeneral: "Overall average", deCinco: "out of 5", mediaNota: "Average of the 4 star questions",
@@ -504,15 +504,15 @@ function BorrarPruebas({ t, personas, alBorrar }) {
 }
 
 // Las 6 preguntas del cuestionario, en el mismo orden que en /cuestionario.
-// «estrellas» van de 1 a 5; «escala» de 0 a 5 (en la escala, más alto no es «mejor»).
+// «estrellas» van de 1 a 5; «escala» también de 1 a 5 (antes de 0 a 5; en la escala, más alto no es «mejor»).
 // «dato»: el porcentaje destacado de su tarjeta (qué notas cuentan).
 const PREGUNTAS = [
   { clave: "general", desde: 1, dato: [5] },
   { clave: "ambientacion", desde: 1, dato: [5] },
-  { clave: "dificultad", desde: 0, escala: true, dato: [4, 5] },
+  { clave: "dificultad", desde: 1, escala: true, dato: [4, 5] },
   { clave: "originalidad", desde: 1, dato: [5] },
   { clave: "inmersion", desde: 1, dato: [5] },
-  { clave: "duracion", desde: 0, escala: true, dato: [3] },
+  { clave: "duracion", desde: 1, escala: true, dato: [3] },
 ];
 
 const coma = (x) => x.toFixed(1).replace(".", ","); // 4.6 → «4,6»

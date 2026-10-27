@@ -204,7 +204,7 @@ main.cues {
   border-radius: var(--radius-sm);
 }
 
-/* ---------- Escala (0 a 5) ---------- */
+/* ---------- Escala (1 a 5) ---------- */
 .cues-escala {
   display: flex;
   justify-content: center;
