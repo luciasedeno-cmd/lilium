@@ -1238,24 +1238,74 @@ body:has(.hero) {
 }
 
 /* ---------- Footer ---------- */
+/* Todo centrado: lirio, correo, enlaces (Términos ✦ Aviso Legal), una línea fina y, debajo,
+   «Escape Room ESADA · 2026 · Admin» más pequeño y claro. Igual en el ordenador y en el móvil. */
 .footer {
   position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  /* Más fino: 52 px de alto y letra más pequeña */
-  gap: 120px;
-  height: 52px;
-  padding: 0 16px;
+  padding: 26px 16px 24px;
   background: var(--verde-oscuro);
-  font-family: var(--font-inter);
-  font-size: 13px;
   color: var(--fondo-oscuro);
-  white-space: nowrap;
+  text-align: center;
 }
 
 .footer a:hover {
   text-decoration: underline;
+}
+
+/* El lirio (terracota en el dibujo) pasa a crema */
+.footer__lirio {
+  position: relative;
+  width: 40px;
+  height: auto;
+  filter: brightness(0) invert(96%) sepia(8%) saturate(300%);
+}
+
+.footer__correo {
+  position: relative;
+  margin-top: 10px;
+  font-family: var(--font-baskervville);
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.footer__enlaces {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 10px 18px;
+  margin-top: 14px;
+  font-family: var(--font-baskervville);
+  font-weight: 500;
+  font-size: 16px;
+  letter-spacing: 0.03em;
+}
+
+.footer__sep {
+  font-size: 0.8em;
+  opacity: 0.55;
+}
+
+/* Línea fina de separación y la parte de abajo, más pequeña y discreta */
+.footer__pie {
+  position: relative;
+  width: min(560px, 100%);
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 245, 230, 0.18);
+  font-family: var(--font-inter);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 245, 230, 0.7);
+}
+
+.footer__admin {
+  opacity: 0.7;
 }
 
 /* Encaje verde del pie: el mismo en todas las páginas. Cuelga hacia arriba sobre el final de la página
@@ -1286,12 +1336,6 @@ body:has(.hero) {
 /* ==========================================================
    Pantallas medianas y móvil (Figma: HOME PAGE-TLF)
    ========================================================== */
-@media (max-width: 1439px) {
-  .footer {
-    gap: 5vw;
-  }
-}
-
 @media (max-width: 1200px) {
   .header {
     padding: 0 24px;
@@ -1418,14 +1462,6 @@ body:has(.hero) {
     top: auto;
     width: min(478px, 100%);
     margin-left: auto;
-  }
-
-  .footer {
-    flex-wrap: wrap;
-    gap: 8px 28px;
-    height: auto;
-    padding: 16px;
-    white-space: normal;
   }
 }
 
@@ -1753,5 +1789,58 @@ body:has(.hero) {
 
   .hero::after {
     opacity: 0;
+  }
+}
+
+/* Pie compacto SOLO en «Acceso»: esa página tiene que caber justo en la pantalla, sin bajar.
+   Sin el lirio y en menos alto: el correo y los enlaces en una fila, y debajo la línea con «Escape Room…» */
+.pagina-acceso .footer {
+  /* Rejilla: arriba el correo y los enlaces uno al lado del otro; debajo, ocupando todo, la línea final */
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-content: center;
+  align-items: center;
+  column-gap: 18px;
+  padding: 12px 16px 10px;
+}
+
+.pagina-acceso .footer__pie {
+  grid-column: 1 / -1;
+  justify-self: center;
+}
+
+.pagina-acceso .footer__lirio {
+  display: none;
+}
+
+.pagina-acceso .footer__correo,
+.pagina-acceso .footer__enlaces {
+  margin-top: 0;
+  font-size: 15px;
+}
+
+/* El ✦ entre el correo y los enlaces (mismo adorno que entre «Términos» y «Aviso Legal») */
+.pagina-acceso .footer__correo::after {
+  content: "✦";
+  margin-left: 18px;
+  font-size: 0.8em;
+  opacity: 0.55;
+}
+
+.pagina-acceso .footer__pie {
+  margin-top: 8px;
+  padding-top: 8px;
+}
+
+@media (max-width: 760px) {
+  /* En el móvil el correo va en su línea (sin ✦ colgando) y los enlaces debajo */
+  .pagina-acceso .footer {
+    grid-template-columns: auto;
+    justify-items: center;
+    row-gap: 6px;
+  }
+
+  .pagina-acceso .footer__correo::after {
+    content: none;
   }
 }
