@@ -1770,8 +1770,10 @@ body:has(.hero) {
   }
 
   /* En el móvil los pasos no se deslizan de lado (en el iPhone las tarjetas se descolocaban y los
-     textos se pisaban): están todas en el mismo sitio y se cambia de una a otra con un fundido.
-     La que se va sale un poco hacia la izquierda; la nueva entra desde la derecha y su mano sube. */
+     textos se pisaban): están todas en el mismo sitio y al cambiar de paso
+       · el texto del que se va se desvanece deprisa y el nuevo aparece justo después;
+       · la mano del que se va baja hasta salir por el borde de abajo y la nueva sube desde ahí
+         (las manos ya salen de ese borde, así que parece que entran y salen de la pantalla). */
   .pasos__pista {
     position: relative;
     width: 100% !important;
@@ -1781,28 +1783,36 @@ body:has(.hero) {
   .pasos__tarjeta {
     position: absolute;
     inset: 0;
-    opacity: 0;
-    translate: 28px 0;
     pointer-events: none;
-    /* La que se va desaparece deprisa (0,25 s)… */
-    transition: opacity 0.25s ease, translate 0.35s ease-in;
   }
 
-  .pasos__tarjeta.is-antes {
-    translate: -28px 0;
-  }
-
-  /* …y la nueva entra cuando la otra ya no se ve, así nunca se pisan los textos */
   .pasos__tarjeta.is-actual {
-    opacity: 1;
-    translate: 0 0;
     pointer-events: auto;
-    transition: opacity 0.5s ease 0.28s, translate 0.75s cubic-bezier(0.22, 1, 0.36, 1) 0.28s;
   }
 
+  .pasos__tarjeta .pasos__texto,
   .pasos__tarjeta:not(.is-actual) .pasos__texto {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .pasos__tarjeta.is-actual .pasos__texto {
     opacity: 1;
     transform: none;
+    transition: opacity 0.45s ease 0.22s, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.22s;
+  }
+
+  .pasos__tarjeta .pasos__mano,
+  .pasos__tarjeta:not(.is-actual) .pasos__mano {
+    opacity: 1;
+    transform: translateY(105%);
+    transition: transform 0.45s cubic-bezier(0.55, 0, 0.9, 0.4);
+  }
+
+  .pasos__tarjeta.is-actual .pasos__mano {
+    transform: none;
+    transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.3s;
   }
 
   /* Navegadores antiguos (se desliza con el dedo): las tarjetas vuelven a ir en fila */
@@ -1812,9 +1822,13 @@ body:has(.hero) {
 
   .como-bloque--simple .pasos__tarjeta {
     position: relative;
-    opacity: 1;
-    translate: none;
     pointer-events: auto;
+  }
+
+  .como-bloque--simple .pasos__tarjeta .pasos__texto,
+  .como-bloque--simple .pasos__tarjeta .pasos__mano {
+    opacity: 1;
+    transform: none;
   }
 
   /* Como en el ordenador, la mano sale del borde de abajo de la pantalla y ocupa todo el hueco que

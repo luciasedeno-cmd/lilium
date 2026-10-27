@@ -88,7 +88,28 @@ export default function CarruselPasos() {
       else animando = false;
     }
 
+    // Freno (solo al mover la página con el dedo): al deslizar muy deprisa, la página se pasaba
+    // todos los pasos de golpe. Ahora no deja ir más allá del paso siguiente (o anterior) al que se
+    // está viendo: hay que esperar a que aparezca para seguir. Solo cuenta arrastrar el dedo (y el
+    // impulso que sigue al soltarlo): tocar un enlace del menú o el logo no arrastra, así que no les afecta.
+    let ultimoDedo = 0;
+    const conDedo = () => (ultimoDedo = performance.now());
+    function frenar() {
+      if (performance.now() - ultimoDedo > 1500) return; // nadie ha movido el dedo hace poco
+      const recorrido = bloque.offsetHeight - window.innerHeight;
+      const dentro = -bloque.getBoundingClientRect().top; // cuánto se ha bajado dentro del bloque
+      if (dentro <= 0 && pos <= 0) return; // aún no ha llegado a los pasos
+      if (dentro >= recorrido && pos >= n - 1) return; // ya los ha visto todos: puede seguir
+      const sitio = (i) => (recorrido * Math.min(n - 1, Math.max(0, i))) / (n - 1);
+      const hasta = sitio(Math.floor(pos) + 1);
+      const desde = sitio(Math.ceil(pos) - 1);
+      const arriba = bloque.getBoundingClientRect().top + window.scrollY;
+      if (dentro > hasta + 2) window.scrollTo({ top: arriba + hasta, behavior: "instant" });
+      else if (dentro < desde - 2) window.scrollTo({ top: arriba + desde, behavior: "instant" });
+    }
+
     const alBajar = () => {
+      frenar();
       calcularObjetivo();
       if (!animando) {
         animando = true;
@@ -102,9 +123,11 @@ export default function CarruselPasos() {
     pintar(pos);
     window.addEventListener("scroll", alBajar, { passive: true });
     window.addEventListener("resize", alBajar);
+    window.addEventListener("touchmove", conDedo, { passive: true });
     return () => {
       window.removeEventListener("scroll", alBajar);
       window.removeEventListener("resize", alBajar);
+      window.removeEventListener("touchmove", conDedo);
     };
   }, [n]);
 
