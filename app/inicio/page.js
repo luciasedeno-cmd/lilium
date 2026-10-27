@@ -9,6 +9,7 @@ import Faq from "@/components/home/Faq";
 import ErasmusBanner from "@/components/ErasmusBanner";
 import BotonErasmus from "@/components/home/BotonErasmus";
 import ErasmusArco from "@/components/home/ErasmusArco";
+import MapaRecorrido from "@/components/home/MapaRecorrido";
 import PiePagina from "@/components/PiePagina";
 import Animaciones from "@/components/home/Animaciones";
 import RetratoOjos, { CuadroOjo, CuadroMariposa } from "@/components/home/RetratoOjos";
@@ -170,18 +171,9 @@ export default async function Inicio() {
         </section>
 
         {/* Cuándo y dónde */}
-        <section className="ubicacion" data-fondo="claro">
-          <img loading="lazy" decoding="async" className="ubicacion__mapa" src="/assets/img/mapa-ancho.webp" width="1440" height="551" alt={t.mapaAlt} data-escala="1.08" />
-          <div className="ubicacion__dato ubicacion__dato--cuando" data-revelar="derecha">
-            <h2><span className="ubicacion__pin" aria-hidden="true" />{t.cuando}</h2>
-            <p>{evento.fechaTexto}</p>
-            <p><i>{t.cuandoNota}</i></p>
-          </div>
-          <div className="ubicacion__dato ubicacion__dato--donde" data-revelar="izquierda" style={{ "--retardo": "0.15s" }}>
-            <h2><span className="ubicacion__pin" aria-hidden="true" />{t.donde}</h2>
-            <p>{evento.lugar}</p>
-          </div>
-        </section>
+        {/* Mapa con el recorrido de pasitos, que se dibuja al llegar (ver MapaRecorrido.js) */}
+        <MapaRecorrido textos={{ cuando: t.cuando, cuandoNota: t.cuandoNota, donde: t.donde, mapaAlt: t.mapaAlt }}
+          fecha={evento.fechaTexto} lugar={evento.lugar} />
 
         {/* ¿Erasmus? (el arco con estatuas, que se monta pieza a pieza al bajar: ver ErasmusArco.js) */}
         <ErasmusArco>

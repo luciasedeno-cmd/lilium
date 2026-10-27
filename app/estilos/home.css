@@ -863,96 +863,156 @@ body:has(.hero) {
 }
 
 /* ---------- Cuándo y dónde ---------- */
+/* Diseño de Figma «Mapa Recorrido» (1440 × 589). Mapa, pasitos y chinchetas van en un SVG
+   (components/home/MapaRecorrido.js) que ocupa todo el ancho; las tarjetas, en la columna de 1440 px. */
 .ubicacion {
   position: relative;
   max-width: 1440px;
-  height: 569px;
+  /* En pantallas de más de 1440 px el mapa crece en alto con el ancho (así nunca se recorta) */
+  height: max(589px, 100vw * 589 / 1440);
   margin: 0 auto;
-  color: var(--verde-oscuro);
+  color: var(--terracota);
 }
 
-/* El mapa ocupa todo el ancho de la pantalla (los textos siguen en la columna de 1440 px) */
 .ubicacion__mapa {
   position: absolute;
   left: calc(50% - 50vw);
-  top: 18px;
+  top: 0;
+  display: block;
   width: 100vw;
-  max-width: none;
-  height: 551px;
-  object-fit: cover;
+  height: 100%;
 }
 
-/* Cada dato va en una tarjeta de papel para que se lea bien encima de las líneas del mapa */
+/* Tarjetas de papel crema (radio 18 px y la sombra en capas del Figma) */
 .ubicacion__dato {
   position: absolute;
   z-index: 2;
-  padding: 20px 28px 22px;
-  border-radius: 4px;
-  background: rgba(255, 250, 242, 0.92);
-  box-shadow: var(--sombra);
-  font-family: var(--font-inter);
-  font-size: 16px;
-}
-
-/* Punto del mapa en terracota (antes negro) con un halo que late suave */
-.ubicacion__pin {
-  position: relative;
-  flex: none;
-  width: 22px;
-  height: 22px;
-  margin-top: 6px;
-  border-radius: 50%;
-  background: var(--terracota);
-}
-
-.ubicacion__pin::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: 2px solid var(--terracota);
-  animation: pin-latido 2.4s ease-out infinite;
-}
-
-@keyframes pin-latido {
-  from { transform: scale(1); opacity: 0.8; }
-  to { transform: scale(2.4); opacity: 0; }
+  display: flex;
+  align-items: flex-start;
+  border-radius: 18px;
+  background: var(--fondo-oscuro);
+  filter: drop-shadow(0 10px 11px rgba(0, 0, 0, 0.1)) drop-shadow(0 41px 20.5px rgba(0, 0, 0, 0.09))
+    drop-shadow(0 92px 27.5px rgba(0, 0, 0, 0.05));
+  font: 600 16px/normal var(--font-inter);
 }
 
 .ubicacion__dato h2 {
-  display: flex;
-  align-items: flex-start;
-  gap: 19px;
-  font-family: var(--font-baskerville);
-  font-size: 40px;
+  font: 400 40px/normal var(--font-baskerville);
   text-transform: uppercase;
 }
 
-.ubicacion__dato--cuando {
-  right: 63px;
-  top: 120px;
+.ubicacion__icono {
+  flex: none;
 }
 
-.ubicacion__dato--cuando h2 {
-  margin-bottom: 5px;
+/* «Cuándo»: 376 × 150 en Figma, icono a 23 px del borde y texto a 66 px */
+.ubicacion__dato--cuando {
+  left: 47px;
+  top: 20.9%; /* 123 px de 589 en Figma */
+  min-width: 376px;
+  gap: 7px;
+  padding: 25px 30px 36px 23px;
+}
+
+.ubicacion__dato--cuando .ubicacion__icono {
+  margin-top: 6px;
 }
 
 .ubicacion__dato--cuando p {
-  padding-left: 41px;
+  padding-left: 6px;
 }
 
+.ubicacion__dato--cuando h2 {
+  margin-bottom: -1px;
+}
+
+/* «Dónde»: 284 × 116 en Figma, icono a 22 px del borde y texto a 65 px */
 .ubicacion__dato--donde {
-  left: 63px;
-  top: 270px; /* antes 400 px: el encaje de arriba de «¿Erasmus?» tapaba el final de la tarjeta */
+  left: 1014px;
+  top: 36.5%; /* 215 px de 589 en Figma */
+  min-width: 284px;
+  max-width: 400px;
+  gap: 8px;
+  padding: 18px 30px 27px 22px;
 }
 
-.ubicacion__dato--donde h2 {
-  margin-bottom: 10px;
-  gap: 19px;
+.ubicacion__dato--donde .ubicacion__icono {
+  margin-top: 7px;
 }
 
 .ubicacion__dato--donde p {
-  padding-left: 41px;
+  padding-left: 3px;
+}
+
+/* ----- Animación al llegar (solo con data-anim, que pone MapaRecorrido.js) ----- */
+/* Pasitos: la línea de la máscara crece de la chincheta derecha a la izquierda (3,2 s) */
+.ubicacion__trazo {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+
+.ubicacion[data-anim] .ubicacion__trazo {
+  stroke-dashoffset: 1;
+}
+
+.ubicacion[data-anim][data-visible] .ubicacion__trazo {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 3.2s cubic-bezier(0.45, 0.05, 0.45, 1) 0.7s;
+}
+
+/* Chinchetas: caen con un pequeño rebote; la derecha al principio, la izquierda al llegar los pasos */
+.ubicacion__chincheta {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+
+.ubicacion[data-anim] .ubicacion__chincheta {
+  opacity: 0;
+}
+
+.ubicacion[data-anim][data-visible] .ubicacion__chincheta {
+  animation: chincheta-cae 0.7s cubic-bezier(0.3, 1.4, 0.5, 1) forwards;
+}
+
+.ubicacion[data-anim][data-visible] .ubicacion__chincheta--der {
+  animation-delay: 0.25s;
+}
+
+.ubicacion[data-anim][data-visible] .ubicacion__chincheta--izq {
+  animation-delay: 3.75s;
+}
+
+@keyframes chincheta-cae {
+  from { opacity: 0; translate: 0 -26px; scale: 0.8; }
+  60% { opacity: 1; }
+  to { opacity: 1; translate: 0 0; scale: 1; }
+}
+
+/* Tarjetas: entran suaves (subiendo un poco) y después flotan muy despacio */
+.ubicacion[data-anim] .ubicacion__dato {
+  opacity: 0;
+  translate: 0 22px;
+}
+
+.ubicacion[data-anim][data-visible] .ubicacion__dato {
+  opacity: 1;
+  translate: 0 0;
+  transition: opacity 0.9s ease, translate 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: tarjeta-flota 6s ease-in-out 1.6s infinite;
+}
+
+.ubicacion[data-anim][data-visible] .ubicacion__dato--donde {
+  transition-delay: 0.15s;
+  animation-delay: 2.6s;
+}
+
+.ubicacion[data-anim][data-visible] .ubicacion__dato--cuando {
+  transition-delay: 0.45s;
+}
+
+@keyframes tarjeta-flota {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
 }
 
 /* ---------- ¿Erasmus? ---------- */
@@ -1502,13 +1562,15 @@ body:has(.hero) {
     padding: 180px 24px 180px;
   }
 
+  /* Tablet y móvil: tarjeta «Cuándo», el mapa y la tarjeta «Dónde», una debajo de otra */
   .ubicacion__mapa {
     position: relative;
     left: auto;
     top: auto;
     width: 100%;
     height: auto;
-    aspect-ratio: 893 / 551;
+    aspect-ratio: 1440 / 589;
+    border-radius: 18px;
     order: 1;
   }
 
@@ -1517,18 +1579,13 @@ body:has(.hero) {
     left: auto;
     right: auto;
     top: auto;
+    align-self: center;
+    min-width: 0;
+    max-width: 100%;
   }
 
   .ubicacion__dato--donde {
     order: 2;
-  }
-
-  .ubicacion__dato--donde h2 {
-    padding-left: 0;
-  }
-
-  .ubicacion__dato--donde p {
-    padding-left: 41px;
   }
 
   .faq {
@@ -1738,6 +1795,19 @@ body:has(.hero) {
     padding-bottom: 130px;
   }
 
+  /* En el móvil el dibujo enseña solo la zona del recorrido (VISTA.movil en MapaRecorrido.js: 660 × 450) */
+  .ubicacion__mapa {
+    aspect-ratio: 660 / 450;
+  }
+
+  .ubicacion__dato {
+    width: 100%;
+  }
+
+  .ubicacion__dato h2 {
+    font-size: 34px;
+  }
+
   .erasmus .union {
     width: 920px;
     height: 100px;
@@ -1869,7 +1939,7 @@ body:has(.hero) {
   .hero__linea--2,
   .hero__boton,
   .hero__fondo,
-  .ubicacion__pin::after {
+  .ubicacion__dato {
     animation: none;
   }
 
