@@ -1519,6 +1519,28 @@ main.paso > :nth-child(n + 5) { animation-delay: 0.24s; }
   text-align: center;
 }
 
+/* «✦ Nombre al azar» (paso 2) y «✦ Otro nombre al azar» (paso 3): enlace subrayado, sin caja */
+.hora-equipo__azar,
+.rev-emblema__azar {
+  padding: 4px 8px;
+  border: 0;
+  background: none;
+  color: var(--naranja);
+  font: 600 15px/1.3 var(--font-inter);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.hora-equipo__azar:hover,
+.rev-emblema__azar:hover {
+  color: var(--terracota);
+}
+
+.rev-emblema__azar {
+  margin: -6px 0 var(--space-2);
+}
+
 @media (max-width: 960px) {
   .paso--hora .salas {
     grid-template-columns: minmax(0, 1fr);

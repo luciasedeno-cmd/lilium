@@ -34,6 +34,7 @@ const TEXTOS = {
     buscar: "Buscar por correo…", actualizar: "Actualizar", salir: "Salir", probar: "Probar la web", irWeb: "Ir a la web",
     sinReservas: "Todavía no hay ninguna reserva.", sinResultados: "Ningún correo coincide con la búsqueda.",
     salasVacias: (n) => (n === 1 ? "1 turno sin reservas" : `${n} turnos sin reservas`),
+    cola: (c) => `Sala de espera ahora mismo: ${c.dentro} ${c.dentro === 1 ? "persona" : "personas"} en la web y ${c.esperando} en la cola (caben ${c.aforo} a la vez).`,
     salaSinNombre: "Sin nombre", erasmus: "Erasmus", grupo: (n) => `Grupo ${n}`, notas: "Anotaciones",
     sinDueno: "Palabras de la frase que no tiene nadie (dádselas el día del retiro):",
     noVinieron: "Palabras de quien no ha venido (dádselas al grupo):", palabraTitulo: "Su palabra de la frase secreta",
@@ -90,6 +91,7 @@ const TEXTOS = {
     buscar: "Search by email…", actualizar: "Refresh", salir: "Sign out", probar: "Try the website", irWeb: "Go to the website",
     sinReservas: "There are no bookings yet.", sinResultados: "No email matches your search.",
     salasVacias: (n) => (n === 1 ? "1 session without bookings" : `${n} sessions without bookings`),
+    cola: (c) => `Waiting room right now: ${c.dentro} ${c.dentro === 1 ? "person" : "people"} on the site and ${c.esperando} in the queue (${c.aforo} fit at once).`,
     salaSinNombre: "No name", erasmus: "Erasmus", grupo: (n) => `Group ${n}`, notas: "Notes",
     sinDueno: "Words of the phrase nobody has (hand them out on the day):",
     noVinieron: "Words of people who didn't come (give them to the group):", palabraTitulo: "Their word of the secret phrase",
@@ -383,6 +385,7 @@ function Panel({ t, datos, aviso, marcar, actualizar, salir }) {
         <div className="panel__buscar">
           <input className="panel__busqueda" type="search" placeholder={t.buscar} value={busca} onChange={(e) => setBusca(e.target.value)} />
           {vacias > 0 && <p className="panel__vacias">{t.salasVacias(vacias)}</p>}
+          {datos.cola?.aforo > 0 && <p className="panel__vacias">{t.cola(datos.cola)}</p>}
         </div>
         <p className="panel__aviso" role="status" aria-live="polite">{aviso}</p>
 

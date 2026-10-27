@@ -91,6 +91,16 @@ alter table miembros add column if not exists valorado_en timestamptz;      -- r
 alter table miembros add column if not exists recordatorio_dia_en timestamptz; -- correo del día antes enviado
 alter table miembros add column if not exists aviso_valoracion_en timestamptz; -- correo «¿nos valoras?» enviado
 
+-- Sala de espera (lib/cola.js): un ticket por navegador; dentro_en = cuándo le tocó entrar
+create table if not exists cola (
+  ticket     text primary key,
+  creada     timestamptz not null default now(),
+  visto      timestamptz not null default now(),
+  dentro_en  timestamptz
+);
+create index if not exists cola_creada on cola (creada);
+alter table cola enable row level security;
+
 -- Turnos del día (edítalos aquí o desde el panel de Supabase). Solo se insertan si la tabla está vacía.
 -- Cada turno dura una hora: 45 minutos de experiencia + 15 de cortesía para recolocar la sala.
 insert into turnos (inicio, fin, erasmus)

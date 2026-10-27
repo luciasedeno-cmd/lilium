@@ -14,11 +14,12 @@ import { useSesion } from "@/lib/useSesion";
 import { iconosDe } from "@/lib/fotos";
 import { EVENTO, eventoEn, HORAS_CONFIRMACION, MIN_SALA_NUEVA, MAX_PERSONAS } from "@/lib/config";
 import { useIdioma } from "@/components/Idioma";
+import { nombreAlAzar } from "@/lib/nombresEquipo";
 
 const TEXTOS = {
   es: {
     etiqueta: "CONFIRMACIÓN", titulo: "Revisión de la sala",
-    sinNombre: "Vuestra hermandad", editarReserva: "Editar reserva", anularReserva: "Anular reserva",
+    sinNombre: "Vuestra hermandad", otroNombre: "Otro nombre al azar", editarReserva: "Editar reserva", anularReserva: "Anular reserva",
     preguntaAnular: "¿Seguro que quieres empezar de cero? Se borrará el grupo y la hora que has elegido.",
     laSala: "La sala", experiencia: "Lilium · El retiro",
     sinopsis: "Cinco guías os esperan en el prado para un retiro de 45 minutos. Entrad con la mente abierta: el resto lo descubriréis dentro.",
@@ -45,7 +46,7 @@ const TEXTOS = {
   },
   en: {
     etiqueta: "CONFIRMATION", titulo: "Review your room",
-    sinNombre: "Your circle", editarReserva: "Edit booking", anularReserva: "Cancel booking",
+    sinNombre: "Your circle", otroNombre: "Another random name", editarReserva: "Edit booking", anularReserva: "Cancel booking",
     preguntaAnular: "Are you sure you want to start again? Your group and chosen time will be cleared.",
     laSala: "The room", experiencia: "Lilium · The retreat",
     sinopsis: "Five guides await you in the meadow for a 45-minute retreat. Come with an open mind: you'll discover the rest inside.",
@@ -104,6 +105,12 @@ export default function Confirmacion() {
     });
   }, [router]);
 
+  // Sala nueva sin nombre: se le da uno al azar (se guarda en el borrador para que no cambie al recargar)
+  const sinNombre = turno?.estado === "libre" && borrador && !(borrador.equipo || "").trim();
+  useEffect(() => {
+    if (sinNombre && !borrador.equipoAzar) setBorrador(guardarBorrador({ equipoAzar: nombreAlAzar(idioma) }));
+  }, [sinNombre, borrador, idioma]);
+
   if (!lider || !borrador || !turno) return <Cargando error={errorSesion || error} />;
 
   const actualizar = (cambios) => setBorrador(guardarBorrador(cambios));
@@ -111,7 +118,8 @@ export default function Confirmacion() {
   const miembros = [lider, ...otros];
   const iconos = iconosDe(miembros); // icono de perfil de cada persona
   const nueva = turno.estado === "libre";
-  const equipo = nueva ? (borrador.equipo || "").trim() || t.sinNombre : turno.equipo || t.sinNombre;
+  const nombreElegido = (borrador.equipo || "").trim() || borrador.equipoAzar || "";
+  const equipo = nueva ? nombreElegido || t.sinNombre : turno.equipo || t.sinNombre;
   const iconoEquipo = iconosDe([`equipo:${equipo.trim().toLowerCase()}`])[0]; // emblema del equipo
   // ¿Sigue valiendo el turno con el grupo actual? (se puede quitar gente desde aquí)
   const valido = nueva ? miembros.length >= MIN_SALA_NUEVA : turno.hueco >= miembros.length;
@@ -126,7 +134,7 @@ export default function Confirmacion() {
     setError("");
     const res = await api("/api/reservas", {
       metodo: "POST",
-      datos: { otros, turnoId: turno.id, equipo: borrador.equipo || "", notas: borrador.notas || "", aceptaTerminos: true },
+      datos: { otros, turnoId: turno.id, equipo: nueva ? nombreElegido : "", notas: borrador.notas || "", aceptaTerminos: true },
     });
     setEnviando(false);
     if (!res.ok) return setError(res.mensaje);
@@ -157,6 +165,13 @@ export default function Confirmacion() {
             {/* Emblema del equipo: uno de los iconos de perfil, «al azar» pero siempre el mismo para ese nombre */}
             <img className="rev-emblema__icono" src={iconoEquipo} width="250" height="250" alt="" />
             <p className="rev-emblema__nombre">“{equipo}”</p>
+            {/* Si no le pusieron nombre, se puede pedir otro al azar */}
+            {sinNombre && (
+              <button type="button" className="rev-emblema__azar"
+                onClick={() => actualizar({ equipoAzar: nombreAlAzar(idioma, borrador.equipoAzar) })}>
+                <span aria-hidden="true">✦</span> {t.otroNombre}
+              </button>
+            )}
             <Link className="ll-btn ll-btn--md ll-btn--primary" href="/reserva/integrantes">{t.editarReserva}</Link>
             <button className="ll-btn ll-btn--md ll-btn--secondary" type="button" onClick={anular}>{t.anularReserva}</button>
           </aside>

@@ -13,6 +13,7 @@ import { eventoEn, MIN_SALA_NUEVA, MAX_PERSONAS } from "@/lib/config";
 import { useIdioma } from "@/components/Idioma";
 import PiePagina from "@/components/PiePagina";
 import { IconoCheck } from "@/components/Iconos";
+import { nombreAlAzar } from "@/lib/nombresEquipo";
 
 const TEXTOS = {
   es: {
@@ -24,7 +25,7 @@ const TEXTOS = {
     sois: (n) => (n === 1 ? "Eres 1." : `Sois ${n}.`), podeis: "Podéis abrir una sala libre o uniros a un grupo con hueco.",
     mostramos: "Te mostramos los grupos en formación con hueco para vosotros.", editar: "Editar",
     soloMostrando: "Mostrando solo turnos Erasmus.", verTodos: "Ver todos los turnos", cargando: "Cargando turnos…", disponibles: "Turnos disponibles",
-    primeros: "¡Sois los primeros en este turno! Poned nombre al equipo (opcional)", ejemplo: "Ej.: Las Hijas del Solsticio", continuar: "Continuar y confirmar →",
+    primeros: "¡Sois los primeros en este turno! Poned nombre al equipo (opcional: si lo dejáis vacío, os pondremos uno al azar)", alAzar: "Nombre al azar", ejemplo: "Ej.: Las Hijas del Solsticio", continuar: "Continuar y confirmar →",
     filtros: "Filtrar turnos", fTodos: "Todos", fHueco: "Con hueco para vosotros", fErasmus: "Solo Erasmus",
     ninguno: "No hay turnos con este filtro. Prueba con «Todos».", de: "de", libres: "libres", elegido: "Turno elegido",
   },
@@ -37,7 +38,7 @@ const TEXTOS = {
     sois: (n) => (n === 1 ? "It's just you." : `There are ${n} of you.`), podeis: "You can open an empty room or join a group with space.",
     mostramos: "Here are the groups still forming that have space for you.", editar: "Edit",
     soloMostrando: "Showing Erasmus sessions only.", verTodos: "See all sessions", cargando: "Loading sessions…", disponibles: "Available sessions",
-    primeros: "You're the first in this session! Name your team (optional)", ejemplo: "E.g.: The Daughters of the Solstice", continuar: "Continue and confirm →",
+    primeros: "You're the first in this session! Name your team (optional: leave it empty and we'll pick one at random)", alAzar: "Random name", ejemplo: "E.g.: The Daughters of the Solstice", continuar: "Continue and confirm →",
     filtros: "Filter sessions", fTodos: "All", fHueco: "With space for you", fErasmus: "Erasmus only",
     ninguno: "No sessions match this filter. Try “All”.", de: "of", libres: "free", elegido: "Chosen session",
   },
@@ -224,6 +225,11 @@ export default function Hora() {
               <label htmlFor="equipo">{t.primeros}</label>
               <input className="campo" id="equipo" maxLength={40} placeholder={t.ejemplo}
                 value={borrador.equipo || ""} onChange={(e) => actualizar({ equipo: e.target.value })} />
+              {/* Rellena el nombre con uno al azar (cada pulsación, uno distinto) */}
+              <button type="button" className="hora-equipo__azar"
+                onClick={() => actualizar({ equipo: nombreAlAzar(idioma, borrador.equipo) })}>
+                <span aria-hidden="true">✦</span> {t.alAzar}
+              </button>
             </div>
           )}
 

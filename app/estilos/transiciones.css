@@ -165,6 +165,129 @@
   }
 }
 
+/* ---------- Sala de espera (components/SalaEspera.js) ----------
+   Misma estética que la pantalla de carga: cuadro verde oscurecido, lirio crema que «respira» y textos crema. */
+.cola {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 32px 20px;
+  overflow-y: auto;
+  background: var(--verde-oscuro) url("/assets/img/faq-fondo.webp") center / cover no-repeat;
+  background-blend-mode: multiply;
+  color: var(--fondo);
+  text-align: center;
+}
+
+.cola::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(41, 47, 32, 0.6), rgba(41, 47, 32, 0.94));
+}
+
+.cola > * {
+  position: relative;
+  animation: carga-aparece 0.7s ease both;
+}
+
+/* Mientras se comprueba (suele ser un instante) no se enseña nada; si tarda, aparece poco a poco */
+.cola--comprobando {
+  animation: cola-aparece 0.5s ease 0.4s both;
+}
+
+.cola__lirio {
+  width: 60px;
+  height: auto;
+  filter: brightness(0) invert(96%) sepia(8%) saturate(300%);
+  animation: carga-respira 1.8s ease-in-out infinite;
+}
+
+.cola__logo {
+  width: 130px;
+  height: auto;
+  margin-bottom: 10px;
+  filter: brightness(0) invert(96%) sepia(8%) saturate(300%);
+}
+
+.cola__etiqueta {
+  font: 600 13px/1 var(--font-inter);
+  letter-spacing: 0.25em;
+  color: var(--melocoton);
+}
+
+.cola__titulo {
+  max-width: 620px;
+  font: 400 clamp(28px, 4vw, 44px)/1.15 var(--font-baskervville);
+  text-transform: uppercase;
+}
+
+.cola__puesto-etiqueta {
+  margin-top: 14px;
+  font: italic 18px/1.3 var(--font-baskervville);
+}
+
+/* El número grande: cifras de la misma anchura para que no «baile» al bajar */
+.cola__puesto {
+  font: 400 clamp(84px, 14vw, 128px)/1 var(--font-baskervville);
+  font-variant-numeric: tabular-nums;
+  color: var(--melocoton);
+}
+
+.cola__barra {
+  display: block;
+  width: min(280px, 70vw);
+  height: 2px;
+  background: rgba(255, 250, 242, 0.25);
+  overflow: hidden;
+}
+
+.cola__barra span {
+  display: block;
+  height: 100%;
+  background: var(--fondo);
+  transform-origin: left;
+  transition: transform 0.8s ease;
+}
+
+/* Web lenta: un trocito de línea que va y viene (no hay puesto que enseñar) */
+.cola__barra--espera span {
+  width: 35%;
+  animation: cola-vaiven 1.6s ease-in-out infinite alternate;
+}
+
+.cola__delante {
+  font: 600 16px/1.3 var(--font-inter);
+}
+
+.cola__texto {
+  max-width: 440px;
+  font: italic 17px/1.5 var(--font-baskervville);
+  opacity: 0.9;
+}
+
+@keyframes cola-aparece {
+  from { opacity: 0; }
+}
+
+@keyframes cola-vaiven {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(290%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cola > *,
+  .cola__lirio,
+  .cola__barra--espera span {
+    animation: none;
+  }
+}
+
 /* ---------- Cursor de Lilium (components/Cursor.js) ----------
    Solo se activa con ratón: el código pone la clase .cursor-lilium en <html>. Sin ella (móvil,
    «reducir movimiento»…) no se ve nada y queda el cursor normal. */

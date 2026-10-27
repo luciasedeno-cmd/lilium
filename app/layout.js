@@ -9,6 +9,7 @@ import "./estilos/admin.css";
 import "./estilos/transiciones.css";
 import { IdiomaProvider } from "@/components/Idioma";
 import Cursor from "@/components/Cursor";
+import SalaEspera from "@/components/SalaEspera";
 import { idiomaActual } from "@/lib/idiomaServidor";
 
 export const metadata = {
@@ -41,7 +42,10 @@ export default async function RootLayout({ children }) {
         />
       </head>
       <body>
-        <IdiomaProvider inicial={idioma}>{children}</IdiomaProvider>
+        <IdiomaProvider inicial={idioma}>
+          {/* Sala de espera: si entra demasiada gente a la vez, la Home y la reserva muestran el puesto en la cola */}
+          <SalaEspera>{children}</SalaEspera>
+        </IdiomaProvider>
         {/* Cursor de Lilium (solo con ratón) */}
         <Cursor />
       </body>
