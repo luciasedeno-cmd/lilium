@@ -134,6 +134,26 @@ export default function HomeHeader() {
     };
   }, [enHome]);
 
+  // Al llegar a la Home desde otra página con un apartado en el enlace (p. ej. «/inicio#faq» desde
+  // «Mi reserva»): el navegador salta al apartado antes de que la página termine de colocarse (las
+  // secciones animadas crecen después), y se quedaba a medio camino. Se vuelve a colocar unas cuantas
+  // veces mientras se asienta, salvo que la persona ya esté moviendo la página.
+  useEffect(() => {
+    if (!enHome || !window.location.hash) return;
+    const destino = document.getElementById(decodeURIComponent(window.location.hash.slice(1)));
+    if (!destino) return;
+    let movida = false;
+    const parar = () => (movida = true);
+    const eventos = ["wheel", "touchstart", "keydown"];
+    eventos.forEach((ev) => window.addEventListener(ev, parar, { passive: true }));
+    const colocar = () => !movida && destino.scrollIntoView({ behavior: "instant", block: "start" });
+    const relojes = [0, 150, 400, 900, 1600, 2500].map((ms) => setTimeout(colocar, ms));
+    return () => {
+      relojes.forEach(clearTimeout);
+      eventos.forEach((ev) => window.removeEventListener(ev, parar));
+    };
+  }, [enHome]);
+
   // Menú del móvil: se cierra con la tecla Esc o tocando fuera
   useEffect(() => {
     if (!abierto) return;
