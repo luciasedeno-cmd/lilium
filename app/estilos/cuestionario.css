@@ -251,6 +251,60 @@ main.cues {
   color: #fff;
 }
 
+/* ---------- Botones tipo «pastilla» (turno y «¿Cómo te enteraste?») ---------- */
+/* Mismo lenguaje que la escala: borde crema de 2 px; el elegido, relleno crema con letra granate */
+.cues-opciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+  max-width: 640px;
+}
+
+.cues-opcion {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--space-5, 20px);
+  border: 2px solid var(--cream-50);
+  border-radius: var(--radius-full);
+  font: 600 16px/1 var(--font-sans);
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, transform 0.2s ease;
+}
+
+.cues-opcion small {
+  margin-left: 4px;
+  font-weight: 500;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.cues-opcion input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.cues-opcion:hover {
+  transform: translateY(-3px);
+}
+
+.cues-opcion.is-elegida {
+  background: var(--cream-50);
+  color: var(--primary);
+}
+
+.cues-opcion:has(input:focus-visible) {
+  outline: 2px solid var(--cream-50);
+  outline-offset: 4px;
+}
+
 /* ---------- Botón «Enviar encuesta» ---------- */
 .cues__enviar {
   display: flex;
@@ -307,6 +361,8 @@ main.cues {
   .cues-escala { gap: 0; justify-content: space-between; width: 100%; max-width: 320px; }
   /* Antes 10 px: ahora 13 px y, si no cabe, en dos líneas (centrado bajo su número) */
   .cues-escala__palabra { font-size: 13px; white-space: normal; text-align: center; line-height: 1.15; }
+  .cues-opciones { gap: var(--space-2); }
+  .cues-opcion { min-height: 40px; padding: 0 var(--space-4); font-size: 15px; }
 }
 
 /* ---------- «Respuesta enviada» ---------- */

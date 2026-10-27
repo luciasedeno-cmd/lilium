@@ -676,6 +676,16 @@ main.panel {
   color: var(--ink);
 }
 
+/* Preguntas con botones (turno, cómo se enteraron): la opción más elegida en grande y solo 2 datos */
+.panel-val__media--texto {
+  font-size: 36px;
+  line-height: 1.1;
+}
+
+.panel-val__datos--dos {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 /* Reparto: una barra por nota */
 .panel-val__reparto {
   display: flex;
@@ -692,6 +702,11 @@ main.panel {
   align-items: center;
   gap: var(--space-3);
   font: 500 14px/1 var(--font-sans);
+}
+
+/* En las preguntas con botones, la etiqueta es un texto («Instagram», «12:00–13:00»): columna más ancha */
+.panel-val__reparto--texto li {
+  grid-template-columns: minmax(96px, 150px) 1fr 72px;
 }
 
 .panel-val__cuenta {

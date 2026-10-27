@@ -78,7 +78,9 @@ create table if not exists cuestionario (
   inmersion     smallint not null,
   duracion      smallint not null,
   comentario    text,
-  idioma        text
+  idioma        text,
+  turno         text,               -- en qué turno estuvo, p. ej. «12:00–13:00» (sin nombre)
+  origen        text                -- cómo se enteró: instagram, amigas, carteles, correo u otro
 );
 alter table cuestionario enable row level security;
 

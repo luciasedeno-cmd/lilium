@@ -1,7 +1,9 @@
 "use client";
 // Cuestionario de Lilium (Figma «PAG ENCUESTA», sistema de diseño «Lilium DEFINITIVO»).
 // Un cuadro del retiro a todo lo alto de fondo y, encima, una tarjeta de cristal por pregunta:
-// 4 se valoran con estrellas (1 a 5) y 2 con una escala de 0 a 5. Todas son obligatorias.
+// primero «¿En qué turno has estado?» (botones con las horas del día; con el enlace del correo ya sale
+// marcado), luego 4 con estrellas (1 a 5) y 2 con una escala de 0 a 5, y al final «¿Cómo te enteraste de
+// Lilium?» (botones). Todas son obligatorias. El turno se guarda solo como hora, nunca con el nombre.
 // Al responder, la página baja sola a la siguiente. Al enviar se guarda en la tabla «cuestionario»
 // de Supabase y se pasa a /cuestionario/enviado.
 import { useEffect, useRef, useState } from "react";
@@ -10,13 +12,15 @@ import NavReserva from "@/components/NavReserva";
 import PiePagina from "@/components/PiePagina";
 import { useIdioma } from "@/components/Idioma";
 import { api } from "@/lib/borrador";
-import { CORREO_VALIDO } from "@/lib/config";
+import { CORREO_VALIDO, ORIGENES } from "@/lib/config";
 
 const TEXTOS = {
   es: {
     etiqueta: "Tu opinión nos importa", titulo: "Cuestionario",
     intro: "Acabas de salir del retiro. Antes de que se desvanezca el recuerdo, cuéntanos cómo lo has vivido. Es anónimo y no lleva más de un minuto.",
     preguntas: {
+      turno: "¿En qué turno has estado?",
+      origen: "¿Cómo te enteraste de Lilium?",
       general: "¿Cuánto te ha gustado la experiencia en general?",
       ambientacion: "¿Cómo valorarías la ambientación y la decoración?",
       dificultad: "¿Qué te ha parecido la dificultad de las pruebas?",
@@ -30,6 +34,8 @@ const TEXTOS = {
     correoMal: "Escribe tu correo de ESADA (nombreapellido@alumnado.esada.es).",
     dificultadEtiquetas: { 0: "Muy fácil", 5: "Muy difícil" },
     duracionEtiquetas: { 0: "Muy corta", 3: "Genial", 5: "Muy larga" },
+    turnoNota: "Solo se guarda la hora, nunca tu nombre.", erasmus: "Erasmus",
+    origenes: { instagram: "Instagram", amigas: "Amigas o clase", carteles: "Carteles en ESADA", correo: "Correo de ESADA", otro: "Otro" },
     enviar: "Enviar encuesta", enviando: "Enviando…",
     faltan: (n) => (n === 1 ? "Falta 1 pregunta por responder." : `Faltan ${n} preguntas por responder.`),
   },
@@ -37,6 +43,8 @@ const TEXTOS = {
     etiqueta: "Your opinion matters", titulo: "Questionnaire",
     intro: "You've just left the retreat. Before the memory fades, tell us what it was like for you. It's anonymous and takes less than a minute.",
     preguntas: {
+      turno: "Which session were you in?",
+      origen: "How did you hear about Lilium?",
       general: "How much did you enjoy the experience overall?",
       ambientacion: "How would you rate the atmosphere and the set design?",
       dificultad: "How difficult were the challenges?",
@@ -50,19 +58,23 @@ const TEXTOS = {
     correoMal: "Type your ESADA email (nameSurname@alumnado.esada.es).",
     dificultadEtiquetas: { 0: "Very easy", 5: "Very hard" },
     duracionEtiquetas: { 0: "Too short", 3: "Just right", 5: "Too long" },
+    turnoNota: "Only the time is saved, never your name.", erasmus: "Erasmus",
+    origenes: { instagram: "Instagram", amigas: "Friends or classmates", carteles: "Posters at ESADA", correo: "ESADA email", otro: "Other" },
     enviar: "Send survey", enviando: "Sending…",
     faltan: (n) => (n === 1 ? "1 question left to answer." : `${n} questions left to answer.`),
   },
 };
 
-// Orden de las preguntas y su tipo («estrellas» de 1 a 5 o «escala» de 0 a 5)
+// Orden de las preguntas y su tipo: «turno» y «opciones» (botones), «estrellas» de 1 a 5 o «escala» de 0 a 5
 const PREGUNTAS = [
+  { clave: "turno", tipo: "turno" },
   { clave: "general", tipo: "estrellas" },
   { clave: "ambientacion", tipo: "estrellas" },
   { clave: "dificultad", tipo: "escala", etiquetas: "dificultadEtiquetas" },
   { clave: "originalidad", tipo: "estrellas" },
   { clave: "inmersion", tipo: "estrellas" },
   { clave: "duracion", tipo: "escala", etiquetas: "duracionEtiquetas" },
+  { clave: "origen", tipo: "opciones" },
 ];
 
 // Estrella de cinco puntas con el contorno crema (se rellena cuando está elegida)
@@ -107,11 +119,29 @@ function PreguntaEscala({ clave, valor, alElegir, etiquetas }) {
   );
 }
 
-export default function Cuestionario() {
+// Pregunta con botones tipo «pastilla» (se elige uno). «opciones»: [{ valor, texto, nota? }]
+function PreguntaOpciones({ clave, valor, alElegir, opciones }) {
+  return (
+    <div className="cues-opciones">
+      {opciones.map((o) => (
+        <label key={o.valor} className={`cues-opcion ${valor === o.valor ? "is-elegida" : ""}`}>
+          <input type="radio" name={clave} value={o.valor} required checked={valor === o.valor} onChange={() => alElegir(o.valor)} />
+          {o.texto}
+          {o.nota && <small> · {o.nota}</small>}
+        </label>
+      ))}
+    </div>
+  );
+}
+
+export default function Cuestionario({ turnos = [], turnoInicial = null }) {
   const router = useRouter();
   const { idioma } = useIdioma();
   const t = TEXTOS[idioma] || TEXTOS.es;
-  const [respuestas, setRespuestas] = useState({});
+  // Con el enlace personal del correo, su turno ya viene marcado (lo puede cambiar)
+  const [respuestas, setRespuestas] = useState(turnoInicial ? { turno: turnoInicial } : {});
+  // Si no se han podido leer los turnos, esa pregunta no sale
+  const preguntas = turnos.length > 0 ? PREGUNTAS : PREGUNTAS.filter((p) => p.tipo !== "turno");
   const [enviando, setEnviando] = useState(false);
   const [mensaje, setMensaje] = useState("");
   const [marcadas, setMarcadas] = useState(false); // tras intentar enviar, se señalan las que faltan
@@ -128,7 +158,7 @@ export default function Cuestionario() {
     api("/api/sesion").then((r) => r?.email && setCorreo((c) => c || r.email));
   }, []);
 
-  const pendientes = PREGUNTAS.filter((p) => respuestas[p.clave] === undefined);
+  const pendientes = preguntas.filter((p) => respuestas[p.clave] === undefined);
 
   // Baja suavemente hasta una pregunta
   function irA(clave) {
@@ -136,11 +166,11 @@ export default function Cuestionario() {
   }
 
   function elegir(i, n) {
-    const p = PREGUNTAS[i];
+    const p = preguntas[i];
     setRespuestas((r) => ({ ...r, [p.clave]: n }));
     setMensaje("");
     // Si era la primera vez que la respondía, se pasa sola a la siguiente
-    if (respuestas[p.clave] === undefined && PREGUNTAS[i + 1]) setTimeout(() => irA(PREGUNTAS[i + 1].clave), 450);
+    if (respuestas[p.clave] === undefined && preguntas[i + 1]) setTimeout(() => irA(preguntas[i + 1].clave), 450);
   }
 
   async function enviar(e) {
@@ -194,7 +224,7 @@ export default function Cuestionario() {
               <p className="cues-correo__nota">{t.correoNota}</p>
             </section>
           )}
-          {PREGUNTAS.map((p, i) => (
+          {preguntas.map((p, i) => (
             <section
               key={p.clave}
               ref={(el) => (tarjetas.current[p.clave] = el)}
@@ -206,7 +236,16 @@ export default function Cuestionario() {
                 <span className="visually-hidden">{i + 1}. </span>
                 {t.preguntas[p.clave]}
               </h2>
-              {p.tipo === "estrellas" ? (
+              {p.tipo === "turno" ? (
+                <>
+                  <PreguntaOpciones clave={p.clave} valor={respuestas[p.clave]} alElegir={(n) => elegir(i, n)}
+                    opciones={turnos.map((tu) => ({ valor: tu.etiqueta, texto: tu.etiqueta, nota: tu.erasmus ? t.erasmus : null }))} />
+                  <p className="cues-correo__nota">{t.turnoNota}</p>
+                </>
+              ) : p.tipo === "opciones" ? (
+                <PreguntaOpciones clave={p.clave} valor={respuestas[p.clave]} alElegir={(n) => elegir(i, n)}
+                  opciones={ORIGENES.map((o) => ({ valor: o, texto: t.origenes[o] }))} />
+              ) : p.tipo === "estrellas" ? (
                 <PreguntaEstrellas clave={p.clave} valor={respuestas[p.clave]} alElegir={(n) => elegir(i, n)} t={t} />
               ) : (
                 <PreguntaEscala clave={p.clave} valor={respuestas[p.clave]} alElegir={(n) => elegir(i, n)} etiquetas={t[p.etiquetas]} />

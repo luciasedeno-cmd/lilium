@@ -13,7 +13,7 @@ import PiePagina from "@/components/PiePagina";
 import { api } from "@/lib/borrador";
 import { useEspera } from "@/lib/useEspera";
 import { iconosDe } from "@/lib/fotos";
-import { ADMIN_CORREO, APERTURA, EVENTO, MAX_PERSONAS } from "@/lib/config";
+import { ADMIN_CORREO, APERTURA, EVENTO, MAX_PERSONAS, ORIGENES } from "@/lib/config";
 import { useTextos } from "@/components/Idioma";
 
 const TEXTOS = {
@@ -61,14 +61,15 @@ const TEXTOS = {
     preguntas: { general: "Experiencia en general", ambientacion: "Ambientación y decoración", dificultad: "Dificultad de las pruebas",
       originalidad: "Originalidad de las pruebas", inmersion: "Inmersión en la historia", duracion: "Duración" },
     escalas: { dificultad: "0 = muy fácil · 5 = muy difícil", duracion: "0 = muy corta · 3 = genial · 5 = muy larga" },
-    columnas: { creada: "Fecha", idioma: "Idioma" },
+    columnas: { creada: "Fecha", idioma: "Idioma", turno: "Turno", origen: "Cómo se enteró" },
+    datoCategoria: "eligieron esta", origenes: { instagram: "Instagram", amigas: "Amigas o clase", carteles: "Carteles en ESADA", correo: "Correo de ESADA", otro: "Otro" },
     mediaGeneral: "Media general", deCinco: "de 5", mediaNota: "Media de las 4 preguntas de estrellas",
     mediasTitulo: "La media de cada pregunta", mediasNota: "Dificultad y duración van aparte: ahí más alto no es mejor.",
     tarjetasTitulo: "Pregunta a pregunta", preguntaDe: (i, n) => `Pregunta ${i} de ${n}`,
     anterior: "Pregunta anterior", siguiente: "Pregunta siguiente", irA: (i) => `Ir a la pregunta ${i}`,
-    repartoTitulo: "Cuántas personas eligieron cada nota", masElegida: "la más elegida",
+    repartoTitulo: "Cuántas personas eligieron cada nota", repartoOpciones: "Cuántas personas eligieron cada opción", masElegida: "la más elegida",
     datoEstrellas: "dieron 5 ★", datoDificultad: "la vieron difícil (4–5)", datoDuracion: "dijeron «genial» (3)",
-    textoPregunta: { general: "¿Cuánto te ha gustado la experiencia en general?", ambientacion: "¿Cómo valorarías la ambientación y la decoración?",
+    textoPregunta: { turno: "¿En qué turno has estado?", origen: "¿Cómo te enteraste de Lilium?", general: "¿Cuánto te ha gustado la experiencia en general?", ambientacion: "¿Cómo valorarías la ambientación y la decoración?",
       dificultad: "¿Qué te ha parecido la dificultad de las pruebas?", originalidad: "¿Cómo valorarías la originalidad de las pruebas?",
       inmersion: "¿Cómo valorarías la inmersión y la sensación de estar dentro de la historia?", duracion: "¿Qué te ha parecido la duración de la experiencia?" },
   },
@@ -114,14 +115,15 @@ const TEXTOS = {
     preguntas: { general: "Overall experience", ambientacion: "Atmosphere and set design", dificultad: "Difficulty of the challenges",
       originalidad: "Originality of the challenges", inmersion: "Immersion in the story", duracion: "Length" },
     escalas: { dificultad: "0 = very easy · 5 = very hard", duracion: "0 = too short · 3 = just right · 5 = too long" },
-    columnas: { creada: "Date", idioma: "Language" },
+    columnas: { creada: "Date", idioma: "Language", turno: "Session", origen: "How they heard" },
+    datoCategoria: "chose this", origenes: { instagram: "Instagram", amigas: "Friends or classmates", carteles: "Posters at ESADA", correo: "ESADA email", otro: "Other" },
     mediaGeneral: "Overall average", deCinco: "out of 5", mediaNota: "Average of the 4 star questions",
     mediasTitulo: "Average of each question", mediasNota: "Difficulty and length are shown apart: higher isn't better there.",
     tarjetasTitulo: "Question by question", preguntaDe: (i, n) => `Question ${i} of ${n}`,
     anterior: "Previous question", siguiente: "Next question", irA: (i) => `Go to question ${i}`,
-    repartoTitulo: "How many people chose each rating", masElegida: "most chosen",
+    repartoTitulo: "How many people chose each rating", repartoOpciones: "How many people chose each option", masElegida: "most chosen",
     datoEstrellas: "gave 5 ★", datoDificultad: "found it hard (4–5)", datoDuracion: "said “just right” (3)",
-    textoPregunta: { general: "How much did you enjoy the experience overall?", ambientacion: "How would you rate the atmosphere and the set design?",
+    textoPregunta: { turno: "Which session were you in?", origen: "How did you hear about Lilium?", general: "How much did you enjoy the experience overall?", ambientacion: "How would you rate the atmosphere and the set design?",
       dificultad: "How difficult were the challenges?", originalidad: "How would you rate the originality of the challenges?",
       inmersion: "How would you rate the immersion and the feeling of being inside the story?", duracion: "What did you think of the length of the experience?" },
   },
@@ -535,6 +537,23 @@ function resumenPregunta(p, respuestas) {
   };
 }
 
+// Preguntas con botones (no son notas): en qué turno estuvo y cómo se enteró de Lilium.
+// Solo cuentan las respuestas que las tienen (las primeras respuestas, de antes de añadirlas, no).
+const minutos = (etiqueta) => {
+  const [h, m] = String(etiqueta).split(/[:–]/).map(Number);
+  return h * 60 + (m || 0);
+};
+
+/** Cuántas personas eligieron cada opción de una pregunta con botones */
+function resumenCategoria(clave, respuestas) {
+  const valores = respuestas.map((r) => r[clave]).filter(Boolean);
+  const numeros = clave === "origen" ? ORIGENES : [...new Set(valores)].sort((a, b) => minutos(a) - minutos(b));
+  const cuentas = Object.fromEntries(numeros.map((x) => [x, valores.filter((v) => v === x).length]));
+  const maximo = Math.max(0, ...Object.values(cuentas));
+  const masElegida = numeros.length ? numeros.reduce((a, b) => (cuentas[b] > cuentas[a] ? b : a)) : null;
+  return { clave, categoria: true, n: valores.length, numeros, cuentas, maximo, masElegida, dato: porcentaje(cuentas[masElegida] || 0, valores.length) };
+}
+
 /**
  * Apartado «Valoraciones» del panel (solo admins). De arriba abajo:
  *  1) Media general (de las 4 preguntas de estrellas) en un anillo que se llena según la nota.
@@ -569,13 +588,21 @@ function Valoraciones({ t }) {
   const resumenes = useMemo(() => (n ? PREGUNTAS.map((p) => ({ ...p, ...resumenPregunta(p, respuestas) })) : []), [respuestas, n]);
   const estrellas = resumenes.filter((p) => !p.escala);
   const mediaGeneral = estrellas.length ? estrellas.reduce((a, p) => a + p.media, 0) / estrellas.length : 0;
+  // Tarjetas del carrusel: primero el turno, luego las 6 notas y al final cómo se enteraron (si hay datos)
+  const tarjetas = useMemo(() => {
+    if (!n) return [];
+    const [turno, origen] = ["turno", "origen"].map((c) => resumenCategoria(c, respuestas));
+    return [turno, ...resumenes, origen].filter((p) => p.n > 0);
+  }, [respuestas, resumenes, n]);
 
   // Descarga: un archivo .csv (tabla de texto que abre Excel o Google Sheets) con una fila por respuesta
   function descargar() {
-    const cabecera = [t.columnas.creada, ...PREGUNTAS.map((p) => t.preguntas[p.clave]), t.columnas.idioma];
+    const cabecera = [t.columnas.creada, t.columnas.turno, ...PREGUNTAS.map((p) => t.preguntas[p.clave]), t.columnas.origen, t.columnas.idioma];
     const filas = respuestas.map((r) => [
       new Date(r.creada).toLocaleString("es-ES", { timeZone: "Europe/Madrid" }),
+      r.turno || "",
       ...PREGUNTAS.map((p) => r[p.clave]),
+      r.origen ? t.origenes[r.origen] || r.origen : "",
       r.idioma || "",
     ]);
     // Punto y coma entre columnas y la marca «﻿» al principio: así Excel en español lo abre bien, con tildes
@@ -639,7 +666,7 @@ function Valoraciones({ t }) {
 
           {/* 3) Tarjetas, una por pregunta */}
           <p className="panel-val__etiqueta panel-val__etiqueta--tarjetas">{t.tarjetasTitulo}</p>
-          <Tarjetas t={t} resumenes={resumenes} />
+          <Tarjetas t={t} resumenes={tarjetas} />
         </>
       )}
     </section>
@@ -700,26 +727,38 @@ function Tarjetas({ t, resumenes }) {
               <div className="panel-val__tarjeta-texto">
                 <p className="panel-val__etiqueta">{t.preguntaDe(i + 1, total)}</p>
                 <h3>{t.textoPregunta[p.clave]}</h3>
-                <p className="panel-val__media">
-                  {!p.escala && <span className="panel-val__estrella" aria-hidden="true">★ </span>}
-                  {coma(p.media)}<small> / 5</small>
-                </p>
-                {p.escala && <p className="panel-val__nota">{t.escalas[p.clave]}</p>}
-                <div className="panel-val__datos">
-                  <p><b>{p.n}</b>{t.valRespuestas(p.n).replace(/^\d+\s/, "")}</p>
-                  <p><b>{p.escala ? p.masElegida : `${p.masElegida} ★`}</b>{t.masElegida}</p>
-                  <p>
-                    <b>{p.dato} %</b>
-                    {p.clave === "dificultad" ? t.datoDificultad : p.clave === "duracion" ? t.datoDuracion : t.datoEstrellas}
+                {p.categoria ? (
+                  // Pregunta con botones: en grande, la opción más elegida
+                  <p className="panel-val__media panel-val__media--texto">{nombreOpcion(t, p.clave, p.masElegida)}</p>
+                ) : (
+                  <p className="panel-val__media">
+                    {!p.escala && <span className="panel-val__estrella" aria-hidden="true">★ </span>}
+                    {coma(p.media)}<small> / 5</small>
                   </p>
-                </div>
+                )}
+                {p.escala && <p className="panel-val__nota">{t.escalas[p.clave]}</p>}
+                {p.categoria ? (
+                  <div className="panel-val__datos panel-val__datos--dos">
+                    <p><b>{p.n}</b>{t.valRespuestas(p.n).replace(/^\d+\s/, "")}</p>
+                    <p><b>{p.dato} %</b>{t.datoCategoria}</p>
+                  </div>
+                ) : (
+                  <div className="panel-val__datos">
+                    <p><b>{p.n}</b>{t.valRespuestas(p.n).replace(/^\d+\s/, "")}</p>
+                    <p><b>{p.escala ? p.masElegida : `${p.masElegida} ★`}</b>{t.masElegida}</p>
+                    <p>
+                      <b>{p.dato} %</b>
+                      {p.clave === "dificultad" ? t.datoDificultad : p.clave === "duracion" ? t.datoDuracion : t.datoEstrellas}
+                    </p>
+                  </div>
+                )}
               </div>
               <div>
-                <p className="panel-val__etiqueta">{t.repartoTitulo}</p>
-                <ul className="panel-val__reparto">
+                <p className="panel-val__etiqueta">{p.categoria ? t.repartoOpciones : t.repartoTitulo}</p>
+                <ul className={`panel-val__reparto${p.categoria ? " panel-val__reparto--texto" : ""}`}>
                   {p.numeros.map((x) => (
                     <li key={x}>
-                      <span className="panel-val__num">{p.escala ? x : `${x} ★`}</span>
+                      <span className="panel-val__num">{p.categoria ? nombreOpcion(t, p.clave, x) : p.escala ? x : `${x} ★`}</span>
                       <span className="panel-val__pista"><span style={{ width: p.maximo ? `${(p.cuentas[x] / p.maximo) * 100}%` : 0 }} /></span>
                       <span className="panel-val__cuenta">{p.cuentas[x]} · {porcentaje(p.cuentas[x], p.n)} %</span>
                     </li>
@@ -739,6 +778,11 @@ function Tarjetas({ t, resumenes }) {
       </div>
     </div>
   );
+}
+
+/** Texto de una opción de las preguntas con botones (el turno ya es su hora) */
+function nombreOpcion(t, clave, valor) {
+  return clave === "origen" ? t.origenes[valor] || valor : valor;
 }
 
 function Cifra({ etiqueta, valor, nota, destacada }) {

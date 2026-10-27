@@ -1,4 +1,4 @@
-// POST /api/cuestionario · { general, ambientacion, dificultad, originalidad, inmersion, duracion, token? | email?, idioma? }
+// POST /api/cuestionario · { general, ambientacion, dificultad, originalidad, inmersion, duracion, turno, origen, token? | email?, idioma? }
 // Guarda una respuesta del cuestionario de después de la experiencia (página /cuestionario).
 // Las respuestas se guardan SIN el correo (son anónimas). Aparte, solo se apunta QUE esa persona ha
 // respondido (miembros.valorado_en), para el panel del equipo y para no mandarle el correo «¿nos valoras?».
@@ -6,8 +6,8 @@
 import { db } from "@/lib/db";
 import { asegurarEsquema } from "@/lib/esquema";
 import { ok, error, manejar, leerJson } from "@/lib/respuestas";
-import { marcarValorado } from "@/lib/retiro";
-import { CORREO_VALIDO, DOMINIO, normalizarCorreo } from "@/lib/config";
+import { marcarValorado, turnosCuestionario } from "@/lib/retiro";
+import { CORREO_VALIDO, DOMINIO, ORIGENES, normalizarCorreo } from "@/lib/config";
 
 // Cada pregunta y sus valores permitidos: flores de 1 a 5, escalas de 0 a 5
 const PREGUNTAS = {
@@ -37,12 +37,20 @@ export const POST = manejar(async (req) => {
   const email = token ? null : normalizarCorreo(datos.email);
   if (!token && !CORREO_VALIDO.test(email || "")) return error(`Escribe tu correo de ESADA (nombreapellido@${DOMINIO}).`);
 
+  // Cómo se enteró de Lilium: una de las opciones de la lista
+  const origen = ORIGENES.includes(datos.origen) ? datos.origen : null;
+  if (!origen) return error("Responde a todas las preguntas, por favor.");
+  // En qué turno estuvo: tiene que ser uno de los turnos del día (si no hay turnos, la pregunta no sale)
+  const { turnos } = await turnosCuestionario(null);
+  const turno = turnos.some((t) => t.etiqueta === datos.turno) ? datos.turno : null;
+  if (turnos.length > 0 && !turno) return error("Responde a todas las preguntas, por favor.");
+
   const sql = db();
   await asegurarEsquema(sql);
   await sql`
-    insert into cuestionario (general, ambientacion, dificultad, originalidad, inmersion, duracion, comentario, idioma)
+    insert into cuestionario (general, ambientacion, dificultad, originalidad, inmersion, duracion, comentario, idioma, turno, origen)
     values (${valores.general}, ${valores.ambientacion}, ${valores.dificultad}, ${valores.originalidad},
-            ${valores.inmersion}, ${valores.duracion}, ${comentario}, ${idioma})`;
+            ${valores.inmersion}, ${valores.duracion}, ${comentario}, ${idioma}, ${turno}, ${origen})`;
   await marcarValorado({ token, email });
   return ok();
 });
