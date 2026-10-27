@@ -1817,10 +1817,24 @@ body:has(.hero) {
     pointer-events: auto;
   }
 
-  /* La mano se funde con el fondo por abajo: así no se ve el corte de la muñeca */
+  /* Como en el ordenador, la mano sale del borde de abajo de la pantalla y ocupa todo el hueco que
+     deja el texto. La parte fija mide el alto «grande» de la pantalla (100lvh: con las barras del
+     navegador escondidas), así la muñeca siempre queda pegada al borde y no se ve el corte. */
+  .como-fijo {
+    height: 100vh;
+    height: 100lvh;
+  }
+
+  .pasos__texto {
+    padding-bottom: 0;
+  }
+
+  .pasos__imagen {
+    margin: 0 -20px;
+  }
+
   .pasos__mano {
-    -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent 98%);
-    mask-image: linear-gradient(to bottom, #000 62%, transparent 98%);
+    object-position: center bottom;
   }
 
   .cuadro {
@@ -1849,23 +1863,28 @@ body:has(.hero) {
     padding-bottom: 130px;
   }
 
-  /* En el móvil, como en el ordenador pero en vertical: el mapa de borde a borde (solo la zona del
-     recorrido: VISTA.movil en MapaRecorrido.js, 620 × 589) y las tarjetas montadas sobre sus esquinas:
-     «Cuándo» arriba a la izquierda y «Dónde» abajo a la derecha */
+  /* En el móvil, como en el ordenador pero en vertical: el mapa girado 90° llena toda la sección
+     (MapaRecorrido.js: VISTA.movil, 589 × 1300) y las tarjetas van encima, «Cuándo» arriba a la
+     izquierda y «Dónde» abajo a la derecha, cada una lejos de su chincheta */
   .ubicacion {
-    gap: 0;
-    padding: 104px 0 110px;
+    display: block;
+    height: auto;
+    padding: 0;
   }
 
   .ubicacion__mapa {
-    aspect-ratio: 620 / 589;
+    position: relative;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 589 / 1300;
     border-radius: 0;
   }
 
   .ubicacion__dato {
+    position: absolute;
     width: auto;
     max-width: calc(100% - 32px);
-    margin: 0 16px;
+    margin: 0;
     padding: 14px 20px 16px 14px;
     gap: 8px;
     font-size: 14px;
@@ -1880,14 +1899,18 @@ body:has(.hero) {
     height: 28px;
   }
 
+  /* Debajo del encaje verde de arriba (que cuelga unos 100 px sobre el mapa) */
   .ubicacion__dato--cuando {
-    align-self: flex-start;
-    margin-bottom: -48px;
+    top: 104px;
+    left: 16px;
   }
 
+  /* Por encima del encaje granate de «¿Erasmus?», que sube unos 80 px desde abajo */
   .ubicacion__dato--donde {
-    align-self: flex-end;
-    margin-top: -48px;
+    top: auto;
+    bottom: 96px;
+    left: auto;
+    right: 16px;
   }
 
   .ubicacion__dato .ubicacion__icono {

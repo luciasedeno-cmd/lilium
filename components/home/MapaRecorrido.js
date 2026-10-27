@@ -7,12 +7,25 @@
 // del Figma (1440 × 589), así siempre coinciden. Los pasitos son una imagen aparte (pasos.webp) que se
 // descubre con una «máscara»: una línea invisible que sigue el camino y se va alargando (CSS).
 // Imágenes: public/assets/img/mapa/ (mapa.webp = mapa sin pasitos; pasos.webp = solo los pasitos).
+// En el móvil el mapa se gira 90° (queda en vertical y llena la sección) y las tarjetas van encima,
+// como en el ordenador: «Cuándo» arriba y «Dónde» abajo. Las chinchetas no se giran (siguen de pie).
 // Sin animación (si el sistema pide «reducir movimiento») se ve todo directamente.
 // Estilos: bloque «Cuándo y dónde» de app/estilos/home.css.
 import { useEffect, useRef, useState } from "react";
 
-// Parte del mapa que se ve: entero en el ordenador; en el móvil, solo la zona del recorrido
-const VISTA = { ordenador: "0 0 1440 589", movil: "325 0 620 589" };
+// Parte del mapa que se ve: en el ordenador, entero (1440 × 589); en el móvil, el mapa girado
+// (589 de ancho × 1440 de alto) del principio hasta 1300, que es donde acaba la parte interesante
+const VISTA = { ordenador: "0 0 1440 589", movil: "0 0 589 1300" };
+
+// Giro del móvil: 90° a la derecha. Un punto (x, y) del mapa pasa a (589 − y, x)
+const GIRO_MOVIL = "translate(589 0) rotate(90)";
+
+// Dónde va cada chincheta (su esquina de arriba a la izquierda; la punta está 14,5 a la derecha y 42 abajo)
+const CHINCHETAS = {
+  ordenador: { der: [902, 282], izq: [348, 326] },
+  // en el móvil, la punta de cada una girada con el mapa: (916,5, 324) → (265, 916,5) y (362,5, 368) → (221, 362,5)
+  movil: { der: [250.5, 874.5], izq: [206.5, 320.5] },
+};
 
 // Camino de los pasitos (de la chincheta derecha a la izquierda), medido sobre el mapa del Figma
 const CAMINO = "M916 324 L828 134 L813 133 L362 369";
@@ -44,12 +57,12 @@ function IconoMarcador() {
 
 export default function MapaRecorrido({ textos, fecha, lugar }) {
   const seccion = useRef(null);
-  const [vista, setVista] = useState(VISTA.ordenador);
+  const [modo, setModo] = useState("ordenador"); // «ordenador» o «movil»
 
-  // En el móvil se enseña solo la zona del recorrido (si no, quedaría diminuto)
+  // En el móvil el mapa va girado y en vertical (ver VISTA y GIRO_MOVIL)
   useEffect(() => {
     const movil = window.matchMedia("(max-width: 760px)");
-    const cambiar = () => setVista(movil.matches ? VISTA.movil : VISTA.ordenador);
+    const cambiar = () => setModo(movil.matches ? "movil" : "ordenador");
     cambiar();
     movil.addEventListener("change", cambiar);
     return () => movil.removeEventListener("change", cambiar);
@@ -75,7 +88,7 @@ export default function MapaRecorrido({ textos, fecha, lugar }) {
 
   return (
     <section className="ubicacion" data-fondo="claro" ref={seccion}>
-      <svg className="ubicacion__mapa" viewBox={vista} preserveAspectRatio="xMidYMid slice" role="img" aria-label={textos.mapaAlt}>
+      <svg className="ubicacion__mapa" viewBox={VISTA[modo]} preserveAspectRatio="xMidYMid slice" role="img" aria-label={textos.mapaAlt}>
         <defs>
           {/* Máscara: lo blanco deja ver los pasitos; la línea crece de la chincheta derecha a la izquierda */}
           <mask id="mascara-pasos" maskUnits="userSpaceOnUse" x="0" y="0" width="1440" height="589">
@@ -83,10 +96,15 @@ export default function MapaRecorrido({ textos, fecha, lugar }) {
               strokeLinecap="round" strokeLinejoin="round" />
           </mask>
         </defs>
-        <image href="/assets/img/mapa/mapa.webp" width="1440" height="589" />
-        <image href="/assets/img/mapa/pasos.webp" width="1440" height="589" mask="url(#mascara-pasos)" />
-        <path className="ubicacion__chincheta ubicacion__chincheta--der" d={CHINCHETA} fill="#8E3526" transform="translate(902 282)" />
-        <path className="ubicacion__chincheta ubicacion__chincheta--izq" d={CHINCHETA} fill="#8E3526" transform="translate(348 326)" />
+        {/* El mapa y los pasitos (en el móvil, girados) */}
+        <g transform={modo === "movil" ? GIRO_MOVIL : undefined}>
+          <image href="/assets/img/mapa/mapa.webp" width="1440" height="589" />
+          <image href="/assets/img/mapa/pasos.webp" width="1440" height="589" mask="url(#mascara-pasos)" />
+        </g>
+        <path className="ubicacion__chincheta ubicacion__chincheta--der" d={CHINCHETA} fill="#8E3526"
+          transform={`translate(${CHINCHETAS[modo].der.join(" ")})`} />
+        <path className="ubicacion__chincheta ubicacion__chincheta--izq" d={CHINCHETA} fill="#8E3526"
+          transform={`translate(${CHINCHETAS[modo].izq.join(" ")})`} />
       </svg>
 
       <div className="ubicacion__dato ubicacion__dato--cuando">
