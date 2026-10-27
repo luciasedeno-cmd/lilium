@@ -45,7 +45,7 @@ const TEXTOS = {
   },
   en: {
     etiqueta: "CONFIRMATION", titulo: "Review your room",
-    sinNombre: "Your sisterhood", editarReserva: "Edit booking", anularReserva: "Cancel booking",
+    sinNombre: "Your circle", editarReserva: "Edit booking", anularReserva: "Cancel booking",
     preguntaAnular: "Are you sure you want to start again? Your group and chosen time will be cleared.",
     laSala: "The room", experiencia: "Lilium · The retreat",
     sinopsis: "Five guides await you in the meadow for a 45-minute retreat. Come with an open mind: you'll discover the rest inside.",
@@ -66,7 +66,7 @@ const TEXTOS = {
     ],
     faltaAceptar: "To book you must tick both boxes.",
     noValido: (n) => n < MIN_SALA_NUEVA
-      ? `Opening a free room needs at least ${MIN_SALA_NUEVA} people. Add someone or choose another session.`
+      ? `Opening an empty room needs at least ${MIN_SALA_NUEVA} people. Add someone or choose another session.`
       : "Your whole group no longer fits in that session. Choose another one.",
     volverHora: "Choose another session",
   },

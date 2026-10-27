@@ -35,10 +35,10 @@ const TEXTOS = {
   },
   en: {
     etiqueta: "Your opinion matters", titulo: "Questionnaire",
-    intro: "You've just left the retreat. Before the memory fades, tell us how you lived it. It's anonymous and takes less than a minute.",
+    intro: "You've just left the retreat. Before the memory fades, tell us what it was like for you. It's anonymous and takes less than a minute.",
     preguntas: {
       general: "How much did you enjoy the experience overall?",
-      ambientacion: "How would you rate the setting and the decoration?",
+      ambientacion: "How would you rate the atmosphere and the set design?",
       dificultad: "How difficult were the challenges?",
       originalidad: "How would you rate the originality of the challenges?",
       inmersion: "How would you rate the immersion and the feeling of being inside the story?",

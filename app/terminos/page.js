@@ -37,7 +37,7 @@ function TerminosEs() {
               <li>Cada turno es para un grupo de {MIN_SALA_NUEVA} a {MAX_PERSONAS} personas. Con menos de {MIN_SALA_NUEVA}, os unimos a un grupo que se esté formando.</li>
               <li>Cada correo solo puede estar en una reserva.</li>
               <li>Cada integrante tiene {HORAS_CONFIRMACION} horas para confirmar su plaza desde el enlace de su correo. Quien no confirme a tiempo pierde su plaza.</li>
-              <li>Puedes cambiar de hora o cancelar desde «Mi reserva». Si haces la reserva, también puedes cancelar la de todo el grupo.</li>
+              <li>Puedes cambiar de hora o cancelar desde «Mi reserva». Si haces la reserva, también puedes anularla junto con la de las personas que apuntaste; el resto de la sala mantiene su plaza.</li>
             </ul>
           </section>
 
@@ -97,7 +97,7 @@ function TerminosEn() {
               <li>Each session is for a group of {MIN_SALA_NUEVA} to {MAX_PERSONAS} people. With fewer than {MIN_SALA_NUEVA}, we'll put you in a group that is being formed.</li>
               <li>Each email can only be in one booking.</li>
               <li>Each member has {HORAS_CONFIRMACION} hours to confirm their place from the link in their email. Anyone who doesn't confirm in time loses their place.</li>
-              <li>You can change your time or cancel from “My booking”. If you made the booking, you can also cancel it for the whole group.</li>
+              <li>You can change your time or cancel from “My booking”. If you made the booking, you can also cancel it together with the people you added; everyone else in the room keeps their place.</li>
             </ul>
           </section>
 

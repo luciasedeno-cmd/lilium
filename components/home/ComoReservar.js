@@ -7,7 +7,7 @@ import { useTextos } from "@/components/Idioma";
 
 const TEXTOS = {
   es: { titulo: "¿Cómo reservar?", subtitulo: "Cinco sencillos pasos para completar la inscripción" },
-  en: { titulo: "How to book?", subtitulo: "Five simple steps to complete your registration" },
+  en: { titulo: "How do I book?", subtitulo: "Five simple steps to complete your registration" },
 };
 
 export default function ComoReservar({ children }) {

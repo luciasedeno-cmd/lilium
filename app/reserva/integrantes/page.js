@@ -32,11 +32,11 @@ const TEXTOS = {
     pista: "nombreapellido@alumnado.esada.es", hueco: "Hay un correo sin escribir: rellénalo o quítalo con la ✕.",
   },
   en: {
-    titulo: "Who will come to the meadow?", intro: "Write the emails of all the members so they receive the confirmation in their inbox.",
+    titulo: "Who's coming to the meadow?", intro: "Write the emails of all the members so they receive the confirmation in their inbox.",
     integrantes: "Group members", tuLider: "You (leader)", integrante: "Member", quitar: "Remove", quitarBoton: "Remove",
     correoIntegrante: "Member's email", completo: "Group full", anadir: "Add member", personas: "people",
     correoMal: "The email must be nameSurname@alumnado.esada.es", repetido: "That email is already in the group.", maximo: "Maximum 6 people per session.",
-    avisoTitulo: "Minimum 3 people to open a new room.", avisoTexto: "With 1 or 2 people, join a group being formed to complete the sisterhood.",
+    avisoTitulo: "Minimum 3 people to open a new room.", avisoTexto: "With 1 or 2 people, join a group still forming to complete the circle.",
     abrirSala: "Continue and open a new room →", unirme: "Continue and join a group →",
     pista: "namesurname@alumnado.esada.es", hueco: "There's an empty email: fill it in or remove it with the ✕.",
   },

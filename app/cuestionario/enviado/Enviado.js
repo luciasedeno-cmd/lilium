@@ -17,7 +17,7 @@ const TEXTOS = {
   en: {
     etiqueta: "QUESTIONNAIRE",
     titulo: "Your answer has been sent successfully!",
-    texto: "Thank you for giving us this moment. Your words help Lilium's retreat bloom a little more for those who come after you.",
+    texto: "Thank you for sharing this moment with us. Your words help Lilium's retreat bloom a little more for those who come after you.",
     firma: "The guides of Lilium",
     volver: "Back to the website",
     otra: "Send another answer",

@@ -20,7 +20,7 @@ const TEXTOS = {
   en: {
     etiqueta: "CONFIRM YOUR PLACE", noValido: "Invalid link",
     noValidoTexto: "The 48-hour deadline may have ended or the booking may have been cancelled. You can book again with your email.",
-    irReservar: "Go to booking", titulo: "They await you in the meadow", teHaAnadido: "has added you to their group", de: "from", a: "to", en: "at",
+    irReservar: "Book now", titulo: "They await you in the meadow", teHaAnadido: "has added you to their group", de: "from", a: "to", en: "at",
     yaConfirmada: "You had already confirmed your place.",
   },
 };

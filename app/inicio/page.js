@@ -70,8 +70,8 @@ const TEXTOS = {
     erasmusTitulo: "Erasmus?",
     erasmusTexto: "There are Erasmus-only sessions and the whole experience is available in English.",
     finalEtiqueta: "THE MEADOW AWAITS",
-    finalTitulo: "Dare to cross?",
-    finalTexto: "Places are few and the circle opens for just one day. Gather your sisterhood and choose your time.",
+    finalTitulo: "Do you dare to cross?",
+    finalTexto: "Places are few and the circle opens for just one day. Gather your circle and choose your time.",
   },
 };
 
