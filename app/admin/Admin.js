@@ -5,8 +5,8 @@
 // 2) Con la llave: el panel del día del retiro → plazas, y cada sala con sus grupos y personas.
 //    En cada persona: «¿Ha venido?» (Sí / No, lo marca el equipo en la puerta) y «¿Ha valorado?»
 //    (se apunta solo cuando rellena el cuestionario; si no, al día siguiente le llega un correo).
-//    «Verificaciones» (plegado): por sala, quién confirmó por correo y quién ha llegado (QR escaneado en la
-//    puerta); en las salas con hueco, «+ Añadir integrante» para quien llega sin reserva.
+//    El «Sí» de «¿Ha venido?» se marca solo al escanear su QR en la puerta (con la hora); en las salas con
+//    hueco (y en los turnos vacíos), «+ Añadir integrante» para quien llega sin reserva.
 // Antes de la apertura (30 de octubre), la llave también sirve para ver y probar la web.
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
@@ -41,10 +41,11 @@ const TEXTOS = {
     sinDueno: "Palabras de la frase que no tiene nadie (dádselas el día del retiro):",
     noVinieron: "Palabras de quien no ha venido (dádselas al grupo):", palabraTitulo: "Su palabra de la frase secreta",
     persona: "Persona", estado: "Estado", vino: "¿Ha venido?", valoro: "¿Ha valorado?",
-    lider: "Líder", confirmada: "Confirmada", pendiente: "Sin confirmar",
+    lider: "Líder", confirmada: "Confirmada", pendiente: "Sin confirmar", enPuerta: "✓ En la puerta",
+    aLas: (h) => `a las ${h}`, turnosVacios: "Turnos sin reservas",
     si: "Sí", no: "No", valorado: "Sí", noValorado: "Todavía no", correoEnviado: "Correo enviado",
     errorGuardar: "No se ha podido guardar. Inténtalo de nuevo.",
-    leyenda: "«¿Ha valorado?» se marca sola cuando la persona rellena el cuestionario (QR de la sala). Si no lo hace, al día siguiente del retiro le llega un correo pidiéndoselo.",
+    leyenda: "«¿Ha venido?» se marca «Sí» solo al escanear el QR de su entrada en la puerta (con este panel abierto en el móvil); también se puede marcar a mano. «¿Ha valorado?» se marca sola cuando la persona rellena el cuestionario (QR de la sala). Si no lo hace, al día siguiente del retiro le llega un correo pidiéndoselo.",
     // Borrar reservas de prueba (solo antes de la apertura)
     borrarTitulo: "Borrar reservas de prueba",
     borrarTexto: "Antes de abrir la web, vacía todas las reservas de prueba para empezar de cero. Los turnos se quedan igual. Este recuadro desaparece solo el 30 de octubre a las 12:00.",
@@ -55,12 +56,6 @@ const TEXTOS = {
     borrarSi: "Sí, borrar todo", borrando: "Borrando…", borrarNo: "Cancelar",
     borrado: (n, r) => `Listo: se han borrado ${n === 1 ? "1 persona" : `${n} personas`} de las reservas${r ? ` y ${r === 1 ? "1 respuesta" : `${r} respuestas`} del cuestionario` : ""}. La web está vacía para la apertura.`,
     // Valoraciones (respuestas del cuestionario)
-    verTitulo: "Verificaciones",
-    verCuenta: (a, n) => `${a} de ${n} han llegado`,
-    verIntro: "«Verificado» = la persona confirmó su plaza desde el enlace de su correo. «Asistencia» = alguien del equipo escaneó su QR en la puerta (con este panel abierto en el móvil) o lo marcó a mano.",
-    verApuntadas: "apuntadas", verVerificadas: "verificadas por correo", verAsistieron: "han asistido",
-    verCorreo: "Correo", verVerificado: "Verificado (correo)", verAsistencia: "Asistencia (QR)",
-    verConfirmo: "✓ Confirmó", verPendiente: "Pendiente", verPuerta: "✓ En la puerta", verSinEscanear: "— Sin escanear", verNoVino: "✕ No vino",
     verLlegadas: (a, n) => `${a} de ${n} han llegado`,
     verAnadir: (h) => `+ Añadir integrante (${h} ${h === 1 ? "plaza libre" : "plazas libres"})`,
     verPista: "correo de quien llega sin reserva", verGuardar: "Añadir", verCancelar: "Cancelar", verAnadiendo: "Añadiendo…",
@@ -108,10 +103,11 @@ const TEXTOS = {
     sinDueno: "Words of the phrase nobody has (hand them out on the day):",
     noVinieron: "Words of people who didn't come (give them to the group):", palabraTitulo: "Their word of the secret phrase",
     persona: "Person", estado: "Status", vino: "Attended?", valoro: "Rated?",
-    lider: "Leader", confirmada: "Confirmed", pendiente: "Not confirmed",
+    lider: "Leader", confirmada: "Confirmed", pendiente: "Not confirmed", enPuerta: "✓ At the door",
+    aLas: (h) => `at ${h}`, turnosVacios: "Sessions without bookings",
     si: "Yes", no: "No", valorado: "Yes", noValorado: "Not yet", correoEnviado: "Email sent",
     errorGuardar: "Couldn't save. Try again.",
-    leyenda: "“Rated?” is ticked automatically when the person fills in the questionnaire (QR in the room). If they don't, they get an email the day after the retreat asking them to.",
+    leyenda: "“Attended?” is set to “Yes” automatically when their ticket QR is scanned at the door (with this dashboard open on the phone); it can also be ticked by hand. “Rated?” is ticked automatically when the person fills in the questionnaire (QR in the room). If they don't, they get an email the day after the retreat asking them to.",
     borrarTitulo: "Delete test bookings",
     borrarTexto: "Before opening the website, empty all test bookings to start from scratch. Sessions stay the same. This box disappears on 30 October at 12:00.",
     borrarBoton: "Delete test bookings",
@@ -120,12 +116,6 @@ const TEXTOS = {
     borrarEscribe: "To confirm, type BORRAR in capitals:",
     borrarSi: "Yes, delete everything", borrando: "Deleting…", borrarNo: "Cancel",
     borrado: (n, r) => `Done: ${n === 1 ? "1 person" : `${n} people`} removed from bookings${r ? ` and ${r === 1 ? "1 answer" : `${r} answers`} from the questionnaire` : ""}. The website is empty for the opening.`,
-    verTitulo: "Check-ins",
-    verCuenta: (a, n) => `${a} of ${n} have arrived`,
-    verIntro: "“Verified” = the person confirmed their place from the link in their email. “Attendance” = someone on the team scanned their QR at the door (with this dashboard open on their phone) or ticked it by hand.",
-    verApuntadas: "booked", verVerificadas: "verified by email", verAsistieron: "attended",
-    verCorreo: "Email", verVerificado: "Verified (email)", verAsistencia: "Attendance (QR)",
-    verConfirmo: "✓ Confirmed", verPendiente: "Pending", verPuerta: "✓ At the door", verSinEscanear: "— Not scanned", verNoVino: "✕ Didn't come",
     verLlegadas: (a, n) => `${a} of ${n} have arrived`,
     verAnadir: (h) => `+ Add member (${h} ${h === 1 ? "place" : "places"} free)`,
     verPista: "email of the person without a booking", verGuardar: "Add", verCancelar: "Cancel", verAnadiendo: "Adding…",
@@ -404,9 +394,6 @@ function Panel({ t, datos, aviso, marcar, actualizar, salir }) {
           <span style={{ width: `${lleno}%` }} />
         </div>
 
-        {/* Verificaciones (plegado): quién confirmó por correo y quién ha llegado (QR escaneado en la puerta) */}
-        <Verificaciones t={t} salas={datos.salas} alCambiar={actualizar} />
-
         <div className="panel__buscar">
           <input className="panel__busqueda" type="search" placeholder={t.buscar} value={busca} onChange={(e) => setBusca(e.target.value)} />
           {vacias > 0 && <p className="panel__vacias">{t.salasVacias(vacias)}</p>}
@@ -427,6 +414,10 @@ function Panel({ t, datos, aviso, marcar, actualizar, salir }) {
                 <p className="panel-sala__plazas">
                   {s.erasmus && <span className="ll-badge">{t.erasmus}</span>}
                   <b>{s.ocupadas}</b>/{MAX_PERSONAS}
+                </p>
+                {/* Cuántas han llegado ya (se va llenando al escanear los QR en la puerta) */}
+                <p className="panel-sala__llegadas">
+                  {t.verLlegadas(s.grupos.flatMap((g) => g.personas).filter((p) => p.asistio === true).length, s.ocupadas)}
                 </p>
               </header>
 
@@ -450,9 +441,26 @@ function Panel({ t, datos, aviso, marcar, actualizar, salir }) {
                   {s.sinDueno.map((f) => <b key={f.numero}>{f.numero} {f.palabra}</b>).reduce((a, b) => [a, " · ", b])}
                 </p>
               )}
+              {/* Alguien llega sin reserva y queda sitio: se apunta aquí */}
+              {s.ocupadas < MAX_PERSONAS && !busca && (
+                <AnadirIntegrante t={t} sala={s} hueco={MAX_PERSONAS - s.ocupadas} alCambiar={actualizar} />
+              )}
             </section>
           ))}
         </div>
+
+        {/* Turnos sin nadie: también se puede apuntar ahí a quien llega sin reserva */}
+        {!busca && vacias > 0 && (
+          <section className="panel-vacias" aria-labelledby="panel-vacias-titulo">
+            <h2 id="panel-vacias-titulo" className="panel-vacias__titulo">{t.turnosVacios}</h2>
+            {datos.salas.filter((s) => s.ocupadas === 0).map((s) => (
+              <div key={s.id} className="panel-vacias__fila">
+                <span className="panel-vacias__hora">{s.inicio}–{s.fin}{s.erasmus && <span className="ll-badge">{t.erasmus}</span>}</span>
+                <AnadirIntegrante t={t} sala={s} hueco={MAX_PERSONAS} alCambiar={actualizar} />
+              </div>
+            ))}
+          </section>
+        )}
 
         <p className="panel__leyenda">{t.leyenda}</p>
 
@@ -813,44 +821,16 @@ function nombreOpcion(t, clave, valor) {
   return clave === "origen" ? t.origenes[valor] || valor : valor;
 }
 
-/**
- * «Verificaciones» (plegado; se abre al pulsarlo): cada sala con sus correos y dos columnas,
- * «Verificado (correo)» = confirmó su plaza desde el correo, y «Asistencia (QR)» = la escanearon en la puerta.
- * En las salas con plazas libres, «+ Añadir integrante» apunta a quien llega sin reserva (/api/admin/integrante).
- */
-function Verificaciones({ t, salas, alCambiar }) {
-  const todas = salas.flatMap((s) => s.grupos.flatMap((g) => g.personas));
-  const verificadas = todas.filter((p) => p.confirmado).length;
-  const asistieron = todas.filter((p) => p.asistio === true).length;
-  return (
-    <details className="panel-verif">
-      <summary className="panel-verif__resumen">
-        <span className="panel-verif__titulo">{t.verTitulo}</span>
-        <span className="panel-verif__cuenta">{t.verCuenta(asistieron, todas.length)}</span>
-        <span className="panel-verif__flecha" aria-hidden="true" />
-      </summary>
-      <div className="panel-verif__cuerpo">
-        <p className="panel-verif__intro">{t.verIntro}</p>
-        <div className="panel-verif__cifras">
-          <p><b>{todas.length}</b>{t.verApuntadas}</p>
-          <p><b>{verificadas}</b>{t.verVerificadas}</p>
-          <p><b>{asistieron}</b>{t.verAsistieron}</p>
-        </div>
-        {salas.map((s) => <SalaVerificacion key={s.id} t={t} sala={s} alCambiar={alCambiar} />)}
-      </div>
-    </details>
-  );
-}
-
 /** Hora en España de una fecha: «10:47» */
 const horaEspana = (fecha) =>
   new Date(fecha).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Madrid" });
 
-function SalaVerificacion({ t, sala, alCambiar }) {
-  const personas = sala.grupos[0]?.personas || [];
-  const llegadas = personas.filter((p) => p.asistio === true).length;
-  const hueco = MAX_PERSONAS - personas.length;
-  const [anadiendo, setAnadiendo] = useState(false); // ¿se ve el campo para añadir?
+/**
+ * «+ Añadir integrante (N plazas libres)»: el día del retiro, apunta en una sala con hueco a alguien que
+ * llega sin reserva (/api/admin/integrante). Queda con la plaza confirmada y la asistencia marcada.
+ */
+function AnadirIntegrante({ t, sala, hueco, alCambiar }) {
+  const [abierto, setAbierto] = useState(false); // ¿se ve el campo para escribir el correo?
   const [correo, setCorreo] = useState("");
   const [fallo, setFallo] = useState("");
   const [enviando, setEnviando] = useState(false);
@@ -863,56 +843,21 @@ function SalaVerificacion({ t, sala, alCambiar }) {
     setEnviando(false);
     if (!r.ok) return setFallo(r.mensaje);
     setCorreo("");
-    setAnadiendo(false);
+    setAbierto(false);
     alCambiar(); // se vuelven a pedir los datos del panel
   }
 
+  if (!abierto) {
+    return <button type="button" className="panel-anadir__boton" onClick={() => setAbierto(true)}>{t.verAnadir(hueco)}</button>;
+  }
   return (
-    <section className="panel-verif__sala">
-      <h3 className="panel-verif__cabeza">
-        <span>{sala.inicio}–{sala.fin}{sala.equipo && <> · “{sala.equipo}”</>}</span>
-        {personas.length > 0 && <small>{t.verLlegadas(llegadas, personas.length)}</small>}
-      </h3>
-      {personas.length > 0 ? (
-        <div className="panel-verif__tabla" role="table">
-          <div className="panel-verif__fila panel-verif__fila--titulos" role="row">
-            <span role="columnheader">{t.verCorreo}</span>
-            <span role="columnheader">{t.verVerificado}</span>
-            <span role="columnheader">{t.verAsistencia}</span>
-          </div>
-          {personas.map((p) => (
-            <div key={p.email} className="panel-verif__fila" role="row">
-              <span role="cell" className="panel-verif__correo">{p.email}</span>
-              <span role="cell">
-                <span className={`panel-chip ${p.confirmado ? "panel-chip--si" : "panel-chip--pendiente"}`}>
-                  {p.puerta ? t.verPuerta : p.confirmado ? t.verConfirmo : t.verPendiente}
-                </span>
-              </span>
-              <span role="cell">
-                {p.asistio === true ? (
-                  <span className="panel-chip panel-chip--si">✓ {p.asistioEn ? horaEspana(p.asistioEn) : ""}</span>
-                ) : (
-                  <span className="panel-chip panel-chip--no">{p.asistio === false ? t.verNoVino : t.verSinEscanear}</span>
-                )}
-              </span>
-            </div>
-          ))}
-        </div>
-      ) : null}
-
-      {/* Alguien llega sin reserva y queda sitio: se apunta aquí */}
-      {hueco > 0 && (anadiendo ? (
-        <form className="panel-verif__anadir" onSubmit={anadir}>
-          <input className="panel__busqueda" type="email" required autoFocus placeholder={t.verPista} value={correo}
-            onChange={(e) => setCorreo(e.target.value)} aria-label={t.verPista} />
-          <button type="submit" className="ll-btn ll-btn--md ll-btn--primary" disabled={enviando}>{enviando ? t.verAnadiendo : t.verGuardar}</button>
-          <button type="button" className="ll-btn ll-btn--md ll-btn--secondary" onClick={() => { setAnadiendo(false); setFallo(""); }}>{t.verCancelar}</button>
-          <p className="panel-verif__nota">{fallo ? <b role="alert">{fallo}</b> : t.verNotaAnadir}</p>
-        </form>
-      ) : (
-        <button type="button" className="panel-verif__boton" onClick={() => setAnadiendo(true)}>{t.verAnadir(hueco)}</button>
-      ))}
-    </section>
+    <form className="panel-anadir" onSubmit={anadir}>
+      <input className="panel__busqueda" type="email" required autoFocus placeholder={t.verPista} value={correo}
+        onChange={(e) => setCorreo(e.target.value)} aria-label={t.verPista} />
+      <button type="submit" className="ll-btn ll-btn--md ll-btn--primary" disabled={enviando}>{enviando ? t.verAnadiendo : t.verGuardar}</button>
+      <button type="button" className="ll-btn ll-btn--md ll-btn--secondary" onClick={() => { setAbierto(false); setFallo(""); }}>{t.verCancelar}</button>
+      <p className="panel-anadir__nota">{fallo ? <b role="alert">{fallo}</b> : t.verNotaAnadir}</p>
+    </form>
   );
 }
 
@@ -954,9 +899,11 @@ function Grupo({ t, grupo, numero, marcar }) {
                 )}
               </td>
               <td data-titulo={t.estado}>
+                {/* ¿Confirmó su plaza desde el correo? (o la apuntó el equipo en la puerta) */}
                 <span className={`panel-estado${p.confirmado ? " is-ok" : ""}`}>
-                  {p.lider ? t.lider : p.confirmado ? t.confirmada : t.pendiente}
+                  {p.puerta ? t.enPuerta : p.confirmado ? `✓ ${t.confirmada}` : t.pendiente}
                 </span>
+                {p.lider && <small className="panel-estado__lider">{t.lider}</small>}
               </td>
               <td data-titulo={t.vino}>
                 {/* Sí / No: pulsar la opción elegida otra vez la quita */}
@@ -966,6 +913,8 @@ function Grupo({ t, grupo, numero, marcar }) {
                   <button type="button" className={`panel-vino__no${p.asistio === false ? " is-elegido" : ""}`} aria-pressed={p.asistio === false}
                     onClick={() => marcar(p.email, p.asistio === false ? null : false)}>{t.no}</button>
                 </div>
+                {/* Se marca «Sí» solo al escanear su QR en la puerta; aquí, a qué hora */}
+                {p.asistio === true && p.asistioEn && <small className="panel-vino__hora">{t.aLas(horaEspana(p.asistioEn))}</small>}
               </td>
               <td data-titulo={t.valoro}>
                 <span className={`panel-valoro${p.valorado ? " is-ok" : ""}`}>

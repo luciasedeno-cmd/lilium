@@ -935,158 +935,28 @@ main.panel {
   }
 }
 
-/* ---------- «Verificaciones» (plegado): confirmado por correo y asistencia escaneada en la puerta ---------- */
-.panel-verif {
-  margin: var(--space-8) 0;
-  border: 1px solid rgba(115, 47, 36, 0.2);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
-  box-shadow: var(--shadow-card);
-  overflow: hidden;
-}
-
-.panel-verif[open] {
-  border-color: var(--primary);
-}
-
-/* La barra que se pulsa para abrir y cerrar */
-.panel-verif__resumen {
-  display: flex;
+/* ---------- Día del retiro: hora del escaneo, líder, «+ Añadir integrante» y turnos vacíos ---------- */
+.panel-sala__cabecera {
   flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-2) var(--space-4);
-  padding: var(--space-4) var(--space-6);
-  list-style: none;
-  cursor: pointer;
 }
 
-.panel-verif__resumen::-webkit-details-marker {
-  display: none;
-}
-
-.panel-verif__titulo {
-  flex: 1;
-  font: 400 32px/1.1 var(--font-serif);
-  color: var(--ink);
-}
-
-.panel-verif__cuenta {
-  font: 600 14px/1.3 var(--font-sans);
-  color: var(--ink);
-}
-
-/* Flechita que gira al abrir */
-.panel-verif__flecha {
-  width: 12px;
-  height: 12px;
-  border-right: 2px solid var(--ink);
-  border-bottom: 2px solid var(--ink);
-  transform: rotate(45deg) translateY(-3px);
-  transition: transform 0.25s ease;
-}
-
-.panel-verif[open] .panel-verif__flecha {
-  transform: rotate(225deg) translateY(-3px);
-}
-
-.panel-verif__cuerpo {
-  padding: 0 var(--space-6) var(--space-6);
-  animation: panel-verif-abre 0.3s ease both;
-}
-
-@keyframes panel-verif-abre {
-  from { opacity: 0; transform: translateY(-6px); }
-}
-
-.panel-verif__intro {
-  margin-bottom: var(--space-4);
-  font: 400 14px/1.5 var(--font-sans);
+.panel-sala__llegadas {
+  flex-basis: 100%;
+  font: 600 13px/1.3 var(--font-sans);
   color: var(--ink-muted);
+  text-align: right;
 }
 
-.panel-verif__cifras {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-3);
-  margin-bottom: var(--space-6);
-}
-
-.panel-verif__cifras p {
-  padding: var(--space-3);
-  border-radius: var(--radius-md);
-  background: var(--bg);
-  font: 400 14px/1.3 var(--font-sans);
-  color: var(--ink-muted);
-  text-align: center;
-}
-
-.panel-verif__cifras b {
+.panel-estado__lider,
+.panel-vino__hora {
   display: block;
-  font: 400 30px/1.1 var(--font-serif);
-  color: var(--ink);
-}
-
-/* Cada sala: cabecera granate y una fila por persona */
-.panel-verif__sala {
-  margin-bottom: var(--space-4);
-  border: 1px solid rgba(115, 47, 36, 0.18);
-  border-radius: var(--radius-md);
-  background: var(--bg);
-  overflow: hidden;
-}
-
-.panel-verif__cabeza {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-4);
-  background: var(--primary);
-  color: var(--on-primary);
-  font: 400 19px/1.3 var(--font-serif);
-}
-
-.panel-verif__cabeza small {
+  margin-top: 4px;
   font: 600 12px/1.3 var(--font-sans);
-}
-
-.panel-verif__fila {
-  display: grid;
-  grid-template-columns: minmax(0, 2fr) 1fr 1fr;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-2) var(--space-4);
-  border-bottom: 1px dashed rgba(115, 47, 36, 0.15);
-  font: 400 14px/1.4 var(--font-sans);
-  color: var(--ink);
-}
-
-.panel-verif__fila--titulos {
-  font: 600 11px/1.3 var(--font-sans);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
   color: var(--ink-muted);
 }
 
-.panel-verif__correo {
-  overflow-wrap: anywhere;
-}
-
-.panel-chip {
-  display: inline-block;
-  padding: 3px 10px;
-  border-radius: var(--radius-full);
-  font: 600 12px/1.4 var(--font-sans);
-  white-space: nowrap;
-}
-
-.panel-chip--si { background: #e3ecd9; color: #3f5a2c; }
-.panel-chip--no { background: #f6e0d6; color: #9b2c22; }
-.panel-chip--pendiente { background: #f3ead7; color: #8a6d2b; }
-
-.panel-verif__boton {
-  margin: var(--space-2) var(--space-4) var(--space-3);
+.panel-anadir__boton {
+  margin-top: var(--space-3);
   padding: 4px 0;
   color: var(--accent);
   font: 600 14px/1.4 var(--font-sans);
@@ -1095,64 +965,73 @@ main.panel {
   cursor: pointer;
 }
 
-.panel-verif__anadir {
+.panel-anadir {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-2);
-  padding: var(--space-3) var(--space-4);
+  margin-top: var(--space-3);
 }
 
-.panel-verif__anadir .panel__busqueda {
+.panel-anadir .panel__busqueda {
   flex: 1 1 260px;
   margin: 0;
 }
 
-.panel-verif__nota {
+.panel-anadir__nota {
   flex-basis: 100%;
   font: 400 13px/1.4 var(--font-sans);
   color: var(--ink-muted);
 }
 
-.panel-verif__nota b {
+.panel-anadir__nota b {
   color: #9b2c22;
 }
 
-/* Móvil: el correo arriba y las dos columnas debajo, una al lado de la otra */
-@media (max-width: 640px) {
-  .panel-verif__resumen,
-  .panel-verif__cuerpo {
-    padding-left: var(--space-4);
-    padding-right: var(--space-4);
-  }
-
-  .panel-verif__titulo {
-    font-size: 26px;
-  }
-
-  .panel-verif__cifras b {
-    font-size: 24px;
-  }
-
-  .panel-verif__fila {
-    grid-template-columns: 1fr 1fr;
-    row-gap: 6px;
-  }
-
-  .panel-verif__correo {
-    grid-column: 1 / -1;
-    font-weight: 600;
-  }
-
-  .panel-verif__fila--titulos span:first-child {
-    display: none;
-  }
+/* Turnos sin reservas: una fila por turno con su «+ Añadir integrante» */
+.panel-vacias {
+  margin-top: var(--space-8);
+  padding: var(--space-6) var(--space-8);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .panel-verif__cuerpo,
-  .panel-verif__flecha {
-    animation: none;
-    transition: none;
+.panel-vacias__titulo {
+  margin-bottom: var(--space-2);
+  font: 400 28px/1.2 var(--font-serif);
+  color: var(--ink);
+}
+
+.panel-vacias__fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  padding: var(--space-2) 0;
+  border-bottom: 1px dashed rgba(115, 47, 36, 0.2);
+}
+
+.panel-vacias__hora {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font: 400 22px/1.2 var(--font-serif);
+  color: var(--ink);
+}
+
+.panel-vacias__fila .panel-anadir__boton {
+  margin-top: 0;
+}
+
+.panel-vacias__fila .panel-anadir {
+  flex-basis: 100%;
+  margin-top: 0;
+}
+
+@media (max-width: 640px) {
+  .panel-vacias {
+    padding: var(--space-4);
   }
 }

@@ -20,7 +20,7 @@ Resumen para quien siga con la web. Los detalles técnicos están en `CLAUDE.md`
 
 ## Reglas de las reservas
 - De 3 a 6 personas por turno; con 1 o 2 solo se puede entrar en un grupo en formación.
-- Un correo = una reserva. La líder queda confirmada; cada integrante tiene **48 h** (desde que le invitan) para confirmar, con recordatorio 12 h antes.
+- Un correo = una reserva. La líder queda confirmada; cada integrante tiene **48 h** (desde que le invitan) para confirmar, con un correo recordatorio el día antes de que caduque (cuando quedan entre 12 y 36 h).
 - Lista de espera («Avísame si se libera una plaza»).
 - Fragmentos de la frase «Dos rostros, un espíritu: elegid bien.» repartidos al azar en cada sala.
 - Iconos de perfil al azar (fijos por correo) en `public/assets/img/perfiles/`.
