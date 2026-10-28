@@ -115,7 +115,6 @@ alter table miembros add column if not exists puerta_en timestamptz;
 -- Cada turno dura una hora: 45 minutos de experiencia + 15 de cortesía para recolocar la sala.
 insert into turnos (inicio, fin, erasmus)
 select * from (values
-  ('9:00',  '10:00', false),
   ('10:00', '11:00', false),
   ('11:00', '12:00', false),
   ('12:00', '13:00', false),

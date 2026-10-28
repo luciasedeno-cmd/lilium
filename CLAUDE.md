@@ -55,6 +55,7 @@
 - `db/esquema.sql`: tablas y turnos del día. Se aplica con `npm run db:migrar`.
 - `db/borrar-reservas.sql`: vacía todas las reservas (los turnos se quedan).
 - `db/cambiar-turnos.sql`: para cambiar los turnos desde el SQL Editor de Supabase (borra las reservas que haya).
+- **Turno de las 9:00 quitado** (`TURNOS_QUITADOS` en `lib/config.js`, por hora de inicio): `limpiar` (`lib/reservas.js`) lo borra solo de la base de datos si nadie ha reservado en él; si alguien ya tenía plaza, se queda para esa gente, pero `listarTurnos` ya no lo ofrece. Quitado también de `db/esquema.sql` y `db/cambiar-turnos.sql`. Ahora hay 9 turnos (10:00–14:00 y 16:00–21:00).
 - Iconos de perfil (`public/assets/img/perfiles/`, 9 símbolos × 6 colores; el de Lilith se quitó a petición del equipo): `lib/fotos.js` → `iconosDe(correos)` da a cada persona uno «al azar» fijo según su correo, sin repetir símbolo ni color dentro del grupo.
 - `public/assets/`: imágenes y SVG. `public/prototipo.html`: prototipo antiguo de una sola página (solo referencia).
 - `/api/cron` lo llama **Vercel una vez al día** (`vercel.json` → `crons`, 9:00 UTC = 10:00 en España; en el plan gratuito de Vercel no se puede más a menudo). Vercel manda sola la cabecera con `CRON_SECRET` (tiene que existir esa variable en Vercel). Opcional: `.github/workflows/recordatorios.yml` lo llama además cada hora si se ponen los secretos `LILIUM_URL` y `CRON_SECRET` en GitHub.
