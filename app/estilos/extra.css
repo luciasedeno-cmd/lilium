@@ -209,6 +209,126 @@
   width: 100%;
 }
 
+/* ---------- Entrada escaneada por el equipo (app/entrada/[token]/EntradaEquipo.js) ----------
+   Ficha a pantalla completa en el móvil: sello de color grande, título en Baskerville y datos */
+.puerta {
+  display: grid;
+  place-items: center;
+  min-height: 100svh;
+  padding: 24px 16px;
+  background: var(--fondo);
+}
+
+.puerta__ficha {
+  --sello: var(--verde-oscuro);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: min(420px, 100%);
+  padding: 32px 24px;
+  border-radius: 18px;
+  background: var(--fondo-oscuro);
+  box-shadow: var(--sombra);
+  color: var(--verde-oscuro);
+  text-align: center;
+  animation: pop-confirmar-entra 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.puerta__ficha--verde { --sello: #4f6b3a; }
+.puerta__ficha--naranja { --sello: var(--naranja); }
+.puerta__ficha--rojo { --sello: #9b2c22; }
+.puerta__ficha--gris { --sello: var(--crudo); }
+
+.puerta__lirio {
+  width: 44px;
+  height: auto;
+}
+
+.puerta__etiqueta {
+  font: 600 11px/1 var(--font-inter);
+  letter-spacing: 0.22em;
+  color: var(--crudo);
+}
+
+.puerta__sello {
+  display: grid;
+  place-items: center;
+  width: 112px;
+  height: 112px;
+  margin: 6px 0;
+  border-radius: 50%;
+  background: var(--sello);
+  color: #fff;
+  font: 400 58px/1 var(--font-inter);
+  box-shadow: 0 10px 24px rgba(41, 47, 32, 0.2);
+}
+
+.puerta__titulo {
+  font: 400 30px/1.1 var(--font-baskervville);
+  text-transform: uppercase;
+  color: var(--sello);
+}
+
+.puerta__texto {
+  font: 400 15px/1.45 var(--font-inter);
+}
+
+.puerta__datos {
+  width: 100%;
+  border-top: 1px dashed rgba(115, 47, 35, 0.3);
+}
+
+.puerta__datos div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px dashed rgba(115, 47, 35, 0.3);
+  font: 400 13px/1.35 var(--font-inter);
+}
+
+.puerta__datos dt {
+  color: var(--gris-texto);
+}
+
+.puerta__datos dd {
+  font-weight: 600;
+  text-align: right;
+  word-break: break-word;
+}
+
+.puerta__boton {
+  width: 100%;
+  margin-top: 6px;
+  padding: 13px;
+  border: 1.5px solid var(--terracota);
+  border-radius: 4px;
+  background: var(--terracota);
+  color: var(--fondo);
+  font: 400 17px/1 var(--font-baskervville);
+  cursor: pointer;
+}
+
+.puerta__boton--borde {
+  background: transparent;
+  color: var(--terracota);
+}
+
+.puerta__boton:disabled {
+  opacity: 0.5;
+}
+
+.puerta__fallo {
+  font: 600 13px/1.4 var(--font-inter);
+  color: #9b2c22;
+}
+
+.puerta__nota {
+  font: 400 12px/1.4 var(--font-inter);
+  color: var(--gris-texto);
+}
+
 /* ---------- ERASMUS BANNER (pop-up al entrar) ---------- */
 .erasmus-pop {
   position: fixed;

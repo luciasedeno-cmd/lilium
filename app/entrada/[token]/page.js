@@ -1,13 +1,33 @@
-// Página que abre el QR de la entrada: el equipo de la puerta comprueba si es válida
+// Página que abre el QR de la entrada.
+// - En el móvil de alguien del equipo (con la llave del panel /admin): se apunta sola la asistencia de esa
+//   persona y se ve su ficha en grande (verde = registrada ahora, naranja = ya se había escaneado), con «Deshacer».
+// - En cualquier otro móvil (por ejemplo, la propia persona): solo dice si la entrada es válida, como antes.
 import { miembroPorToken, reservaDe } from "@/lib/reservas";
+import { registrarEntrada } from "@/lib/retiro";
+import { conLlavePrevia } from "@/lib/previaServidor";
 import { conDb } from "@/lib/db";
 import { EVENTO } from "@/lib/config";
+import EntradaEquipo from "./EntradaEquipo";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Entrada · Lilium", robots: { index: false } };
 
 export default async function Entrada({ params }) {
   const { token } = await params;
+
+  // Móvil del equipo: se registra la asistencia al abrir la página
+  if (await conLlavePrevia()) {
+    const r = await conDb(() => registrarEntrada(token));
+    const hora = r.persona?.asistio_en
+      ? new Date(r.persona.asistio_en).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Madrid" })
+      : null;
+    return (
+      <EntradaEquipo estado={r.estado} email={r.persona?.email || null} hora={hora}
+        turno={r.persona ? `${EVENTO.fechaTexto} · ${r.persona.inicio}–${r.persona.fin}` : null}
+        equipo={r.persona?.equipo || null} llegadas={r.llegadas ?? null} total={r.total ?? null} />
+    );
+  }
+
   const { miembro, reserva } = await conDb(async () => {
     const m = await miembroPorToken(token);
     return { miembro: m, reserva: m ? await reservaDe(m.email) : null };

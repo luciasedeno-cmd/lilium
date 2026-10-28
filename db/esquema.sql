@@ -108,6 +108,8 @@ create table if not exists mirando (
   visto     timestamptz not null default now()
 );
 alter table mirando enable row level security;
+-- Personas que el equipo apunta en la puerta el día del retiro (llegaron sin reserva): cuándo
+alter table miembros add column if not exists puerta_en timestamptz;
 
 -- Turnos del día (edítalos aquí o desde el panel de Supabase). Solo se insertan si la tabla está vacía.
 -- Cada turno dura una hora: 45 minutos de experiencia + 15 de cortesía para recolocar la sala.
