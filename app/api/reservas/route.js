@@ -2,6 +2,7 @@
 // en la sala: si la sala está vacía se crea su grupo; si ya tiene grupo, entran en ese mismo grupo.
 import { correoDeSesion } from "@/lib/sesion";
 import { crearReserva, fragmentosDe } from "@/lib/reservas";
+import { dejarDeMirar } from "@/lib/mirando";
 import { correoInvitacion, correoEntrada, urlSitio } from "@/lib/correo";
 import { reservasAbiertas, MIN_SALA_NUEVA, MAX_PERSONAS, DOMINIO } from "@/lib/config";
 import { ok, error, manejar, leerJson } from "@/lib/respuestas";
@@ -28,6 +29,7 @@ export const POST = manejar(async (req) => {
 
   const res = await crearReserva({ lider, otros, turnoId: Number(turnoId), equipo, notas });
   if (!res.ok) return error(MENSAJES[res.error](res), 409, { motivo: res.error });
+  await dejarDeMirar(lider).catch(() => {}); // ya ha reservado: deja de contar como «mirando»
 
   // Correos: invitación a cada integrante y entrada al líder (ya confirmado).
   // Si falla un envío la reserva sigue creada; se informa para avisar a mano.

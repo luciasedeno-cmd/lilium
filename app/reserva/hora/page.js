@@ -14,6 +14,8 @@ import { useIdioma } from "@/components/Idioma";
 import PiePagina from "@/components/PiePagina";
 import { IconoCheck } from "@/components/Iconos";
 import { nombreAlAzar } from "@/lib/nombresEquipo";
+import { useMirando } from "@/lib/useMirando";
+import Mirando from "@/components/Mirando";
 
 const TEXTOS = {
   es: {
@@ -52,7 +54,7 @@ function motivoBloqueo(turno, total, t = TEXTOS.es) {
   return null;
 }
 
-function Sala({ turno, total, escogida, onElegir, onEsperar }) {
+function Sala({ turno, total, escogida, mirando, onElegir, onEsperar }) {
   const t = TEXTOS[useIdioma().idioma];
   const bloqueo = motivoBloqueo(turno, total, t);
   const libre = turno.estado === "libre";
@@ -84,6 +86,8 @@ function Sala({ turno, total, escogida, onElegir, onEsperar }) {
           {turno.erasmus && <span className="chip"><img src="/assets/svg/icono-mundo.svg" width="15" height="15" alt="" />{t.soloErasmus}</span>}
         </div>
         {turno.equipo && <p className="sala__nombre">“{turno.equipo}”</p>}
+        {/* Cuánta gente más está mirando este turno ahora mismo */}
+        <Mirando n={mirando} className="sala__mirando" />
 
         {/* Las 6 plazas del turno: ocupadas (con icono) y libres (círculo vacío) */}
         <div className="sala__plazas-fila">
@@ -139,6 +143,13 @@ export default function Hora() {
     filtro === "erasmus" ? x.erasmus : filtro === "hueco" ? !motivoBloqueo(x, total) : true
   );
   const escogido = (turnos || []).find((x) => x.id === borrador.turnoId && !motivoBloqueo(x, total));
+  // Cada 10 s: se avisa del turno elegido y llegan cuántas personas miran cada turno y sus plazas al día
+  const vivo = useMirando(escogido?.id);
+  useEffect(() => {
+    if (!vivo) return;
+    const ahora = Object.fromEntries(vivo.turnos.map((x) => [x.id, x]));
+    setTurnos((lista) => lista && lista.map((x) => (ahora[x.id] ? { ...x, ...ahora[x.id], en_espera: x.en_espera } : x)));
+  }, [vivo]);
 
   // «Avísame si se libera una plaza»: apunta a la persona en la lista de espera de ese turno
   async function esperar(turno) {
@@ -215,7 +226,7 @@ export default function Hora() {
 
           <ul className="salas" role="radiogroup" aria-label={t.disponibles}>
             {visibles.map((x) => (
-              <Sala key={x.id} turno={x} total={total} escogida={escogido?.id === x.id} onElegir={elegir} onEsperar={esperar} />
+              <Sala key={x.id} turno={x} total={total} escogida={escogido?.id === x.id} mirando={vivo?.mirando?.[x.id]} onElegir={elegir} onEsperar={esperar} />
             ))}
           </ul>
 

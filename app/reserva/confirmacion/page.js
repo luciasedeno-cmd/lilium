@@ -15,6 +15,10 @@ import { iconosDe } from "@/lib/fotos";
 import { EVENTO, eventoEn, HORAS_CONFIRMACION, MIN_SALA_NUEVA, MAX_PERSONAS } from "@/lib/config";
 import { useIdioma } from "@/components/Idioma";
 import { nombreAlAzar } from "@/lib/nombresEquipo";
+import { useMirando } from "@/lib/useMirando";
+import { cabe, turnoCercano } from "@/lib/turnos";
+import Mirando from "@/components/Mirando";
+import TurnoPerdido from "@/components/TurnoPerdido";
 
 const TEXTOS = {
   es: {
@@ -43,6 +47,7 @@ const TEXTOS = {
       ? `Para abrir una sala libre hacen falta al menos ${MIN_SALA_NUEVA} personas. Añade a alguien o elige otro turno.`
       : "En ese turno ya no cabe todo el grupo. Elige otro turno.",
     volverHora: "Elegir otro turno",
+    compartida: "Otro grupo acaba de entrar en este turno: si confirmáis, compartiréis la sala con él.",
   },
   en: {
     etiqueta: "CONFIRMATION", titulo: "Review your room",
@@ -70,6 +75,7 @@ const TEXTOS = {
       ? `Opening an empty room needs at least ${MIN_SALA_NUEVA} people. Add someone or choose another session.`
       : "Your whole group no longer fits in that session. Choose another one.",
     volverHora: "Choose another session",
+    compartida: "Another group has just joined this session: if you confirm, you'll share the room with them.",
   },
 };
 
@@ -92,6 +98,11 @@ export default function Confirmacion() {
   const [enviando, setEnviando] = useState(false);
   const [terminos, setTerminos] = useState(false);
   const [normas, setNormas] = useState(false);
+  const [perdido, setPerdido] = useState(null); // { perdido, alternativa, motivo } si otro grupo ocupa el turno
+  const [compartida, setCompartida] = useState(false); // la sala estaba libre y ha entrado otro grupo (cabéis igual)
+  // Cada 10 s: cuánta gente más mira este turno y las plazas de todos los turnos ahora mismo
+  const vivo = useMirando(turno?.id);
+  const tamano = borrador ? (borrador.integrantes || []).length + 1 : 0;
 
   useEffect(() => {
     const b = leerBorrador();
@@ -110,6 +121,20 @@ export default function Confirmacion() {
   useEffect(() => {
     if (sinNombre && !borrador.equipoAzar) setBorrador(guardarBorrador({ equipoAzar: nombreAlAzar(idioma) }));
   }, [sinNombre, borrador, idioma]);
+
+  // ¿Ha cambiado el turno elegido mientras se revisaba? Si el grupo cabía y ya no cabe → pop-up con otro
+  // turno; si sigue cabiendo, se ponen al día sus plazas (y se avisa si ahora compartirán sala).
+  useEffect(() => {
+    if (!vivo || !turno || perdido || enviando) return;
+    const ahora = vivo.turnos.find((x) => x.id === turno.id);
+    if (!ahora || (ahora.ocupadas === turno.ocupadas && ahora.equipo === turno.equipo)) return;
+    if (cabe(turno, tamano) && !cabe(ahora, tamano)) {
+      setPerdido({ perdido: turno, alternativa: turnoCercano(vivo.turnos, turno, tamano), motivo: ahora.ocupadas < turno.ocupadas ? "vacio" : "ocupado" });
+      return;
+    }
+    if (turno.ocupadas === 0 && ahora.ocupadas > 0) setCompartida(true);
+    setTurno((x) => ({ ...x, ...ahora }));
+  }, [vivo]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!lider || !borrador || !turno) return <Cargando error={errorSesion || error} />;
 
@@ -137,9 +162,26 @@ export default function Confirmacion() {
       datos: { otros, turnoId: turno.id, equipo: nueva ? nombreElegido : "", notas: borrador.notas || "", aceptaTerminos: true },
     });
     setEnviando(false);
+    // Otro grupo ha reservado justo antes: pop-up con el turno con sitio más cercano
+    if (!res.ok && (res.motivo === "sin_hueco" || res.motivo === "minimo")) {
+      const r = await api("/api/turnos");
+      if (r.ok) {
+        setError("");
+        return setPerdido({ perdido: turno, alternativa: turnoCercano(r.turnos, turno, miembros.length), motivo: res.motivo === "minimo" ? "vacio" : "ocupado" });
+      }
+    }
     if (!res.ok) return setError(res.mensaje);
     borrarBorrador();
     router.replace(res.fallidos?.length ? `/mi-reserva?fallidos=${encodeURIComponent(res.fallidos.join(","))}` : "/mi-reserva?nueva=1");
+  }
+
+  // Pop-up: pasar al turno propuesto (aún hay que pulsar «Confirmar reserva»)
+  function cambiarTurno(nuevo) {
+    actualizar({ turnoId: nuevo.id });
+    setTurno(nuevo);
+    setCompartida(false);
+    setPerdido(null);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function anular() {
@@ -236,6 +278,9 @@ export default function Confirmacion() {
           {/* ---------- Columna 3: resumen y botón ---------- */}
           <aside className="rev-resumen" aria-labelledby="rev-resumen-titulo">
             <h2 className="rev-resumen__titulo" id="rev-resumen-titulo">{t.resumen}</h2>
+            {/* «2 personas más están mirando este turno ahora mismo» */}
+            <Mirando n={vivo?.mirando?.[turno.id]} largo className="mirando--resumen" />
+            {compartida && <p className="rev-resumen__compartida" role="status">{t.compartida}</p>}
             <dl className="rev-resumen__filas">
               <div><dt>{t.sala}</dt><dd>{equipo}</dd></div>
               <div><dt>{t.fecha}</dt><dd>{fechaCorta}</dd></div>
@@ -267,6 +312,11 @@ export default function Confirmacion() {
             </ol>
           </aside>
         </div>
+        {/* Otro grupo ha ocupado el turno mientras se revisaba: se propone el más cercano con sitio */}
+        {perdido && (
+          <TurnoPerdido perdido={perdido.perdido} alternativa={perdido.alternativa} motivo={perdido.motivo}
+            onCambiar={cambiarTurno} onVerTodos={() => router.push("/reserva/hora")} />
+        )}
       </main>
       <PiePagina />
     </>

@@ -101,6 +101,14 @@ create table if not exists cola (
 create index if not exists cola_creada on cola (creada);
 alter table cola enable row level security;
 
+-- «X personas están mirando este turno» (lib/mirando.js): qué turno mira cada persona mientras reserva
+create table if not exists mirando (
+  email     text primary key,
+  turno_id  integer not null references turnos(id) on delete cascade,
+  visto     timestamptz not null default now()
+);
+alter table mirando enable row level security;
+
 -- Turnos del día (edítalos aquí o desde el panel de Supabase). Solo se insertan si la tabla está vacía.
 -- Cada turno dura una hora: 45 minutos de experiencia + 15 de cortesía para recolocar la sala.
 insert into turnos (inicio, fin, erasmus)
