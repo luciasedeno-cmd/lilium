@@ -14,7 +14,6 @@ import NavReserva from "@/components/NavReserva";
 import PiePagina from "@/components/PiePagina";
 import { api } from "@/lib/borrador";
 import { useEspera } from "@/lib/useEspera";
-import { iconosDe } from "@/lib/fotos";
 import { ADMIN_CORREO, APERTURA, EVENTO, MAX_PERSONAS, ORIGENES } from "@/lib/config";
 import { useTextos } from "@/components/Idioma";
 
@@ -42,7 +41,8 @@ const TEXTOS = {
     noVinieron: "Palabras de quien no ha venido (dádselas al grupo):", palabraTitulo: "Su palabra de la frase secreta",
     persona: "Persona", estado: "Estado", vino: "¿Ha venido?", valoro: "¿Ha valorado?",
     lider: "Líder", confirmada: "Confirmada", pendiente: "Sin confirmar", enPuerta: "✓ En la puerta",
-    aLas: (h) => `a las ${h}`, turnosVacios: "Turnos sin reservas",
+    aLas: (h) => `a las ${h}`, turnosVacios: "Turnos sin reservas", correo: "Correo", plazasCorto: "plazas",
+    sinEscanear: "— Sin escanear", noVino: "✕ No vino", marcarSi: "Marcar que ha venido", marcarNo: "Marcar que no ha venido",
     si: "Sí", no: "No", valorado: "Sí", noValorado: "Todavía no", correoEnviado: "Correo enviado",
     errorGuardar: "No se ha podido guardar. Inténtalo de nuevo.",
     leyenda: "«¿Ha venido?» se marca «Sí» solo al escanear el QR de su entrada en la puerta (con este panel abierto en el móvil); también se puede marcar a mano. «¿Ha valorado?» se marca sola cuando la persona rellena el cuestionario (QR de la sala). Si no lo hace, al día siguiente del retiro le llega un correo pidiéndoselo.",
@@ -104,7 +104,8 @@ const TEXTOS = {
     noVinieron: "Words of people who didn't come (give them to the group):", palabraTitulo: "Their word of the secret phrase",
     persona: "Person", estado: "Status", vino: "Attended?", valoro: "Rated?",
     lider: "Leader", confirmada: "Confirmed", pendiente: "Not confirmed", enPuerta: "✓ At the door",
-    aLas: (h) => `at ${h}`, turnosVacios: "Sessions without bookings",
+    aLas: (h) => `at ${h}`, turnosVacios: "Sessions without bookings", correo: "Email", plazasCorto: "places",
+    sinEscanear: "— Not scanned", noVino: "✕ Didn't come", marcarSi: "Mark as attended", marcarNo: "Mark as not attended",
     si: "Yes", no: "No", valorado: "Yes", noValorado: "Not yet", correoEnviado: "Email sent",
     errorGuardar: "Couldn't save. Try again.",
     leyenda: "“Attended?” is set to “Yes” automatically when their ticket QR is scanned at the door (with this dashboard open on the phone); it can also be ticked by hand. “Rated?” is ticked automatically when the person fills in the questionnaire (QR in the room). If they don't, they get an email the day after the retreat asking them to.",
@@ -405,25 +406,23 @@ function Panel({ t, datos, aviso, marcar, actualizar, salir }) {
 
         <div className="panel__salas">
           {salas.map((s) => (
-            <section className="panel-sala" key={s.id} aria-labelledby={`sala-${s.id}`}>
-              <header className="panel-sala__cabecera">
-                <h2 id={`sala-${s.id}`}>
-                  <span className="panel-sala__hora">{s.inicio}–{s.fin}</span>
-                  <span className="panel-sala__equipo">{s.equipo || t.salaSinNombre}</span>
+            <section className="sv" key={s.id} aria-labelledby={`sala-${s.id}`}>
+              {/* Cabecera granate: hora, nombre del grupo, plazas y cuántas han llegado */}
+              <header className="sv__cabeza">
+                <h2 id={`sala-${s.id}`} className="sv__titulo">
+                  {s.inicio}–{s.fin} · “{s.equipo || t.salaSinNombre}”
+                  {s.erasmus && <span className="sv__badge">{t.erasmus}</span>}
                 </h2>
-                <p className="panel-sala__plazas">
-                  {s.erasmus && <span className="ll-badge">{t.erasmus}</span>}
-                  <b>{s.ocupadas}</b>/{MAX_PERSONAS}
-                </p>
-                {/* Cuántas han llegado ya (se va llenando al escanear los QR en la puerta) */}
-                <p className="panel-sala__llegadas">
+                <p className="sv__cuenta">
                   {t.verLlegadas(s.grupos.flatMap((g) => g.personas).filter((p) => p.asistio === true).length, s.ocupadas)}
+                  <span> · {s.ocupadas}/{MAX_PERSONAS} {t.plazasCorto}</span>
                 </p>
               </header>
 
               {s.grupos.map((g, n) => (
                 <Grupo key={g.id} t={t} grupo={g} numero={s.grupos.length > 1 ? n + 1 : null} marcar={marcar} />
               ))}
+              <div className="sv__pie">
               {/* Quien está marcado como «No ha venido»: su palabra falta en la sala */}
               {(() => {
                 const faltan = s.grupos.flatMap((g) => g.personas).filter((p) => p.asistio === false && p.fragmento).map((p) => p.fragmento);
@@ -445,6 +444,7 @@ function Panel({ t, datos, aviso, marcar, actualizar, salir }) {
               {s.ocupadas < MAX_PERSONAS && !busca && (
                 <AnadirIntegrante t={t} sala={s} hueco={MAX_PERSONAS - s.ocupadas} alCambiar={actualizar} />
               )}
+              </div>
             </section>
           ))}
         </div>
@@ -872,60 +872,60 @@ function Cifra({ etiqueta, valor, nota, destacada }) {
 }
 
 function Grupo({ t, grupo, numero, marcar }) {
-  const iconos = iconosDe(grupo.personas.map((p) => p.email));
   return (
-    <div className="panel-grupo">
-      {numero && <p className="panel-grupo__titulo">{t.grupo(numero)}</p>}
-      <table className="panel-tabla">
-        <thead>
-          <tr>
-            <th scope="col">{t.persona}</th>
-            <th scope="col">{t.estado}</th>
-            <th scope="col">{t.vino}</th>
-            <th scope="col">{t.valoro}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {grupo.personas.map((p, i) => (
-            <tr key={p.email}>
-              <td className="panel-tabla__persona" data-titulo={t.persona}>
-                <img src={iconos[i]} width="36" height="36" alt="" />
-                <span>{p.email}</span>
+    <div className="sv__grupo">
+      {numero && <p className="sv__grupo-titulo">{t.grupo(numero)}</p>}
+      <div className="sv__tabla" role="table">
+        <div className="sv__fila sv__fila--titulos" role="row">
+          <span role="columnheader">{t.correo}</span>
+          <span role="columnheader">{t.estado}</span>
+          <span role="columnheader">{t.vino}</span>
+          <span role="columnheader">{t.valoro}</span>
+        </div>
+        {grupo.personas.map((p) => (
+          <div key={p.email} className="sv__fila" role="row">
+            <span role="cell" className="sv__persona">
+              <span className="sv__correo">{p.email}</span>
+              <span className="sv__extra">
+                {p.lider && <b className="sv__lider">{t.lider}</b>}
                 {/* Su palabra de la frase secreta (solo se ve aquí, en el panel del equipo) */}
                 {p.fragmento && (
                   <span className="panel-palabra" title={t.palabraTitulo}>
                     <small>{p.fragmento.numero}</small> {p.fragmento.palabra}
                   </span>
                 )}
-              </td>
-              <td data-titulo={t.estado}>
-                {/* ¿Confirmó su plaza desde el correo? (o la apuntó el equipo en la puerta) */}
-                <span className={`panel-estado${p.confirmado ? " is-ok" : ""}`}>
-                  {p.puerta ? t.enPuerta : p.confirmado ? `✓ ${t.confirmada}` : t.pendiente}
-                </span>
-                {p.lider && <small className="panel-estado__lider">{t.lider}</small>}
-              </td>
-              <td data-titulo={t.vino}>
-                {/* Sí / No: pulsar la opción elegida otra vez la quita */}
-                <div className="panel-vino" role="group" aria-label={`${t.vino} ${p.email}`}>
-                  <button type="button" className={`panel-vino__si${p.asistio === true ? " is-elegido" : ""}`} aria-pressed={p.asistio === true}
-                    onClick={() => marcar(p.email, p.asistio === true ? null : true)}>{t.si}</button>
-                  <button type="button" className={`panel-vino__no${p.asistio === false ? " is-elegido" : ""}`} aria-pressed={p.asistio === false}
-                    onClick={() => marcar(p.email, p.asistio === false ? null : false)}>{t.no}</button>
-                </div>
-                {/* Se marca «Sí» solo al escanear su QR en la puerta; aquí, a qué hora */}
-                {p.asistio === true && p.asistioEn && <small className="panel-vino__hora">{t.aLas(horaEspana(p.asistioEn))}</small>}
-              </td>
-              <td data-titulo={t.valoro}>
-                <span className={`panel-valoro${p.valorado ? " is-ok" : ""}`}>
-                  {p.valorado ? `✓ ${t.valorado}` : p.avisoValoracion ? t.correoEnviado : t.noValorado}
-                </span>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {grupo.notas && <p className="panel-grupo__notas"><b>{t.notas}:</b> {grupo.notas}</p>}
+              </span>
+            </span>
+
+            {/* ¿Confirmó su plaza desde el correo? (o la apuntó el equipo en la puerta) */}
+            <span role="cell" data-titulo={t.estado}>
+              <span className={`panel-chip ${p.confirmado ? "panel-chip--si" : "panel-chip--pendiente"}`}>
+                {p.puerta ? t.enPuerta : p.confirmado ? `✓ ${t.confirmada}` : t.pendiente}
+              </span>
+            </span>
+
+            {/* ¿Ha venido? Se pone en «✓» solo al escanear su QR; ✓ / ✕ para marcarlo a mano (pulsar otra vez lo quita) */}
+            <span role="cell" data-titulo={t.vino} className="sv__vino">
+              <span className={`panel-chip ${p.asistio === true ? "panel-chip--si" : "panel-chip--no"}`}>
+                {p.asistio === true ? `✓ ${p.asistioEn ? horaEspana(p.asistioEn) : t.si}` : p.asistio === false ? t.noVino : t.sinEscanear}
+              </span>
+              <span className="sv__marcar" role="group" aria-label={`${t.vino} ${p.email}`}>
+                <button type="button" className={`sv__boton sv__boton--si${p.asistio === true ? " is-elegido" : ""}`} aria-pressed={p.asistio === true}
+                  title={t.marcarSi} aria-label={t.marcarSi} onClick={() => marcar(p.email, p.asistio === true ? null : true)}>✓</button>
+                <button type="button" className={`sv__boton sv__boton--no${p.asistio === false ? " is-elegido" : ""}`} aria-pressed={p.asistio === false}
+                  title={t.marcarNo} aria-label={t.marcarNo} onClick={() => marcar(p.email, p.asistio === false ? null : false)}>✕</button>
+              </span>
+            </span>
+
+            <span role="cell" data-titulo={t.valoro}>
+              <span className={`panel-chip ${p.valorado ? "panel-chip--si" : p.avisoValoracion ? "panel-chip--pendiente" : "panel-chip--gris"}`}>
+                {p.valorado ? `✓ ${t.valorado}` : p.avisoValoracion ? t.correoEnviado : t.noValorado}
+              </span>
+            </span>
+          </div>
+        ))}
+      </div>
+      {grupo.notas && <p className="sv__notas"><b>{t.notas}:</b> {grupo.notas}</p>}
     </div>
   );
 }
