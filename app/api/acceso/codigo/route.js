@@ -1,5 +1,5 @@
 // POST /api/acceso/codigo · { email } → envía un código de 6 dígitos al correo
-import { correoPermitido, DOMINIO, normalizarCorreo, reservasAbiertas } from "@/lib/config";
+import { correoPermitido, normalizarCorreo, reservasAbiertas } from "@/lib/config";
 import { nuevoCodigo } from "@/lib/codigos";
 import { correoCodigo } from "@/lib/correo";
 import { ok, error, manejar, leerJson } from "@/lib/respuestas";
@@ -10,7 +10,7 @@ export const POST = manejar(async (req) => {
   const correo = normalizarCorreo(email);
   // Alumnado de ESADA o, como excepción, los correos de ADMIN_CORREOS (por ejemplo, el profesor)
   if (!correoPermitido(correo)) {
-    return error(`Usa tu correo institucional: nombreapellido@${DOMINIO}`);
+    return error("Usa tu correo de ESADA: nombreapellido@alumnado.esada.es (alumnado) o nombre@esada.es (profesorado).");
   }
   if (!reservasAbiertas(correo) && !(await conLlavePrevia())) return error("Las reservas abren el 30 de octubre a las 12:00.", 403);
 

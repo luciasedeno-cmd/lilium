@@ -16,7 +16,9 @@ const MENSAJES = {
   no_es_del_grupo: (r) => `No puedes quitar a ${r.email}: solo a las personas que apuntaste tú.`,
   ya_en_grupo: (r) => `${r.email} ya está en tu grupo.`,
   inscrito: (r) => `${r.email} ya está en otra reserva. Cada correo solo puede estar en una.`,
-  sin_hueco: (r) => `En vuestro turno solo caben ${MAX_PERSONAS} personas: podéis añadir ${Math.max(0, r.hueco)} como mucho.`,
+  sin_hueco: (r) => `Ahora mismo podéis añadir ${Math.max(0, r.hueco)} como mucho (máximo ${MAX_PERSONAS} por turno; hasta el 2 de noviembre a las 12:00 una plaza está guardada para el profesorado).`,
+  profe_solo: () => "Como profesorado, reservas solo tu plaza: no puedes apuntar a más personas.",
+  profe_invitado: (r) => `${r.email} es del profesorado: cada profesor reserva su plaza por su cuenta.`,
 };
 
 export const POST = manejar(async (req) => {

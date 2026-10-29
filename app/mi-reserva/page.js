@@ -11,7 +11,8 @@ import { IconoCheck, IconoCruz } from "@/components/Iconos";
 import { api } from "@/lib/borrador";
 import { useSesion } from "@/lib/useSesion";
 import { iconosDe } from "@/lib/fotos";
-import { eventoEn, MIN_SALA_NUEVA, MAX_PERSONAS, CORREO_VALIDO, CONTACTO } from "@/lib/config";
+import { eventoEn, MIN_SALA_NUEVA, MAX_PERSONAS, CORREO_VALIDO, CONTACTO, esProfesorado } from "@/lib/config";
+import { huecoPara } from "@/lib/turnos";
 import { useIdioma } from "@/components/Idioma";
 import { fechaHora } from "@/lib/idioma";
 
@@ -32,7 +33,7 @@ const TEXTOS = {
     guardadoFallidos: (c) => `Cambios guardados, pero no pudimos enviar la invitación a: ${c}. Avísales de que entren en la web con su correo.`,
     guardadoInvitados: "Cambios guardados. Hemos enviado la invitación a las personas nuevas: tienen 48 h para confirmar.", guardado: "Cambios guardados.",
     cargando: "Cargando tu reserva…", nuevo: "Nuevo · recibirá la invitación al guardar", seQuitara: "Se quitará del grupo al guardar",
-    lider: "Líder", invitado: "Invitado", apuntadoPor: (c) => `Apuntado por ${c}`, porSuCuenta: "Reservó por su cuenta", confirmado: "Confirmado", pendienteHasta: (f) => `Pendiente (hasta el ${f})`,
+    profesorado: "Profesorado", lider: "Líder", invitado: "Invitado", apuntadoPor: (c) => `Apuntado por ${c}`, porSuCuenta: "Reservó por su cuenta", confirmado: "Confirmado", pendienteHasta: (f) => `Pendiente (hasta el ${f})`,
     miReserva: "Mi reserva", numero: "Nº", tuReserva: "Tu reserva", qrAlt: "QR de tu entrada: enséñalo en la puerta",
     sinQr: "Tu entrada (el código QR) aparecerá aquí cuando confirmes tu plaza desde el enlace de tu correo.",
     pendiente: "Pendiente de confirmación", confirmada: "Confirmada", llegad: "llegad 15 min antes", soloErasmus: "Solo Erasmus",
@@ -63,7 +64,7 @@ const TEXTOS = {
     guardadoFallidos: (c) => `Changes saved, but we couldn't send the invitation to: ${c}. Tell them to sign in to the website with their email.`,
     guardadoInvitados: "Changes saved. We've sent the invitation to the new people: they have 48 h to confirm.", guardado: "Changes saved.",
     cargando: "Loading your booking…", nuevo: "New · will get the invitation when you save", seQuitara: "Will be removed from the group when you save",
-    lider: "Leader", invitado: "Guest", apuntadoPor: (c) => `Added by ${c}`, porSuCuenta: "Booked on their own", confirmado: "Confirmed", pendienteHasta: (f) => `Pending (until ${f})`,
+    profesorado: "Teaching staff", lider: "Leader", invitado: "Guest", apuntadoPor: (c) => `Added by ${c}`, porSuCuenta: "Booked on their own", confirmado: "Confirmed", pendienteHasta: (f) => `Pending (until ${f})`,
     miReserva: "My booking", numero: "No.", tuReserva: "Your booking", qrAlt: "Your ticket's QR: show it at the door",
     sinQr: "Your ticket (the QR code) will appear here once you confirm your place from the link in your email.",
     pendiente: "Pending confirmation", confirmada: "Confirmed", llegad: "arrive 15 min early", soloErasmus: "Erasmus only",
@@ -255,8 +256,10 @@ function MiReservaContenido() {
   const gestiona = Boolean(yo.responsable);
   const esMia = (m) => m.nuevo || (m.apuntadoPor === yo.email && m.email !== yo.email);
   const pendientes = miembros.filter((m) => !m.confirmado).length;
-  // Plazas libres en el turno teniendo en cuenta los cambios sin guardar
-  const hueco = MAX_PERSONAS - turno.ocupadas + quitar.length - anadir.length;
+  // Plazas libres en el turno para añadir alumnado, teniendo en cuenta los cambios sin guardar
+  // (hasta el 2 de noviembre a las 12:00, si no hay profesorado en la sala, una plaza está guardada para él)
+  const soyProfe = esProfesorado(yo.email);
+  const hueco = huecoPara({ ocupadas: turno.ocupadas, profe: miembros.some((m) => esProfesorado(m.email)) }, false) + quitar.length - anadir.length;
   const lista = [...miembros.map((m) => ({ ...m, nuevo: false })), ...anadir.map((c) => ({ email: c, confirmado: false, nuevo: true }))];
   // Toda la gente de la sala está en un solo grupo (lib/reservas.js), así que aquí sale todo el equipo
   const iconos = iconosDe(lista.map((m) => m.email)); // icono de perfil de cada persona
@@ -268,6 +271,7 @@ function MiReservaContenido() {
     if (quitar.includes(m.email)) return t.seQuitara;
     // Líder (quien abrió la sala); quien reservó por su cuenta; o «Invitado» (y, si no lo apunté yo, quién lo apuntó)
     let papel = m.email === lider ? t.lider : m.apuntadoPor === m.email ? t.porSuCuenta : t.invitado;
+    if (esProfesorado(m.email)) papel = m.email === lider ? `${t.lider} · ${t.profesorado}` : t.profesorado; // indicador de profesorado
     if (m.email !== lider && m.apuntadoPor && m.apuntadoPor !== m.email && m.apuntadoPor !== yo.email && m.apuntadoPor !== lider) {
       papel = `${papel} · ${t.apuntadoPor(m.apuntadoPor)}`;
     }
@@ -326,7 +330,8 @@ function MiReservaContenido() {
               <img className="mr-equipo__icono" src={iconoEquipo} width="250" height="250" alt="" />
               <p className="mr-equipo__nombre">{turno.equipo ? `“${turno.equipo}”` : t.hermandad}</p>
               <p className="mr-equipo__tipo">{turno.ocupadas < MIN_SALA_NUEVA ? t.formacion : t.sala} · {turno.ocupadas}/{MAX_PERSONAS} {t.personas}</p>
-              {gestiona && !editando && (
+              {/* El profesorado reserva solo su plaza: no tiene gente que editar */}
+              {gestiona && !editando && !soyProfe && (
                 <button className="mr-boton mr-boton--lleno" type="button" onClick={empezarEdicion} disabled={ocupado}>{t.editar}</button>
               )}
               {gestiona ? (
@@ -403,7 +408,8 @@ function MiReservaContenido() {
               <p>{t.cambioTexto}</p>
               <ul className="cambio-hora__lista">
                 {cambiando.map((x) => {
-                  const posible = x.estado === "formacion" && x.hueco >= 1;
+                  // `x.hueco` ya cuenta la plaza del profesorado; el profesorado también puede pasar a una sala vacía
+                  const posible = (x.estado === "formacion" || (soyProfe && x.estado === "libre")) && x.hueco >= 1;
                   return (
                     <li key={x.id}>
                       <button type="button" className="chip" disabled={!posible || ocupado} onClick={() => moverA(x.id)}>

@@ -14,6 +14,7 @@ import PiePagina from "@/components/PiePagina";
 import { useTextos } from "@/components/Idioma";
 import RetratosPaso from "@/components/RetratosPaso";
 import { IconoCruz, IconoMas } from "@/components/Iconos";
+import { esProfesorado } from "@/lib/config";
 
 // Aquí solo se mira que tenga forma de correo: el servidor comprueba que sea de ESADA
 // (o de las personas autorizadas por el equipo, como el profesor)
@@ -30,6 +31,10 @@ const TEXTOS = {
     avisoTitulo: "Mínimo 3 personas para abrir sala nueva.", avisoTexto: "Con 1 o 2 personas, únete a un grupo en formación para completar la hermandad.",
     abrirSala: "Continuar y abrir sala nueva →", unirme: "Continuar y unirme a un grupo →",
     pista: "nombreapellido@alumnado.esada.es", hueco: "Hay un correo sin escribir: rellénalo o quítalo con la ✕.",
+    // Profesorado (correo @esada.es): reserva solo su plaza
+    tuProfe: "Tú (profesorado)", introProfe: "Como profesorado, reservas solo tu plaza. En cada sala hay una plaza guardada para el profesorado: puedes unirte a un grupo o abrir tú una sala vacía.",
+    continuarProfe: "Continuar y elegir hora →", avisoProfeTitulo: "Una plaza de profesorado por sala.",
+    avisoProfeTexto: "Si nadie del profesorado la coge antes del lunes 2 de noviembre a las 12:00, se libera para el alumnado.",
   },
   en: {
     titulo: "Who's coming to the meadow?", intro: "Write the emails of all the members so they receive the confirmation in their inbox.",
@@ -39,6 +44,9 @@ const TEXTOS = {
     avisoTitulo: "Minimum 3 people to open a new room.", avisoTexto: "With 1 or 2 people, join a group still forming to complete the circle.",
     abrirSala: "Continue and open a new room →", unirme: "Continue and join a group →",
     pista: "namesurname@alumnado.esada.es", hueco: "There's an empty email: fill it in or remove it with the ✕.",
+    tuProfe: "You (teaching staff)", introProfe: "As teaching staff, you only book your own place. Every room keeps one place for teaching staff: you can join a group or open an empty room yourself.",
+    continuarProfe: "Continue and choose a time →", avisoProfeTitulo: "One teaching staff place per room.",
+    avisoProfeTexto: "If no teacher takes it before Monday 2 November at 12:00, it's released for students.",
   },
 };
 
@@ -83,7 +91,14 @@ export default function Integrantes() {
   }
 
   // Antes de seguir: cada correo escrito tiene que estar bien y sin repetir; los huecos vacíos, fuera
+  // Profesorado: reserva solo su plaza (sin más integrantes)
+  const profesorado = esProfesorado(lider);
+
   function continuar() {
+    if (profesorado) {
+      guardarBorrador({ integrantes: [] });
+      return router.push("/reserva/hora");
+    }
     const vistos = new Set([lider]);
     for (const f of filas) {
       const c = f.correo.trim().toLowerCase();
@@ -113,7 +128,7 @@ export default function Integrantes() {
 
         <section className="integrantes-intro">
           <h1 className="titular">{t.titulo}</h1>
-          <p>{t.intro}</p>
+          <p>{profesorado ? t.introProfe : t.intro}</p>
         </section>
 
         <section className="int-grupo" aria-label={t.integrantes}>
@@ -124,17 +139,19 @@ export default function Integrantes() {
                 <img src="/assets/img/icono-lirio.webp" width="99" height="80" alt="" />
               </span>
               <div>
-                <p className="int-lider__nombre">{t.tuLider}</p>
+                <p className="int-lider__nombre">{profesorado ? t.tuProfe : t.tuLider}</p>
                 <p className="int-lider__correo">{lider}</p>
               </div>
             </div>
-            <button className="boton-mas int-mas" type="button" onClick={anadir} aria-label={t.anadir} disabled={filas.length + 1 >= MAX_PERSONAS}>
-              <IconoMas />
-            </button>
+            {!profesorado && (
+              <button className="boton-mas int-mas" type="button" onClick={anadir} aria-label={t.anadir} disabled={filas.length + 1 >= MAX_PERSONAS}>
+                <IconoMas />
+              </button>
+            )}
           </div>
 
           {/* Un hueco por cada persona añadida */}
-          {filas.length > 0 && (
+          {!profesorado && filas.length > 0 && (
             <ul className="int-huecos">
               {filas.map((f, i) => (
                 <li className="int-hueco" key={f.id}>
@@ -163,12 +180,12 @@ export default function Integrantes() {
         </section>
 
         <button className="boton integrantes-continuar" type="button" onClick={continuar}>
-          {total >= MIN_SALA_NUEVA ? t.abrirSala : t.unirme}
+          {profesorado ? t.continuarProfe : total >= MIN_SALA_NUEVA ? t.abrirSala : t.unirme}
         </button>
 
         <p className="int-aviso">
-          <b>{t.avisoTitulo}</b>
-          <span>{t.avisoTexto}</span>
+          <b>{profesorado ? t.avisoProfeTitulo : t.avisoTitulo}</b>
+          <span>{profesorado ? t.avisoProfeTexto : t.avisoTexto}</span>
         </p>
       </main>
       <PiePagina />

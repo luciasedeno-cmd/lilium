@@ -14,7 +14,7 @@ import NavReserva from "@/components/NavReserva";
 import PiePagina from "@/components/PiePagina";
 import { api } from "@/lib/borrador";
 import { useEspera } from "@/lib/useEspera";
-import { ADMIN_CORREO, APERTURA, EVENTO, MAX_PERSONAS, ORIGENES } from "@/lib/config";
+import { ADMIN_CORREO, APERTURA, EVENTO, MAX_PERSONAS, ORIGENES, esProfesorado, plazaProfeGuardada } from "@/lib/config";
 import { useTextos } from "@/components/Idioma";
 
 const TEXTOS = {
@@ -41,7 +41,7 @@ const TEXTOS = {
     noVinieron: "Palabras de quien no ha venido (dádselas al grupo):", palabraTitulo: "Su palabra de la frase secreta",
     persona: "Persona", estado: "Estado", vino: "¿Ha venido?", valoro: "¿Ha valorado?",
     lider: "Líder", confirmada: "Confirmada", pendiente: "Sin confirmar", enPuerta: "✓ En la puerta",
-    aLas: (h) => `a las ${h}`, turnosVacios: "Turnos sin reservas", correo: "Correo", plazasCorto: "plazas",
+    aLas: (h) => `a las ${h}`, turnosVacios: "Turnos sin reservas", profesorado: "Profesorado", plazaProfe: "1 plaza guardada para profesorado", correo: "Correo", plazasCorto: "plazas",
     sinEscanear: "— Sin escanear", noVino: "✕ No vino", marcarSi: "Marcar que ha venido", marcarNo: "Marcar que no ha venido",
     si: "Sí", no: "No", valorado: "Sí", noValorado: "Todavía no", correoEnviado: "Correo enviado",
     errorGuardar: "No se ha podido guardar. Inténtalo de nuevo.",
@@ -104,7 +104,7 @@ const TEXTOS = {
     noVinieron: "Words of people who didn't come (give them to the group):", palabraTitulo: "Their word of the secret phrase",
     persona: "Person", estado: "Status", vino: "Attended?", valoro: "Rated?",
     lider: "Leader", confirmada: "Confirmed", pendiente: "Not confirmed", enPuerta: "✓ At the door",
-    aLas: (h) => `at ${h}`, turnosVacios: "Sessions without bookings", correo: "Email", plazasCorto: "places",
+    aLas: (h) => `at ${h}`, turnosVacios: "Sessions without bookings", profesorado: "Teaching staff", plazaProfe: "1 place kept for teaching staff", correo: "Email", plazasCorto: "places",
     sinEscanear: "— Not scanned", noVino: "✕ Didn't come", marcarSi: "Mark as attended", marcarNo: "Mark as not attended",
     si: "Yes", no: "No", valorado: "Yes", noValorado: "Not yet", correoEnviado: "Email sent",
     errorGuardar: "Couldn't save. Try again.",
@@ -416,6 +416,10 @@ function Panel({ t, datos, aviso, marcar, actualizar, salir }) {
                 <p className="sv__cuenta">
                   {t.verLlegadas(s.grupos.flatMap((g) => g.personas).filter((p) => p.asistio === true).length, s.ocupadas)}
                   <span> · {s.ocupadas}/{MAX_PERSONAS} {t.plazasCorto}</span>
+                  {/* Hasta el 2 de noviembre a las 12:00, si nadie del profesorado ha entrado, su plaza sigue guardada */}
+                  {plazaProfeGuardada() && s.ocupadas < MAX_PERSONAS && !s.grupos.some((g) => g.personas.some((p) => esProfesorado(p.email))) && (
+                    <span> · {t.plazaProfe}</span>
+                  )}
                 </p>
               </header>
 
@@ -888,6 +892,7 @@ function Grupo({ t, grupo, numero, marcar }) {
               <span className="sv__correo">{p.email}</span>
               <span className="sv__extra">
                 {p.lider && <b className="sv__lider">{t.lider}</b>}
+                {esProfesorado(p.email) && <b className="sv__profe">{t.profesorado}</b>}
                 {/* Su palabra de la frase secreta (solo se ve aquí, en el panel del equipo) */}
                 {p.fragmento && (
                   <span className="panel-palabra" title={t.palabraTitulo}>

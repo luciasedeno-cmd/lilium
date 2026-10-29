@@ -12,7 +12,7 @@ import { IconoCheck, IconoCruz } from "@/components/Iconos";
 import { leerBorrador, guardarBorrador, borrarBorrador, api } from "@/lib/borrador";
 import { useSesion } from "@/lib/useSesion";
 import { iconosDe } from "@/lib/fotos";
-import { EVENTO, eventoEn, HORAS_CONFIRMACION, MIN_SALA_NUEVA, MAX_PERSONAS } from "@/lib/config";
+import { EVENTO, eventoEn, HORAS_CONFIRMACION, MIN_SALA_NUEVA, MAX_PERSONAS, esProfesorado } from "@/lib/config";
 import { useIdioma } from "@/components/Idioma";
 import { nombreAlAzar } from "@/lib/nombresEquipo";
 import { useMirando } from "@/lib/useMirando";
@@ -128,8 +128,9 @@ export default function Confirmacion() {
     if (!vivo || !turno || perdido || enviando) return;
     const ahora = vivo.turnos.find((x) => x.id === turno.id);
     if (!ahora || (ahora.ocupadas === turno.ocupadas && ahora.equipo === turno.equipo)) return;
-    if (cabe(turno, tamano) && !cabe(ahora, tamano)) {
-      setPerdido({ perdido: turno, alternativa: turnoCercano(vivo.turnos, turno, tamano), motivo: ahora.ocupadas < turno.ocupadas ? "vacio" : "ocupado" });
+    const profe = esProfesorado(lider); // el profesorado puede abrir una sala vacía solo
+    if (cabe(turno, tamano, profe) && !cabe(ahora, tamano, profe)) {
+      setPerdido({ perdido: turno, alternativa: turnoCercano(vivo.turnos, turno, tamano, profe), motivo: ahora.ocupadas < turno.ocupadas ? "vacio" : "ocupado" });
       return;
     }
     if (turno.ocupadas === 0 && ahora.ocupadas > 0) setCompartida(true);
@@ -147,7 +148,9 @@ export default function Confirmacion() {
   const equipo = nueva ? nombreElegido || t.sinNombre : turno.equipo || t.sinNombre;
   const iconoEquipo = iconosDe([`equipo:${equipo.trim().toLowerCase()}`])[0]; // emblema del equipo
   // ¿Sigue valiendo el turno con el grupo actual? (se puede quitar gente desde aquí)
-  const valido = nueva ? miembros.length >= MIN_SALA_NUEVA : turno.hueco >= miembros.length;
+  // Profesorado: reserva solo su plaza y puede abrir una sala vacía; `turno.hueco` ya cuenta la plaza guardada
+  const profe = esProfesorado(lider);
+  const valido = (nueva && !profe ? miembros.length >= MIN_SALA_NUEVA : true) && turno.hueco >= miembros.length;
   const aceptado = terminos && normas;
   // Fecha corta para el resumen: «vie, 6 nov» / «Fri 6 Nov»
   const fechaCorta = new Date(`${EVENTO.fecha}T12:00:00`).toLocaleDateString(idioma === "en" ? "en-GB" : "es-ES", { weekday: "short", day: "numeric", month: "short" });
@@ -163,11 +166,11 @@ export default function Confirmacion() {
     });
     setEnviando(false);
     // Otro grupo ha reservado justo antes: pop-up con el turno con sitio más cercano
-    if (!res.ok && (res.motivo === "sin_hueco" || res.motivo === "minimo")) {
+    if (!res.ok && ["sin_hueco", "minimo", "plaza_profe", "profe_ocupada"].includes(res.motivo)) {
       const r = await api("/api/turnos");
       if (r.ok) {
         setError("");
-        return setPerdido({ perdido: turno, alternativa: turnoCercano(r.turnos, turno, miembros.length), motivo: res.motivo === "minimo" ? "vacio" : "ocupado" });
+        return setPerdido({ perdido: turno, alternativa: turnoCercano(r.turnos, turno, miembros.length, profe), motivo: res.motivo === "minimo" ? "vacio" : "ocupado" });
       }
     }
     if (!res.ok) return setError(res.mensaje);

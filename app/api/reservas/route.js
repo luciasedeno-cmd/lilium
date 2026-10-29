@@ -10,6 +10,10 @@ import { conLlavePrevia } from "@/lib/previaServidor";
 
 const MENSAJES = {
   correo: (r) => `${r.email} no es un correo válido (nombreapellido@${DOMINIO}).`,
+  profe_solo: () => "Como profesorado, reservas solo tu plaza: no puedes apuntar a más personas.",
+  profe_invitado: (r) => `${r.email} es del profesorado: cada profesor reserva su plaza por su cuenta.`,
+  profe_ocupada: () => "La plaza del profesorado de ese turno ya está cogida. Elige otro.",
+  plaza_profe: () => "En ese turno queda una plaza guardada para el profesorado (hasta el 2 de noviembre a las 12:00). Elige otro turno.",
   repetido: () => "Hay correos repetidos en el grupo.",
   maximo: () => `Máximo ${MAX_PERSONAS} personas por turno.`,
   turno: () => "Ese turno no existe.",

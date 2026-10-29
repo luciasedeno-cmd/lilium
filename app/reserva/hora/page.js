@@ -16,6 +16,7 @@ import { IconoCheck } from "@/components/Iconos";
 import { nombreAlAzar } from "@/lib/nombresEquipo";
 import { useMirando } from "@/lib/useMirando";
 import Mirando from "@/components/Mirando";
+import { esProfesorado, plazaProfeGuardada } from "@/lib/config";
 
 const TEXTOS = {
   es: {
@@ -30,6 +31,13 @@ const TEXTOS = {
     primeros: "¡Sois los primeros en este turno! Poned nombre al equipo (opcional: si lo dejáis vacío, os pondremos uno al azar)", alAzar: "Nombre al azar", ejemplo: "Ej.: Las Hijas del Solsticio", continuar: "Continuar y confirmar →",
     filtros: "Filtrar turnos", fTodos: "Todos", fHueco: "Con hueco para vosotros", fErasmus: "Solo Erasmus",
     ninguno: "No hay turnos con este filtro. Prueba con «Todos».", de: "de", libres: "libres", elegido: "Turno elegido",
+    // Profesorado: 1 plaza guardada por sala hasta el 2 de noviembre a las 12:00
+    plazaProfe: "1 plaza para profesorado", conProfe: "Con profesorado", asientoProfe: "Plaza guardada para el profesorado",
+    soloProfe: "Solo queda la plaza guardada para el profesorado (se libera el lunes 2 de noviembre a las 12:00).",
+    profeCogida: "La plaza del profesorado de este turno ya está cogida.",
+    eresProfe: "Reservas tu plaza de profesorado.", profePuedes: "Puedes unirte a un grupo o abrir tú una sala vacía.",
+    tuPlaza: "Tu plaza de profesorado está libre",
+    avisoProfe: "En cada sala hay 1 plaza guardada para el profesorado hasta el lunes 2 de noviembre a las 12:00. Si nadie la coge, se libera para el alumnado.",
   },
   en: {
     completo: "This session is full.", minimo: `You need at least ${MIN_SALA_NUEVA} people to open an empty room.`, sinHueco: "There isn't room for your whole group in this session.",
@@ -43,20 +51,42 @@ const TEXTOS = {
     primeros: "You're the first in this session! Name your team (optional: leave it empty and we'll pick one at random)", alAzar: "Random name", ejemplo: "E.g.: The Daughters of the Solstice", continuar: "Continue and confirm →",
     filtros: "Filter sessions", fTodos: "All", fHueco: "With space for you", fErasmus: "Erasmus only",
     ninguno: "No sessions match this filter. Try “All”.", de: "of", libres: "free", elegido: "Chosen session",
+    plazaProfe: "1 place for teaching staff", conProfe: "With teaching staff", asientoProfe: "Place kept for teaching staff",
+    soloProfe: "Only the place kept for teaching staff is left (it's released on Monday 2 November at 12:00).",
+    profeCogida: "The teaching staff place in this session is already taken.",
+    eresProfe: "You're booking your teaching staff place.", profePuedes: "You can join a group or open an empty room yourself.",
+    tuPlaza: "Your teaching staff place is free",
+    avisoProfe: "Every room keeps 1 place for teaching staff until Monday 2 November at 12:00. If nobody takes it, it's released for students.",
   },
 };
 
+/** Birrete (gorro de graduación): indicador del profesorado */
+function IconoBirrete() {
+  return (
+    <svg className="icono-birrete" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+      <path d="M12 4 1.5 9 12 14l8-3.8V16h1.5V9.3L12 4Z" fill="currentColor" />
+      <path d="M6 12.3v3.4c0 1.6 2.7 3.3 6 3.3s6-1.7 6-3.3v-3.4L12 15.3l-6-3Z" fill="currentColor" />
+    </svg>
+  );
+}
+
 /** ¿Puede este grupo elegir el turno? Devuelve null si sí, o el motivo si no. */
-function motivoBloqueo(turno, total, t = TEXTOS.es) {
+// `turno.hueco` ya viene calculado para quien mira (alumnado o profesorado; ver huecoPara en lib/turnos.js)
+function motivoBloqueo(turno, total, t = TEXTOS.es, profe = false) {
   if (turno.estado === "completo") return t.completo;
-  if (turno.estado === "libre" && total < MIN_SALA_NUEVA) return t.minimo;
-  if (turno.hueco < total) return t.sinHueco;
+  if (turno.estado === "libre" && total < MIN_SALA_NUEVA && !profe) return t.minimo; // el profesorado puede abrirla solo
+  if (turno.hueco < total) {
+    if (profe && turno.profe) return t.profeCogida;
+    // Cabrían si no fuera por la plaza guardada del profesorado
+    if (!profe && turno.plazaProfe && MAX_PERSONAS - turno.ocupadas >= total) return t.soloProfe;
+    return t.sinHueco;
+  }
   return null;
 }
 
-function Sala({ turno, total, escogida, mirando, onElegir, onEsperar }) {
+function Sala({ turno, total, escogida, mirando, profe, onElegir, onEsperar }) {
   const t = TEXTOS[useIdioma().idioma];
-  const bloqueo = motivoBloqueo(turno, total, t);
+  const bloqueo = motivoBloqueo(turno, total, t, profe);
   const libre = turno.estado === "libre";
   const llena = turno.estado === "completo";
   // Turno lleno (o sin hueco para todo el grupo): se puede pedir aviso si se libera una plaza
@@ -84,6 +114,9 @@ function Sala({ turno, total, escogida, mirando, onElegir, onEsperar }) {
         <div className="sala__chips">
           <span className={`chip chip--estado chip--${estado}`}>{libre ? t.libre : llena ? t.llena : t.formacion}</span>
           {turno.erasmus && <span className="chip"><img src="/assets/svg/icono-mundo.svg" width="15" height="15" alt="" />{t.soloErasmus}</span>}
+          {/* Indicador de profesorado: plaza guardada o ya hay alguien del profesorado en la sala */}
+          {turno.plazaProfe && <span className="chip chip--profe"><IconoBirrete />{t.plazaProfe}</span>}
+          {turno.profe && <span className="chip chip--profe"><IconoBirrete />{t.conProfe}</span>}
         </div>
         {turno.equipo && <p className="sala__nombre">“{turno.equipo}”</p>}
         {/* Cuánta gente más está mirando este turno ahora mismo */}
@@ -93,15 +126,21 @@ function Sala({ turno, total, escogida, mirando, onElegir, onEsperar }) {
         <div className="sala__plazas-fila">
           <div className="sala__asientos" aria-hidden="true">
             {Array.from({ length: MAX_PERSONAS }, (_, i) =>
-              i < turno.ocupadas ? <img key={i} src={iconos[i]} width="30" height="30" alt="" /> : <span key={i} className="sala__asiento" />
+              i < turno.ocupadas ? <img key={i} src={iconos[i]} width="30" height="30" alt="" />
+                // La última plaza, si está guardada para el profesorado, lleva un birrete
+                : turno.plazaProfe && i === MAX_PERSONAS - 1 ? <span key={i} className="sala__asiento sala__asiento--profe" title={t.asientoProfe}><IconoBirrete /></span>
+                : <span key={i} className="sala__asiento" />
             )}
           </div>
           <p className="sala__plazas">
-            {llena ? t.sinPlazas(turno.ocupadas) : <><b>{turno.hueco}</b> {t.de} {MAX_PERSONAS} {t.libres}</>}
+            {/* Alumnado: las plazas que puede coger (sin la del profesorado); profesorado: las plazas reales de la sala */}
+            {llena ? t.sinPlazas(turno.ocupadas) : <><b>{profe ? MAX_PERSONAS - turno.ocupadas : turno.hueco}</b> {t.de} {MAX_PERSONAS} {t.libres}</>}
           </p>
         </div>
-        {!llena && (
-          <p className="sala__perfecto">{t.perfecto} {libre ? `${MIN_SALA_NUEVA}-${MAX_PERSONAS}` : turno.hueco === 1 ? "1" : `1-${turno.hueco}`}</p>
+        {!llena && turno.hueco > 0 && (
+          <p className="sala__perfecto">
+            {profe ? t.tuPlaza : <>{t.perfecto} {libre ? `${MIN_SALA_NUEVA}-${turno.hueco}` : turno.hueco === 1 ? "1" : `1-${turno.hueco}`}</>}
+          </p>
         )}
       </div>
       {sinHueco && (
@@ -135,14 +174,15 @@ export default function Hora() {
   }, []);
 
   const actualizar = (cambios) => setBorrador(guardarBorrador(cambios));
-  const total = (borrador.integrantes || []).length + 1;
+  const profe = esProfesorado(lider); // profesorado: reserva solo su plaza
+  const total = profe ? 1 : (borrador.integrantes || []).length + 1;
   // Filtro de arriba: todos, solo los que tienen hueco para el grupo, o solo Erasmus
   const filtro = borrador.soloErasmus ? "erasmus" : borrador.filtro || "todos";
   const cambiarFiltro = (f) => actualizar({ filtro: f, soloErasmus: f === "erasmus" });
   const visibles = (turnos || []).filter((x) =>
-    filtro === "erasmus" ? x.erasmus : filtro === "hueco" ? !motivoBloqueo(x, total) : true
+    filtro === "erasmus" ? x.erasmus : filtro === "hueco" ? !motivoBloqueo(x, total, t, profe) : true
   );
-  const escogido = (turnos || []).find((x) => x.id === borrador.turnoId && !motivoBloqueo(x, total));
+  const escogido = (turnos || []).find((x) => x.id === borrador.turnoId && !motivoBloqueo(x, total, t, profe));
   // Cada 10 s: se avisa del turno elegido y llegan cuántas personas miran cada turno y sus plazas al día
   const vivo = useMirando(escogido?.id);
   useEffect(() => {
@@ -204,10 +244,14 @@ export default function Hora() {
             <p className="hora-info__grupo">
               <img src="/assets/svg/icono-personas.svg" width="26" height="24" alt="" />
               <span>
-                <b>{t.sois(total)}</b> {total >= MIN_SALA_NUEVA ? t.podeis : t.mostramos}{" "}
-                <Link href="/reserva/integrantes">{t.editar}</Link>
+                {profe ? <><b>{t.eresProfe}</b> {t.profePuedes}</> : <><b>{t.sois(total)}</b> {total >= MIN_SALA_NUEVA ? t.podeis : t.mostramos}{" "}
+                <Link href="/reserva/integrantes">{t.editar}</Link></>}
               </span>
             </p>
+            {/* Hasta el 2 de noviembre a las 12:00: aviso de la plaza guardada para el profesorado */}
+            {plazaProfeGuardada() && (
+              <p className="hora-info__profe"><IconoBirrete /><span>{t.avisoProfe}</span></p>
+            )}
           </div>
 
           {/* Filtros (como pestañas) */}
@@ -226,7 +270,7 @@ export default function Hora() {
 
           <ul className="salas" role="radiogroup" aria-label={t.disponibles}>
             {visibles.map((x) => (
-              <Sala key={x.id} turno={x} total={total} escogida={escogido?.id === x.id} mirando={vivo?.mirando?.[x.id]} onElegir={elegir} onEsperar={esperar} />
+              <Sala key={x.id} turno={x} total={total} profe={profe} escogida={escogido?.id === x.id} mirando={vivo?.mirando?.[x.id]} onElegir={elegir} onEsperar={esperar} />
             ))}
           </ul>
 

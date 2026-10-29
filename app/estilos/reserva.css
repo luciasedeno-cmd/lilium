@@ -1452,6 +1452,39 @@ main.paso > :nth-child(n + 5) { animation-delay: 0.24s; }
 .chip--formacion { color: var(--naranja); border-color: var(--naranja); }
 .chip--llena { color: #7d7468; border-color: #b7ad9f; }
 
+/* Profesorado: chip granate con birrete y la última plaza de la sala marcada con el birrete */
+.chip--profe {
+  color: var(--terracota);
+  border-color: var(--terracota);
+  background: rgba(115, 47, 35, 0.07);
+}
+
+.chip--profe .icono-birrete {
+  flex: none;
+}
+
+.sala__asiento--profe {
+  display: inline-grid;
+  place-items: center;
+  border-style: solid !important;
+  border-color: var(--terracota) !important;
+  color: var(--terracota);
+  background: rgba(115, 47, 35, 0.08);
+}
+
+/* Aviso de la plaza guardada para el profesorado, debajo del día y el grupo */
+.hora-info .hora-info__profe {
+  flex-basis: 100%;
+  justify-content: center;
+  gap: 8px;
+  font-size: 13.5px;
+  text-align: left;
+}
+
+.hora-info__profe .icono-birrete {
+  flex: none;
+}
+
 .paso--hora .sala__nombre {
   min-height: 0;
   margin: 0;

@@ -33,7 +33,7 @@ function TerminosEs() {
           <section aria-labelledby="t-reservas">
             <h2 id="t-reservas">Reservas</h2>
             <ul>
-              <li>Solo puede reservar el alumnado de ESADA con su correo institucional (@alumnado.esada.es).</li>
+              <li>Solo pueden reservar el alumnado (@alumnado.esada.es) y el profesorado (@esada.es) de ESADA, con su correo institucional. Hasta el lunes 2 de noviembre a las 12:00, en cada sala hay una plaza guardada para el profesorado; si nadie la coge, se libera para el alumnado.</li>
               <li>Cada turno es para un grupo de {MIN_SALA_NUEVA} a {MAX_PERSONAS} personas. Con menos de {MIN_SALA_NUEVA}, os unimos a un grupo que se esté formando.</li>
               <li>Cada correo solo puede estar en una reserva.</li>
               <li>Cada integrante tiene {HORAS_CONFIRMACION} horas para confirmar su plaza desde el enlace de su correo. Quien no confirme a tiempo pierde su plaza.</li>
@@ -93,7 +93,7 @@ function TerminosEn() {
           <section aria-labelledby="t-reservas">
             <h2 id="t-reservas">Bookings</h2>
             <ul>
-              <li>Only ESADA students can book, using their university email (@alumnado.esada.es).</li>
+              <li>Only ESADA students (@alumnado.esada.es) and teaching staff (@esada.es) can book, using their university email. Until Monday 2 November at 12:00, every room keeps one place for teaching staff; if nobody takes it, it is released for students.</li>
               <li>Each session is for a group of {MIN_SALA_NUEVA} to {MAX_PERSONAS} people. With fewer than {MIN_SALA_NUEVA}, we'll put you in a group that is being formed.</li>
               <li>Each email can only be in one booking.</li>
               <li>Each member has {HORAS_CONFIRMACION} hours to confirm their place from the link in their email. Anyone who doesn't confirm in time loses their place.</li>

@@ -815,6 +815,15 @@ main.panel {
   font: 600 11px/1.5 var(--font-sans);
 }
 
+/* Etiqueta de profesorado (correo @esada.es) */
+.sv__profe {
+  padding: 1px 8px;
+  border: 1px solid var(--primary);
+  border-radius: var(--radius-full);
+  color: var(--primary);
+  font: 600 11px/1.5 var(--font-sans);
+}
+
 .sv .panel-palabra {
   margin-left: 0;
   padding: 0 8px;

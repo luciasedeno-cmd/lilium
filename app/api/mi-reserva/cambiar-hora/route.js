@@ -14,6 +14,7 @@ const MENSAJES = {
   turno: "Ese turno no existe.",
   minimo: `Para abrir una sala libre hacen falta ${MIN_SALA_NUEVA} personas. Elige un grupo en formación.`,
   sin_hueco: "Ese turno ya no tiene hueco.",
+  profe_ocupada: "La plaza del profesorado de ese turno ya está cogida. Elige otro.",
 };
 
 export const POST = manejar(async (req) => {

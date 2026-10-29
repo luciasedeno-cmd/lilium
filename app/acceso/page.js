@@ -18,9 +18,9 @@ const CORREO_VALIDO = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const TEXTOS = {
   es: {
     etiqueta: "ACCESO", antes: "Antes de entrar al prado...", revisa: "Revisa tu correo", dentro: "Ya estás dentro",
-    intro: "Solo el alumnado de ESADA puede reservar. Confirma tu correo institucional y te enviaremos un código.",
-    correo: "Correo institucional", formato: "Formato: nombreapellido@alumnado.esada.es",
-    correoMal: "Usa tu correo institucional: nombreapellido@alumnado.esada.es",
+    intro: "Pueden reservar el alumnado y el profesorado de ESADA. Confirma tu correo institucional y te enviaremos un código.",
+    correo: "Correo institucional", formato: "Formato: nombreapellido@alumnado.esada.es (profesorado: nombre@esada.es)",
+    correoMal: "Usa tu correo institucional: nombreapellido@alumnado.esada.es (profesorado: nombre@esada.es)",
     enviando: "Enviando…", enviar: "Enviar código", demo: "Modo pruebas (sin Gmail configurado): tu código es",
     pistaCorreo: "nombreapellido@alumnado.esada.es", pistaCodigo: "******",
     reenviarEn: (s) => `Podrás pedir otro código en ${s} s`,
@@ -31,9 +31,9 @@ const TEXTOS = {
   },
   en: {
     etiqueta: "SIGN IN", antes: "Before entering the meadow...", revisa: "Check your email", dentro: "You're already in",
-    intro: "Only ESADA students can book. Confirm your university email and we'll send you a code.",
-    correo: "University email", formato: "Format: nameSurname@alumnado.esada.es",
-    correoMal: "Use your university email: nameSurname@alumnado.esada.es",
+    intro: "ESADA students and teaching staff can book. Confirm your university email and we'll send you a code.",
+    correo: "University email", formato: "Format: nameSurname@alumnado.esada.es (teaching staff: name@esada.es)",
+    correoMal: "Use your university email: nameSurname@alumnado.esada.es (teaching staff: name@esada.es)",
     enviando: "Sending…", enviar: "Send code", demo: "Test mode (Gmail not set up): your code is",
     pistaCorreo: "namesurname@alumnado.esada.es", pistaCodigo: "******",
     reenviarEn: (s) => `You can ask for another code in ${s} s`,
