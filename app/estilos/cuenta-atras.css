@@ -24,6 +24,14 @@ body:has(.cuenta) {
   background: url("/assets/img/hero-retiro.webp") center / cover no-repeat;
   color: var(--fondo);
   text-align: center;
+  /* El vídeo de fondo va detrás de todo lo demás */
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.cuenta__video {
+  z-index: -1;
 }
 
 .cuenta__reloj {

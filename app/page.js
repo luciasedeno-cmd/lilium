@@ -1,6 +1,7 @@
 // Portada: cuenta atrás hasta la apertura de las reservas (Figma: CUENTA REGRESIVA).
 // El cuadro a pantalla completa, «FALTAN», el reloj, el selector ES / EN y un botón pequeño «Admin».
 // Al llegar la fecha, lleva a confirmar el correo.
+import VideoFondo from "@/components/VideoFondo";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { APERTURA } from "@/lib/config";
@@ -21,6 +22,8 @@ export default async function Portada() {
 
   return (
     <main className="cuenta">
+      {/* De fondo, el cuadro en movimiento y en bucle */}
+      <VideoFondo className="cuenta__video" />
       {/* Título para buscadores y lectores de pantalla (no se ve) */}
       <h1 className="visually-hidden">{en ? "Lilium · Bookings open on Friday 30 October at 12:00" : "Lilium · Las reservas abren el viernes 30 de octubre a las 12:00"}</h1>
       <div className="cuenta__idioma"><SelectorIdioma /></div>

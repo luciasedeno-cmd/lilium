@@ -176,6 +176,23 @@ body:has(.hero) {
   background: url("/assets/img/hero-retiro.webp") center / cover no-repeat;
 }
 
+/* Vídeo de fondo (components/VideoFondo.js): cubre la capa entera, como el cuadro */
+.video-fondo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+/* Con «reducir movimiento», sin vídeo: queda el cuadro quieto */
+@media (prefers-reduced-motion: reduce) {
+  .video-fondo {
+    display: none;
+  }
+}
+
 /* Al bajar, la portada se oscurece poco a poco hacia el verde de la sección siguiente */
 .hero::after {
   content: "";

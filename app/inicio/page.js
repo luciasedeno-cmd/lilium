@@ -1,4 +1,5 @@
 // Home de Lilium (textos en español e inglés, según el idioma elegido arriba)
+import VideoFondo from "@/components/VideoFondo";
 import Link from "next/link";
 import { eventoEn } from "@/lib/config";
 import { idiomaActual } from "@/lib/idiomaServidor";
@@ -94,7 +95,10 @@ export default async function Inicio() {
         {/* Portada */}
         <section className="hero" data-fondo="oscuro" data-principal data-salida>
           {/* El cuadro va en una capa aparte para que se mueva más despacio (parallax) */}
-          <div className="hero__fondo" data-parallax="0.35" aria-hidden="true" />
+          <div className="hero__fondo" data-parallax="0.35" aria-hidden="true">
+            {/* El cuadro en movimiento, en bucle */}
+            <VideoFondo />
+          </div>
           <h1 className="hero__titulo">
             <span className="hero__linea hero__linea--1">{t.lineas[0]}</span>
             <span className="hero__linea hero__linea--2">{t.lineas[1]}</span>
