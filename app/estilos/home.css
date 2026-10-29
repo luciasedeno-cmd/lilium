@@ -186,6 +186,18 @@ body:has(.hero) {
   pointer-events: none;
 }
 
+/* Se ve la parte de ABAJO del cuadro (el río, la barca y las flores), pegada al borde de abajo de la pantalla:
+   lo que no cabe se recorta por arriba */
+.video-fondo {
+  object-position: center bottom;
+}
+
+/* En la portada, la capa del cuadro sobresale un 12 % por abajo (para el parallax): el vídeo termina justo
+   donde termina la portada (100 % − 12/124 de la capa), así su parte de abajo queda a la vista */
+.hero__fondo .video-fondo {
+  height: 90.32%; /* = 112/124: de arriba de la capa hasta el borde de abajo de la portada */
+}
+
 /* Con «reducir movimiento», sin vídeo: queda el cuadro quieto */
 @media (prefers-reduced-motion: reduce) {
   .video-fondo {
