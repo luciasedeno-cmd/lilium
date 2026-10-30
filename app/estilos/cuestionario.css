@@ -141,6 +141,38 @@ main.cues {
   outline-offset: 3px;
 }
 
+/* Notas (opcional): caja de texto como la del correo, más alta */
+.cues-notas {
+  width: min(100%, 560px);
+  min-height: 120px;
+  padding: var(--space-3) var(--space-4);
+  border: 2px solid var(--cream-50);
+  border-radius: 5px;
+  background: rgba(255, 250, 242, 0.12);
+  font: 400 16px/1.5 var(--font-sans);
+  color: #fff;
+  resize: vertical;
+}
+
+.cues-notas::placeholder {
+  color: rgba(255, 250, 242, 0.7);
+}
+
+.cues-notas:focus {
+  outline: 2px solid var(--cream-50);
+  outline-offset: 3px;
+}
+
+.cues-notas__opcional {
+  margin-left: 6px;
+  padding: 2px 8px;
+  border: 1px solid rgba(255, 250, 242, 0.7);
+  border-radius: 999px;
+  font: 500 11px/1.4 var(--font-sans);
+  letter-spacing: 0.06em;
+  vertical-align: middle;
+}
+
 .cues-correo__nota {
   max-width: 480px;
   font: 400 13px/1.4 var(--font-sans);

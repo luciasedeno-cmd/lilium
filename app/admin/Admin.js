@@ -69,7 +69,9 @@ const TEXTOS = {
     preguntas: { general: "Experiencia en general", ambientacion: "Ambientación y decoración", dificultad: "Dificultad de las pruebas",
       originalidad: "Originalidad de las pruebas", inmersion: "Inmersión en la historia", duracion: "Duración" },
     escalas: { dificultad: "1 = muy fácil · 5 = muy difícil", duracion: "1 = muy corta · 3 = genial · 5 = muy larga" },
-    columnas: { creada: "Fecha", idioma: "Idioma", turno: "Turno", origen: "Cómo se enteró" },
+    columnas: { creada: "Fecha", idioma: "Idioma", turno: "Turno", origen: "Cómo se enteró", comentario: "Notas" },
+    notasTitulo: "Notas", notasNinguna: "Todavía nadie ha dejado una nota (son opcionales).",
+    notasCuenta: (n) => (n === 1 ? "1 persona ha dejado una nota" : `${n} personas han dejado una nota`),
     datoCategoria: "eligieron esta", origenes: { instagram: "Instagram", amigas: "Amigas o clase", carteles: "Carteles en ESADA", correo: "Correo de ESADA", otro: "Otro" },
     mediaGeneral: "Media general", deCinco: "de 5", mediaNota: "Media de las 4 preguntas de estrellas",
     mediasTitulo: "La media de cada pregunta", mediasNota: "Dificultad y duración van aparte: ahí más alto no es mejor.",
@@ -130,7 +132,9 @@ const TEXTOS = {
     preguntas: { general: "Overall experience", ambientacion: "Atmosphere and set design", dificultad: "Difficulty of the challenges",
       originalidad: "Originality of the challenges", inmersion: "Immersion in the story", duracion: "Length" },
     escalas: { dificultad: "1 = very easy · 5 = very hard", duracion: "1 = too short · 3 = just right · 5 = too long" },
-    columnas: { creada: "Date", idioma: "Language", turno: "Session", origen: "How they heard" },
+    columnas: { creada: "Date", idioma: "Language", turno: "Session", origen: "How they heard", comentario: "Notes" },
+    notasTitulo: "Notes", notasNinguna: "Nobody has left a note yet (they're optional).",
+    notasCuenta: (n) => (n === 1 ? "1 person left a note" : `${n} people left a note`),
     datoCategoria: "chose this", origenes: { instagram: "Instagram", amigas: "Friends or classmates", carteles: "Posters at ESADA", correo: "ESADA email", otro: "Other" },
     mediaGeneral: "Overall average", deCinco: "out of 5", mediaNota: "Average of the 4 star questions",
     mediasTitulo: "Average of each question", mediasNota: "Difficulty and length are shown apart: higher isn't better there.",
@@ -637,13 +641,14 @@ function Valoraciones({ t }) {
 
   // Descarga: un archivo .csv (tabla de texto que abre Excel o Google Sheets) con una fila por respuesta
   function descargar() {
-    const cabecera = [t.columnas.creada, t.columnas.turno, ...PREGUNTAS.map((p) => t.preguntas[p.clave]), t.columnas.origen, t.columnas.idioma];
+    const cabecera = [t.columnas.creada, t.columnas.turno, ...PREGUNTAS.map((p) => t.preguntas[p.clave]), t.columnas.origen, t.columnas.idioma, t.columnas.comentario];
     const filas = respuestas.map((r) => [
       new Date(r.creada).toLocaleString("es-ES", { timeZone: "Europe/Madrid" }),
       r.turno || "",
       ...PREGUNTAS.map((p) => r[p.clave]),
       r.origen ? t.origenes[r.origen] || r.origen : "",
       r.idioma || "",
+      r.comentario || "",
     ]);
     // Punto y coma entre columnas y la marca «﻿» al principio: así Excel en español lo abre bien, con tildes
     const texto = "﻿" + [cabecera, ...filas].map((f) => f.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(";")).join("\r\n");
@@ -707,9 +712,35 @@ function Valoraciones({ t }) {
           {/* 3) Tarjetas, una por pregunta */}
           <p className="panel-val__etiqueta panel-val__etiqueta--tarjetas">{t.tarjetasTitulo}</p>
           <Tarjetas t={t} resumenes={tarjetas} />
+
+          {/* 4) Notas: lo que escribieron en «¿Quieres contarnos algo más?» (opcional), las más nuevas primero */}
+          <Notas t={t} respuestas={respuestas} />
         </>
       )}
     </section>
+  );
+}
+
+/** Notas libres del cuestionario: tarjetitas con el texto, la fecha y el turno (son anónimas) */
+function Notas({ t, respuestas }) {
+  const notas = respuestas.filter((r) => r.comentario && r.comentario.trim()).slice().reverse();
+  return (
+    <div className="panel-notas">
+      <p className="panel-val__etiqueta">{t.notasTitulo} · {notas.length ? t.notasCuenta(notas.length) : t.notasNinguna}</p>
+      {notas.length > 0 && (
+        <ul className="panel-notas__lista">
+          {notas.map((r, i) => (
+            <li key={i} className="panel-notas__nota">
+              <p className="panel-notas__texto">“{r.comentario}”</p>
+              <p className="panel-notas__datos">
+                {new Date(r.creada).toLocaleString("es-ES", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Europe/Madrid" })}
+                {r.turno && <> · {r.turno}</>}
+              </p>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
 

@@ -1036,3 +1036,39 @@ main.panel {
     padding: var(--space-4);
   }
 }
+
+/* ---------- Valoraciones · Notas libres del cuestionario ---------- */
+.panel-notas {
+  margin-top: var(--space-8);
+}
+
+.panel-notas__lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-3);
+  max-height: 520px;
+  overflow-y: auto;
+  padding: 2px;
+}
+
+.panel-notas__nota {
+  padding: var(--space-4);
+  border-left: 3px solid var(--primary);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  box-shadow: var(--shadow-card);
+}
+
+.panel-notas__texto {
+  font: italic 400 16px/1.5 var(--font-serif);
+  color: var(--ink);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.panel-notas__datos {
+  margin-top: var(--space-2);
+  font: 600 12px/1.3 var(--font-sans);
+  color: var(--ink-muted);
+}

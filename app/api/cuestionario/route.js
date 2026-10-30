@@ -29,13 +29,13 @@ export const POST = manejar(async (req) => {
     if (!Number.isInteger(n) || n < min || n > max) return error("Responde a todas las preguntas, por favor.");
     valores[clave] = n;
   }
-  // Comentario libre (la página actual no lo pide; la columna se queda por si se vuelve a usar)
+  // Notas: comentario libre y opcional de la última tarjeta («¿Quieres contarnos algo más?»)
   const comentario = String(datos.comentario || "").trim().slice(0, 1000) || null;
   const idioma = datos.idioma === "en" ? "en" : "es";
   // ¿Quién responde? Con el enlace del correo ya se sabe; si no, hace falta su correo de ESADA
   const token = typeof datos.token === "string" && datos.token.length > 10 ? datos.token : null;
   const email = token ? null : normalizarCorreo(datos.email);
-  if (!token && !CORREO_VALIDO.test(email || "")) return error(`Escribe tu correo de ESADA (nombreapellido@${DOMINIO}).`);
+  if (!token && !CORREO_VALIDO.test(email || "")) return error(`Escribe tu correo de ESADA (nombreapellido@${DOMINIO} o, si eres profesorado, nombre@esada.es).`);
 
   // Cómo se enteró de Lilium: una de las opciones de la lista
   const origen = ORIGENES.includes(datos.origen) ? datos.origen : null;

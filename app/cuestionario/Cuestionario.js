@@ -31,12 +31,14 @@ const TEXTOS = {
     estrellas: (n) => (n === 1 ? "1 estrella" : `${n} estrellas`),
     correoTitulo: "Tu correo de ESADA",
     correoNota: "Solo para saber que ya has respondido (y no escribirte para pedírtelo). Tus respuestas son anónimas.",
-    correoMal: "Escribe tu correo de ESADA (nombreapellido@alumnado.esada.es).",
+    correoMal: "Escribe tu correo de ESADA (nombreapellido@alumnado.esada.es o, si eres profesorado, nombre@esada.es).",
     dificultadEtiquetas: { 1: "Muy fácil", 5: "Muy difícil" },
     duracionEtiquetas: { 1: "Muy corta", 3: "Genial", 5: "Muy larga" },
     turnoNota: "Solo se guarda la hora, nunca tu nombre.", erasmus: "Erasmus",
     origenes: { instagram: "Instagram", amigas: "Amigas o clase", carteles: "Carteles en ESADA", correo: "Correo de ESADA", otro: "Otro" },
     enviar: "Enviar encuesta", enviando: "Enviando…",
+    notasTitulo: "¿Quieres contarnos algo más?", notasOpcional: "Opcional",
+    notasPista: "Lo que más te ha gustado, lo que cambiarías, una idea… (puedes dejarlo en blanco)",
     faltan: (n) => (n === 1 ? "Falta 1 pregunta por responder." : `Faltan ${n} preguntas por responder.`),
   },
   en: {
@@ -55,12 +57,14 @@ const TEXTOS = {
     estrellas: (n) => (n === 1 ? "1 star" : `${n} stars`),
     correoTitulo: "Your ESADA email",
     correoNota: "Only so we know you've answered (and don't write to ask you). Your answers are anonymous.",
-    correoMal: "Type your ESADA email (nameSurname@alumnado.esada.es).",
+    correoMal: "Type your ESADA email (nameSurname@alumnado.esada.es or, for teaching staff, name@esada.es).",
     dificultadEtiquetas: { 1: "Very easy", 5: "Very hard" },
     duracionEtiquetas: { 1: "Too short", 3: "Just right", 5: "Too long" },
     turnoNota: "Only the time is saved, never your name.", erasmus: "Erasmus",
     origenes: { instagram: "Instagram", amigas: "Friends or classmates", carteles: "Posters at ESADA", correo: "ESADA email", otro: "Other" },
     enviar: "Send survey", enviando: "Sending…",
+    notasTitulo: "Anything else you'd like to tell us?", notasOpcional: "Optional",
+    notasPista: "What you liked most, what you'd change, an idea… (you can leave it blank)",
     faltan: (n) => (n === 1 ? "1 question left to answer." : `${n} questions left to answer.`),
   },
 };
@@ -150,6 +154,7 @@ export default function Cuestionario({ turnos = [], turnoInicial = null }) {
   const [token, setToken] = useState(null);
   const [correo, setCorreo] = useState("");
   const [correoFalta, setCorreoFalta] = useState(false);
+  const [notas, setNotas] = useState(""); // comentario libre y opcional, al final
 
   useEffect(() => {
     const enlace = new URLSearchParams(window.location.search).get("t");
@@ -186,7 +191,7 @@ export default function Cuestionario({ turnos = [], turnoInicial = null }) {
       return irA(pendientes[0].clave);
     }
     setEnviando(true);
-    const r = await api("/api/cuestionario", { metodo: "POST", datos: { ...respuestas, idioma, token, email: token ? undefined : correo.trim() } });
+    const r = await api("/api/cuestionario", { metodo: "POST", datos: { ...respuestas, comentario: notas.trim(), idioma, token, email: token ? undefined : correo.trim() } });
     if (!r.ok) {
       setEnviando(false);
       return setMensaje(r.mensaje);
@@ -252,6 +257,16 @@ export default function Cuestionario({ turnos = [], turnoInicial = null }) {
               )}
             </section>
           ))}
+
+          {/* Notas: opcional (no cuenta para las preguntas que faltan) */}
+          <section className="cues-tarjeta cues-tarjeta--notas">
+            <label className="cues-tarjeta__titulo" htmlFor="cues-notas">
+              {t.notasTitulo} <span className="cues-notas__opcional">{t.notasOpcional}</span>
+            </label>
+            <textarea id="cues-notas" className="cues-notas" rows={4} maxLength={1000} placeholder={t.notasPista}
+              value={notas} onChange={(e) => setNotas(e.target.value)} />
+            <p className="cues-correo__nota" aria-live="polite">{notas.length} / 1000</p>
+          </section>
 
           <div className="cues__enviar">
             <button type="submit" className="cues__boton" disabled={enviando}>
