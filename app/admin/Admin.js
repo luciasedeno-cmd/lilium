@@ -915,7 +915,9 @@ function CorreosAlumnado({ t }) {
     setAvisos((a) => ({ ...a, [tipo]: "" }));
     const r = await api("/api/admin/correos", { metodo: "POST", datos: { tipo, ...datos } });
     setOcupado("");
-    const texto = !r.ok ? r.mensaje : tipo === "prueba" ? t.corPruebaHecho(datos.email) : t.corHecho(r.enviados, r.fallidos);
+    // Si alguno falla, se enseña también el motivo (lo que contesta Gmail, explicado)
+    const texto = !r.ok ? r.mensaje : tipo === "prueba" ? t.corPruebaHecho(datos.email)
+      : `${t.corHecho(r.enviados, r.fallidos)}${r.motivo ? ` ${r.motivo}` : ""}`;
     setAvisos((a) => ({ ...a, [tipo]: texto }));
     if (r.ok && tipo === "perdidas") setPegados("");
     contar();
