@@ -1072,3 +1072,69 @@ main.panel {
   font: 600 12px/1.3 var(--font-sans);
   color: var(--ink-muted);
 }
+
+/* ---------- «Correos al alumnado» (CorreosAlumnado en Admin.js) ---------- */
+.panel-correos {
+  margin-top: var(--space-12);
+  padding: var(--space-8);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+
+.panel-correos__bloques {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+}
+
+.panel-correos__bloque {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-top: 3px solid var(--primary);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+}
+
+.panel-correos__bloque h3 {
+  font: 400 20px/1.25 var(--font-serif);
+  color: var(--ink);
+}
+
+.panel-correos__bloque p {
+  font: 400 14px/1.5 var(--font-sans);
+  color: var(--ink-muted);
+}
+
+.panel-correos__bloque .ll-btn {
+  margin-top: auto;
+}
+
+.panel-correos__bloque .panel__busqueda {
+  width: 100%;
+}
+
+.panel-correos__pegar {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--ink);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  font: 400 14px/1.4 var(--font-sans);
+  color: var(--ink);
+  resize: vertical;
+}
+
+.panel-correos__bloque .panel-correos__aviso {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+@media (max-width: 640px) {
+  .panel-correos {
+    padding: var(--space-4);
+  }
+}

@@ -60,6 +60,21 @@ const TEXTOS = {
     verAnadir: (h) => `+ Añadir integrante (${h} ${h === 1 ? "plaza libre" : "plazas libres"})`,
     verPista: "correo de quien llega sin reserva", verGuardar: "Añadir", verCancelar: "Cancelar", verAnadiendo: "Añadiendo…",
     verNotaAnadir: "Queda con la plaza confirmada y la asistencia marcada.",
+    corTitulo: "Correos al alumnado",
+    corIntro: "Para escribir ahora a quien no ha confirmado su plaza o a quien la perdió. Antes de enviarlos de verdad, mándate la prueba y mira cómo se ven.",
+    corPruebaTitulo: "1 · Probar", corPruebaTexto: "Te llegan las dos versiones con «[PRUEBA]» en el asunto (con datos de ejemplo).",
+    corPruebaBoton: "Enviar las dos pruebas", corPruebaHecho: (c) => `✓ Pruebas enviadas a ${c}. Mira la bandeja de entrada (y la de spam).`,
+    corPendTitulo: "2 · «Confirma tu plaza antes de perderla»",
+    corPendTexto: "A quien aún no ha confirmado y sigue a tiempo. Le llega su turno, hasta cuándo tiene y el botón para confirmar.",
+    corPendBoton: (n) => (n === 1 ? "Enviar a 1 persona" : `Enviar a ${n} personas`),
+    corPerdTitulo: "3 · «¿Perdiste tu plaza? Aún estás a tiempo»",
+    corPerdTexto: "A quien perdió su plaza por no confirmar. La web las apunta desde hoy; las de antes no quedaron guardadas: pega sus correos aquí debajo (uno por línea o separados por comas). A quien ya vuelva a tener plaza no se le escribe, y a nadie se le escribe dos veces.",
+    corPerdPista: "correos de quienes perdieron su plaza antes de hoy (opcional)",
+    corPerdBoton: (n) => (n === 1 ? "Enviar a 1 persona (+ las pegadas)" : `Enviar a ${n} personas (+ las pegadas)`),
+    corNadie: "Ahora mismo no hay nadie.",
+    corSeguro: (n, cual) => `¿Seguro? Se enviará «${cual}» a ${n === 1 ? "1 persona" : `${n} personas`}. No se puede deshacer.`,
+    corSeguroPerd: "¿Seguro? Se enviará «¿Perdiste tu plaza?» a quien la perdió y a los correos pegados. No se puede deshacer.",
+    corEnviando: "Enviando…", corHecho: (n, f) => `✓ Enviados: ${n}.${f ? ` No se pudieron enviar: ${f} (vuelve a pulsar para reintentarlo).` : ""}`,
     valTitulo: "Valoraciones", valCargando: "Cargando las valoraciones…",
     valIntro: "Respuestas del cuestionario de después de la experiencia. Son anónimas: no se sabe quién ha contestado qué.",
     valNinguna: "Todavía no ha respondido nadie al cuestionario.",
@@ -123,6 +138,21 @@ const TEXTOS = {
     verAnadir: (h) => `+ Add member (${h} ${h === 1 ? "place" : "places"} free)`,
     verPista: "email of the person without a booking", verGuardar: "Add", verCancelar: "Cancel", verAnadiendo: "Adding…",
     verNotaAnadir: "Their place is confirmed and their attendance ticked.",
+    corTitulo: "Emails to students",
+    corIntro: "To write now to anyone who hasn't confirmed their place or who lost it. Before sending them for real, send yourself the test and check how they look.",
+    corPruebaTitulo: "1 · Test", corPruebaTexto: "You'll get both versions with “[PRUEBA]” in the subject (with sample data).",
+    corPruebaBoton: "Send both tests", corPruebaHecho: (c) => `✓ Tests sent to ${c}. Check the inbox (and spam).`,
+    corPendTitulo: "2 · “Confirm your place before you lose it”",
+    corPendTexto: "To anyone who hasn't confirmed yet and is still in time. They get their session, the deadline and the confirm button.",
+    corPendBoton: (n) => (n === 1 ? "Send to 1 person" : `Send to ${n} people`),
+    corPerdTitulo: "3 · “Lost your place? There's still time”",
+    corPerdTexto: "To anyone who lost their place for not confirming. The site records them from today; earlier ones weren't saved: paste their emails below (one per line or comma-separated). Nobody who has a place again gets it, and nobody gets it twice.",
+    corPerdPista: "emails of people who lost their place before today (optional)",
+    corPerdBoton: (n) => (n === 1 ? "Send to 1 person (+ pasted ones)" : `Send to ${n} people (+ pasted ones)`),
+    corNadie: "Nobody right now.",
+    corSeguro: (n, cual) => `Are you sure? “${cual}” will be sent to ${n === 1 ? "1 person" : `${n} people`}. It can't be undone.`,
+    corSeguroPerd: "Are you sure? “Lost your place?” will be sent to those who lost it and to the pasted emails. It can't be undone.",
+    corEnviando: "Sending…", corHecho: (n, f) => `✓ Sent: ${n}.${f ? ` Couldn't send: ${f} (press again to retry).` : ""}`,
     valTitulo: "Ratings", valCargando: "Loading the ratings…",
     valIntro: "Answers to the after-experience questionnaire. They're anonymous: there's no way to know who answered what.",
     valNinguna: "Nobody has answered the questionnaire yet.",
@@ -471,6 +501,9 @@ function Panel({ t, datos, aviso, marcar, actualizar, salir }) {
         )}
 
         <p className="panel__leyenda">{t.leyenda}</p>
+
+        {/* Correos al alumnado: recordar que confirmen y avisar a quien perdió su plaza (con prueba antes) */}
+        <CorreosAlumnado t={t} />
 
         {/* Respuestas del cuestionario: medias, reparto y descarga */}
         <Valoraciones t={t} />
@@ -854,6 +887,85 @@ function Tarjetas({ t, resumenes }) {
 /** Texto de una opción de las preguntas con botones (el turno ya es su hora) */
 function nombreOpcion(t, clave, valor) {
   return clave === "origen" ? t.origenes[valor] || valor : valor;
+}
+
+/**
+ * «Correos al alumnado»: 1) prueba de los dos correos a un correo del equipo; 2) «Confirma tu plaza antes de
+ * perderla» a quien no ha confirmado; 3) «¿Perdiste tu plaza?» a quien la perdió (+ correos pegados).
+ * Todo pasa por /api/admin/correos. Antes de enviar de verdad se pide confirmación.
+ */
+function CorreosAlumnado({ t }) {
+  const [cuentas, setCuentas] = useState(null); // { sinConfirmar, perdidas }
+  const [correoPrueba, setCorreoPrueba] = useState("luciasedeno@alumnado.esada.es");
+  const [pegados, setPegados] = useState("");
+  const [ocupado, setOcupado] = useState(""); // qué botón está enviando
+  const [avisos, setAvisos] = useState({}); // mensaje bajo cada bloque
+
+  const contar = useCallback(async () => {
+    const r = await api("/api/admin/correos");
+    if (r.ok) setCuentas({ sinConfirmar: r.sinConfirmar, perdidas: r.perdidas });
+  }, []);
+  useEffect(() => {
+    contar();
+  }, [contar]);
+
+  async function enviar(tipo, datos, pregunta) {
+    if (pregunta && !window.confirm(pregunta)) return;
+    setOcupado(tipo);
+    setAvisos((a) => ({ ...a, [tipo]: "" }));
+    const r = await api("/api/admin/correos", { metodo: "POST", datos: { tipo, ...datos } });
+    setOcupado("");
+    const texto = !r.ok ? r.mensaje : tipo === "prueba" ? t.corPruebaHecho(datos.email) : t.corHecho(r.enviados, r.fallidos);
+    setAvisos((a) => ({ ...a, [tipo]: texto }));
+    if (r.ok && tipo === "perdidas") setPegados("");
+    contar();
+  }
+
+  const lista = pegados.split(/[\s,;]+/).map((c) => c.trim()).filter(Boolean);
+  const nPend = cuentas?.sinConfirmar ?? 0;
+  const nPerd = cuentas?.perdidas ?? 0;
+
+  return (
+    <section className="panel-correos" aria-labelledby="correos-titulo">
+      <h2 id="correos-titulo" className="panel-val__titulo">{t.corTitulo}</h2>
+      <p className="panel-val__intro">{t.corIntro}</p>
+
+      <div className="panel-correos__bloques">
+        <div className="panel-correos__bloque">
+          <h3>{t.corPruebaTitulo}</h3>
+          <p>{t.corPruebaTexto}</p>
+          <input className="panel__busqueda" type="email" value={correoPrueba} onChange={(e) => setCorreoPrueba(e.target.value)} aria-label={t.corPruebaTitulo} />
+          <button type="button" className="ll-btn ll-btn--md ll-btn--secondary" disabled={!!ocupado}
+            onClick={() => enviar("prueba", { email: correoPrueba })}>
+            {ocupado === "prueba" ? t.corEnviando : t.corPruebaBoton}
+          </button>
+          {avisos.prueba && <p className="panel-correos__aviso" role="status">{avisos.prueba}</p>}
+        </div>
+
+        <div className="panel-correos__bloque">
+          <h3>{t.corPendTitulo}</h3>
+          <p>{t.corPendTexto}</p>
+          <button type="button" className="ll-btn ll-btn--md ll-btn--primary" disabled={!!ocupado || nPend === 0}
+            onClick={() => enviar("sin_confirmar", {}, t.corSeguro(nPend, t.corPendTitulo.replace(/^2 · /, "")))}>
+            {ocupado === "sin_confirmar" ? t.corEnviando : nPend ? t.corPendBoton(nPend) : t.corNadie}
+          </button>
+          {avisos.sin_confirmar && <p className="panel-correos__aviso" role="status">{avisos.sin_confirmar}</p>}
+        </div>
+
+        <div className="panel-correos__bloque">
+          <h3>{t.corPerdTitulo}</h3>
+          <p>{t.corPerdTexto}</p>
+          <textarea className="panel-correos__pegar" rows={3} placeholder={t.corPerdPista} value={pegados}
+            onChange={(e) => setPegados(e.target.value)} aria-label={t.corPerdPista} />
+          <button type="button" className="ll-btn ll-btn--md ll-btn--primary" disabled={!!ocupado || (nPerd === 0 && lista.length === 0)}
+            onClick={() => enviar("perdidas", { extra: lista }, t.corSeguroPerd)}>
+            {ocupado === "perdidas" ? t.corEnviando : nPerd || lista.length ? t.corPerdBoton(nPerd) : t.corNadie}
+          </button>
+          {avisos.perdidas && <p className="panel-correos__aviso" role="status">{avisos.perdidas}</p>}
+        </div>
+      </div>
+    </section>
+  );
 }
 
 /** Hora en España de una fecha: «10:47» */

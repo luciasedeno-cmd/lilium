@@ -110,6 +110,14 @@ create table if not exists mirando (
 alter table mirando enable row level security;
 -- Personas que el equipo apunta en la puerta el día del retiro (llegaron sin reserva): cuándo
 alter table miembros add column if not exists puerta_en timestamptz;
+-- Quien perdió su plaza por no confirmar a tiempo (para poder escribirle «¿Perdiste tu plaza?»)
+create table if not exists plazas_perdidas (
+  email       text primary key,
+  turno_id    integer references turnos(id) on delete set null,
+  perdida_en  timestamptz not null default now(),
+  avisado_en  timestamptz
+);
+alter table plazas_perdidas enable row level security;
 
 -- Turnos del día (edítalos aquí o desde el panel de Supabase). Solo se insertan si la tabla está vacía.
 -- Cada turno dura una hora: 45 minutos de experiencia + 15 de cortesía para recolocar la sala.
