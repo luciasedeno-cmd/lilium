@@ -32,9 +32,9 @@ const TEXTOS = {
     abrirSala: "Continuar y abrir sala nueva →", unirme: "Continuar y unirme a un grupo →",
     pista: "nombreapellido@alumnado.esada.es", hueco: "Hay un correo sin escribir: rellénalo o quítalo con la ✕.",
     // Profesorado (correo @esada.es): reserva solo su plaza
-    tuProfe: "Tú (profesorado)", introProfe: "Como profesorado, reservas solo tu plaza. En cada sala hay una plaza guardada para el profesorado: puedes unirte a un grupo o abrir tú una sala vacía.",
-    continuarProfe: "Continuar y elegir hora →", avisoProfeTitulo: "Una plaza de profesorado por sala.",
-    avisoProfeTexto: "Si nadie del profesorado la coge antes del lunes 2 de noviembre a las 12:00, se libera para el alumnado.",
+    tuProfe: "Tú (profesorado)", introProfe: "Como profesorado, reservas solo tu plaza: puedes unirte a un grupo con hueco o abrir tú una sala vacía.",
+    continuarProfe: "Continuar y elegir hora →", avisoProfeTitulo: "Todas las plazas libres están abiertas.",
+    avisoProfeTexto: "Elige cualquier turno con hueco, igual que el alumnado.",
   },
   en: {
     titulo: "Who's coming to the meadow?", intro: "Write the emails of all the members so they receive the confirmation in their inbox.",
@@ -44,9 +44,9 @@ const TEXTOS = {
     avisoTitulo: "Minimum 3 people to open a new room.", avisoTexto: "With 1 or 2 people, join a group still forming to complete the circle.",
     abrirSala: "Continue and open a new room →", unirme: "Continue and join a group →",
     pista: "namesurname@alumnado.esada.es", hueco: "There's an empty email: fill it in or remove it with the ✕.",
-    tuProfe: "You (teaching staff)", introProfe: "As teaching staff, you only book your own place. Every room keeps one place for teaching staff: you can join a group or open an empty room yourself.",
-    continuarProfe: "Continue and choose a time →", avisoProfeTitulo: "One teaching staff place per room.",
-    avisoProfeTexto: "If no teacher takes it before Monday 2 November at 12:00, it's released for students.",
+    tuProfe: "You (teaching staff)", introProfe: "As teaching staff, you only book your own place: you can join a group with space or open an empty room yourself.",
+    continuarProfe: "Continue and choose a time →", avisoProfeTitulo: "All free places are open.",
+    avisoProfeTexto: "Choose any session with space, just like students.",
   },
 };
 
