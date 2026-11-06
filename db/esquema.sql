@@ -6,7 +6,8 @@ create table if not exists turnos (
   inicio    text    not null,            -- "10:00"
   fin       text    not null,            -- "11:00"
   erasmus   boolean not null default false,
-  equipo    text                          -- nombre del equipo; lo pone el primer grupo que abre la sala
+  equipo    text,                         -- nombre del equipo; lo pone el primer grupo que abre la sala
+  dia       date                          -- día del retiro (el viernes 6 ya pasó; ahora se reserva el lunes 9)
 );
 
 create table if not exists reservas (
@@ -118,9 +119,14 @@ create table if not exists plazas_perdidas (
   avisado_en  timestamptz
 );
 alter table plazas_perdidas enable row level security;
+-- Segundo día (lunes 9): «Uy uy uy» y día de cada respuesta del cuestionario.
+-- El archivo del viernes 6 (reservas_archivo / miembros_archivo) y los turnos del 9 los crea lib/esquema.js.
+alter table miembros add column if not exists aviso_olvido_en timestamptz;
+alter table cuestionario add column if not exists dia date;
 
 -- Turnos del día (edítalos aquí o desde el panel de Supabase). Solo se insertan si la tabla está vacía.
 -- Cada turno dura una hora: 45 minutos de experiencia + 15 de cortesía para recolocar la sala.
+-- (La web crea sola los del lunes 9 copiando los del viernes 6: lib/esquema.js)
 insert into turnos (inicio, fin, erasmus)
 select * from (values
   ('10:00', '11:00', false),

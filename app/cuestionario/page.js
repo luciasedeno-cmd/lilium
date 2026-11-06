@@ -16,12 +16,12 @@ export const metadata = {
 
 export default async function PaginaCuestionario({ searchParams }) {
   const { t } = (await searchParams) || {};
-  let datos = { turnos: [], suyo: null };
+  let datos = { turnos: [], suyo: null, dias: [], suDia: null };
   try {
     datos = await conDb(() => turnosCuestionario(typeof t === "string" ? t : null));
   } catch (e) {
     // Si la base de datos no responde, el cuestionario sigue funcionando sin la pregunta del turno
     console.error("No se pudieron leer los turnos para el cuestionario:", e.message);
   }
-  return <Cuestionario turnos={datos.turnos} turnoInicial={datos.suyo} />;
+  return <Cuestionario turnos={datos.turnos} turnoInicial={datos.suyo} dias={datos.dias} diaInicial={datos.suDia} />;
 }

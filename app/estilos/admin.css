@@ -1138,3 +1138,41 @@ main.panel {
     padding: var(--space-4);
   }
 }
+
+/* ---------- Selector de día (panel y filtro de valoraciones): pastillas ---------- */
+.panel-dias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: var(--space-6) 0 var(--space-2);
+}
+
+.panel-dias button {
+  padding: 8px 18px;
+  border: 1px solid var(--primary);
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--primary);
+  font: 600 14px/1.2 var(--font-sans);
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.panel-dias button[aria-pressed="true"] {
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+.panel-dias button small {
+  margin-left: 4px;
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.panel-dias--val {
+  margin-top: var(--space-4);
+}
+
+.panel-dias__aviso {
+  margin-bottom: var(--space-4);
+}

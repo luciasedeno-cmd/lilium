@@ -3,8 +3,9 @@
 // manda el recordatorio del día antes y el correo del día después para valorar la experiencia.
 // Requiere la cabecera Authorization: Bearer <CRON_SECRET>.
 import { pendientesDeRecordatorio, marcarRecordatorio, limiteDe } from "@/lib/reservas";
-import { correoRecordatorio, correoRecordatorioDia, correoValoracion, urlSitio } from "@/lib/correo";
-import { tocaRecordatorioDia, tocaValoracion, pendientesRecordatorioDia, pendientesValoracion, marcarEnviado } from "@/lib/retiro";
+import { correoRecordatorio, correoRecordatorioDia, correoValoracion, correoOlvido, urlSitio } from "@/lib/correo";
+import { tocaRecordatorioDia, tocaValoracion, pendientesRecordatorioDia, pendientesValoracion, marcarEnviado,
+  tocaValoracionArchivo, tocaOlvido, pendientesArchivo, marcarArchivo } from "@/lib/retiro";
 import { ok, error, manejar } from "@/lib/respuestas";
 import { avisarListaEspera } from "@/lib/avisos";
 
@@ -52,15 +53,32 @@ export const GET = manejar(async (req) => {
       correoValoracion({ para: p.email, enlace: `${base}/cuestionario?t=${p.token}` }));
   }
 
+  // Viernes 6 (ya pasado, en el archivo): «¿Qué te pareció?» los días 7 y 8, y el lunes 9 el «Uy uy uy»
+  let valoracionArchivo = 0;
+  if (tocaValoracionArchivo()) {
+    const gente = await pendientesArchivo("aviso_valoracion_en");
+    valoracionArchivo = await mandarYApuntar(gente, "aviso_valoracion_en", (p) =>
+      correoValoracion({ para: p.email, enlace: `${base}/cuestionario?t=${p.token}` }), marcarArchivo);
+  }
+  // «Uy uy uy ¿se te ha olvidado algo?»: EN PAUSA hasta que el equipo dé el visto bueno al texto.
+  // Para activarlo, cambiar a true.
+  const OLVIDO_APROBADO = false;
+  let olvido = 0;
+  if (OLVIDO_APROBADO && tocaOlvido()) {
+    const gente = await pendientesArchivo("aviso_olvido_en");
+    olvido = await mandarYApuntar(gente, "aviso_olvido_en", (p) =>
+      correoOlvido({ para: p.email, enlace: `${base}/cuestionario?t=${p.token}` }), marcarArchivo);
+  }
+
   return ok({
-    listaEspera, recordatorioDia, valoracion,
+    listaEspera, recordatorioDia, valoracion, valoracionArchivo, olvido,
     enviados: resultados.filter((r) => r.status === "fulfilled").length,
     fallidos: resultados.filter((r) => r.status === "rejected").length,
   });
 });
 
 /** Manda un correo a cada persona y apunta a quién le ha llegado (al resto se le reintenta la próxima hora) */
-async function mandarYApuntar(gente, campo, mandar) {
+async function mandarYApuntar(gente, campo, mandar, apuntar = marcarEnviado) {
   const bien = [];
   const tanda = gente.slice(0, POR_PASADA);
   for (let i = 0; i < tanda.length; i += A_LA_VEZ) {
@@ -71,6 +89,6 @@ async function mandarYApuntar(gente, campo, mandar) {
       else console.error("Error enviando correo:", r.reason);
     });
   }
-  await marcarEnviado(campo, bien);
+  await apuntar(campo, bien);
   return bien.length;
 }

@@ -41,16 +41,19 @@ export const POST = manejar(async (req) => {
   const origen = ORIGENES.includes(datos.origen) ? datos.origen : null;
   if (!origen) return error("Responde a todas las preguntas, por favor.");
   // En qué turno estuvo: tiene que ser uno de los turnos del día (si no hay turnos, la pregunta no sale)
-  const { turnos } = await turnosCuestionario(null);
+  const { turnos, dias, suDia } = await turnosCuestionario(token);
   const turno = turnos.some((t) => t.etiqueta === datos.turno) ? datos.turno : null;
   if (turnos.length > 0 && !turno) return error("Responde a todas las preguntas, por favor.");
+  // De qué día es la respuesta: el de su reserva (enlace del correo), el que eligió, o el único que ha pasado
+  const dia = suDia || (dias.some((d) => d.valor === datos.dia) ? datos.dia : dias.length === 1 ? dias[0].valor : null);
+  if (!dia && dias.length > 1) return error("Responde a todas las preguntas, por favor.");
 
   const sql = db();
   await asegurarEsquema(sql);
   await sql`
-    insert into cuestionario (general, ambientacion, dificultad, originalidad, inmersion, duracion, comentario, idioma, turno, origen)
+    insert into cuestionario (general, ambientacion, dificultad, originalidad, inmersion, duracion, comentario, idioma, turno, origen, dia)
     values (${valores.general}, ${valores.ambientacion}, ${valores.dificultad}, ${valores.originalidad},
-            ${valores.inmersion}, ${valores.duracion}, ${comentario}, ${idioma}, ${turno}, ${origen})`;
+            ${valores.inmersion}, ${valores.duracion}, ${comentario}, ${idioma}, ${turno}, ${origen}, ${dia})`;
   await marcarValorado({ token, email });
   return ok();
 });

@@ -14,7 +14,7 @@ import NavReserva from "@/components/NavReserva";
 import PiePagina from "@/components/PiePagina";
 import { api } from "@/lib/borrador";
 import { useEspera } from "@/lib/useEspera";
-import { ADMIN_CORREO, APERTURA, EVENTO, MAX_PERSONAS, ORIGENES, esProfesorado, plazaProfeGuardada } from "@/lib/config";
+import { ADMIN_CORREO, APERTURA, EVENTO, MAX_PERSONAS, ORIGENES, DIAS, DIA_ACTIVO, diaDe, esProfesorado, plazaProfeGuardada } from "@/lib/config";
 import { useTextos } from "@/components/Idioma";
 
 const TEXTOS = {
@@ -84,7 +84,9 @@ const TEXTOS = {
     preguntas: { general: "Experiencia en general", ambientacion: "Ambientación y decoración", dificultad: "Dificultad de las pruebas",
       originalidad: "Originalidad de las pruebas", inmersion: "Inmersión en la historia", duracion: "Duración" },
     escalas: { dificultad: "1 = muy fácil · 5 = muy difícil", duracion: "1 = muy corta · 3 = genial · 5 = muy larga" },
-    columnas: { creada: "Fecha", idioma: "Idioma", turno: "Turno", origen: "Cómo se enteró", comentario: "Notas" },
+    columnas: { creada: "Fecha", dia: "Día del retiro", idioma: "Idioma", turno: "Turno", origen: "Cómo se enteró", comentario: "Notas" },
+    filtroDia: "Filtrar por día", todosDias: "Todos los días", diaCorto: (d) => d.corto, diaPanel: "Día del panel",
+    diaPasado: "Este día ya pasó: se ve tal y como quedó (se puede corregir «¿Ha venido?», pero no añadir a nadie).",
     notasTitulo: "Notas", notasNinguna: "Todavía nadie ha dejado una nota (son opcionales).",
     notasCuenta: (n) => (n === 1 ? "1 persona ha dejado una nota" : `${n} personas han dejado una nota`),
     datoCategoria: "eligieron esta", origenes: { instagram: "Instagram", amigas: "Amigas o clase", carteles: "Carteles en ESADA", correo: "Correo de ESADA", otro: "Otro" },
@@ -162,7 +164,9 @@ const TEXTOS = {
     preguntas: { general: "Overall experience", ambientacion: "Atmosphere and set design", dificultad: "Difficulty of the challenges",
       originalidad: "Originality of the challenges", inmersion: "Immersion in the story", duracion: "Length" },
     escalas: { dificultad: "1 = very easy · 5 = very hard", duracion: "1 = too short · 3 = just right · 5 = too long" },
-    columnas: { creada: "Date", idioma: "Language", turno: "Session", origen: "How they heard", comentario: "Notes" },
+    columnas: { creada: "Date", dia: "Retreat day", idioma: "Language", turno: "Session", origen: "How they heard", comentario: "Notes" },
+    filtroDia: "Filter by day", todosDias: "All days", diaCorto: (d) => d.cortoEn, diaPanel: "Dashboard day",
+    diaPasado: "This day is over: it's shown as it ended (you can fix “Attended?”, but not add anyone).",
     notasTitulo: "Notes", notasNinguna: "Nobody has left a note yet (they're optional).",
     notasCuenta: (n) => (n === 1 ? "1 person left a note" : `${n} people left a note`),
     datoCategoria: "chose this", origenes: { instagram: "Instagram", amigas: "Friends or classmates", carteles: "Posters at ESADA", correo: "ESADA email", otro: "Other" },
@@ -191,8 +195,10 @@ export default function Admin() {
   //  · Sin llave (no ha entrado): se enseña el formulario para entrar.
   //  · Otro fallo (servidor lento, sin conexión…): si ya se veía el panel, se queda; si no, el
   //    formulario lo explica con un mensaje (antes se quedaba callado y parecía que no dejaba entrar).
+  // Día que se ve en el panel (por defecto, el que se reserva ahora; el viernes 6 sale de su archivo)
+  const [dia, setDia] = useState(DIA_ACTIVO);
   const cargar = useCallback(async () => {
-    const r = await api("/api/admin/panel");
+    const r = await api(`/api/admin/panel?dia=${dia}`);
     if (r.ok) {
       setDatos(r);
       setEstado("dentro");
@@ -201,7 +207,7 @@ export default function Admin() {
       setEstado((e) => (e === "dentro" && !sinLlave ? e : "fuera"));
     }
     return r;
-  }, []);
+  }, [dia]);
 
   useEffect(() => {
     cargar();
@@ -223,7 +229,7 @@ export default function Admin() {
   async function marcar(email, valor) {
     const antes = datos;
     setDatos((d) => cambiarPersona(d, email, { asistio: valor }));
-    const r = await api("/api/admin/asistencia", { metodo: "POST", datos: { email, asistio: valor } });
+    const r = await api("/api/admin/asistencia", { metodo: "POST", datos: { email, asistio: valor, dia: datos?.dia } });
     if (!r.ok) {
       setDatos(antes);
       setAviso(r.mensaje || t.errorGuardar);
@@ -238,7 +244,7 @@ export default function Admin() {
     );
   }
   if (estado === "fuera") return <Entrar t={t} alEntrar={cargar} />;
-  return <Panel t={t} datos={datos} aviso={aviso} marcar={marcar} actualizar={cargar} salir={salir} />;
+  return <Panel t={t} datos={datos} aviso={aviso} marcar={marcar} actualizar={cargar} salir={salir} dia={dia} cambiarDia={setDia} />;
 }
 
 /** Copia de los datos con una persona cambiada */
@@ -380,7 +386,8 @@ function Entrar({ t, alEntrar }) {
 }
 
 /* ---------- Panel ---------- */
-function Panel({ t, datos, aviso, marcar, actualizar, salir }) {
+function Panel({ t, datos, aviso, marcar, actualizar, salir, dia, cambiarDia }) {
+  const pasado = Boolean(datos.archivado); // día ya pasado: solo se mira (y se corrige «¿Ha venido?»)
   const [busca, setBusca] = useState("");
   const { totales } = datos;
   const antesDeAbrir = Date.now() < APERTURA.getTime();
@@ -406,7 +413,7 @@ function Panel({ t, datos, aviso, marcar, actualizar, salir }) {
       <NavReserva />
       <main className="panel">
         <header className="panel__cabecera">
-          <p className="panel__etiqueta">{t.panelEtiqueta} · {EVENTO.fechaTexto}</p>
+          <p className="panel__etiqueta">{t.panelEtiqueta} · {diaDe(datos.dia)?.texto || EVENTO.fechaTexto}</p>
           <h1 className="panel__titulo">{t.panelTitulo}</h1>
           <div className="panel__acciones">
             <button type="button" className="ll-btn ll-btn--md ll-btn--secondary" onClick={actualizar}>{t.actualizar}</button>
@@ -415,6 +422,14 @@ function Panel({ t, datos, aviso, marcar, actualizar, salir }) {
             <button type="button" className="ll-btn ll-btn--md ll-btn--primary" onClick={salir}>{t.salir}</button>
           </div>
         </header>
+
+        {/* Día del panel: el lunes 9 (el que se reserva ahora) o el viernes 6 (ya pasado, archivado) */}
+        <div className="panel-dias" role="group" aria-label={t.diaPanel}>
+          {DIAS.map((d) => (
+            <button key={d.id} type="button" aria-pressed={dia === d.id} onClick={() => cambiarDia(d.id)}>{t.diaCorto(d)}</button>
+          ))}
+        </div>
+        {pasado && <p className="panel__vacias panel-dias__aviso">{t.diaPasado}</p>}
 
         {/* Plazas y totales */}
         <section className="panel__totales" aria-label={t.plazas}>
@@ -479,7 +494,7 @@ function Panel({ t, datos, aviso, marcar, actualizar, salir }) {
                 </p>
               )}
               {/* Alguien llega sin reserva y queda sitio: se apunta aquí */}
-              {s.ocupadas < MAX_PERSONAS && !busca && (
+              {s.ocupadas < MAX_PERSONAS && !busca && !pasado && (
                 <AnadirIntegrante t={t} sala={s} hueco={MAX_PERSONAS - s.ocupadas} alCambiar={actualizar} />
               )}
               </div>
@@ -488,7 +503,7 @@ function Panel({ t, datos, aviso, marcar, actualizar, salir }) {
         </div>
 
         {/* Turnos sin nadie: también se puede apuntar ahí a quien llega sin reserva */}
-        {!busca && vacias > 0 && (
+        {!busca && vacias > 0 && !pasado && (
           <section className="panel-vacias" aria-labelledby="panel-vacias-titulo">
             <h2 id="panel-vacias-titulo" className="panel-vacias__titulo">{t.turnosVacios}</h2>
             {datos.salas.filter((s) => s.ocupadas === 0).map((s) => (
@@ -640,8 +655,14 @@ function resumenCategoria(clave, respuestas) {
  * Pide los datos a /api/admin/valoraciones (solo con la llave del equipo) y los refresca cada 30 s.
  */
 function Valoraciones({ t }) {
-  const [respuestas, setRespuestas] = useState(null); // null = cargando
+  const [todas, setRespuestas] = useState(null); // null = cargando
   const [fallo, setFallo] = useState("");
+  // Filtro por día del retiro: «todos» o el id de un día (las respuestas llevan su día en r.dia)
+  const [filtroDia, setFiltroDia] = useState("todos");
+  const respuestas = useMemo(
+    () => (todas && filtroDia !== "todos" ? todas.filter((r) => r.dia === filtroDia) : todas),
+    [todas, filtroDia]
+  );
 
   useEffect(() => {
     let vivo = true;
@@ -674,9 +695,10 @@ function Valoraciones({ t }) {
 
   // Descarga: un archivo .csv (tabla de texto que abre Excel o Google Sheets) con una fila por respuesta
   function descargar() {
-    const cabecera = [t.columnas.creada, t.columnas.turno, ...PREGUNTAS.map((p) => t.preguntas[p.clave]), t.columnas.origen, t.columnas.idioma, t.columnas.comentario];
+    const cabecera = [t.columnas.creada, t.columnas.dia, t.columnas.turno, ...PREGUNTAS.map((p) => t.preguntas[p.clave]), t.columnas.origen, t.columnas.idioma, t.columnas.comentario];
     const filas = respuestas.map((r) => [
       new Date(r.creada).toLocaleString("es-ES", { timeZone: "Europe/Madrid" }),
+      diaDe(r.dia)?.texto || r.dia || "",
       r.turno || "",
       ...PREGUNTAS.map((p) => r[p.clave]),
       r.origen ? t.origenes[r.origen] || r.origen : "",
@@ -706,6 +728,17 @@ function Valoraciones({ t }) {
           </div>
         )}
       </header>
+
+      {/* Filtro por día del retiro (todos, viernes 6, lunes 9…) */}
+      {todas && todas.length > 0 && (
+        <div className="panel-dias panel-dias--val" role="group" aria-label={t.filtroDia}>
+          {[{ id: "todos" }, ...DIAS].map((d) => (
+            <button key={d.id} type="button" aria-pressed={filtroDia === d.id} onClick={() => setFiltroDia(d.id)}>
+              {d.id === "todos" ? t.todosDias : t.diaCorto(d)} <small>{d.id === "todos" ? todas.length : todas.filter((r) => r.dia === d.id).length}</small>
+            </button>
+          ))}
+        </div>
+      )}
 
       {fallo && <p className="panel__aviso" role="alert">{fallo}</p>}
       {!respuestas && !fallo && <p className="panel-val__nada" role="status">{t.valCargando}</p>}

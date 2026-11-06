@@ -19,6 +19,7 @@ const TEXTOS = {
     etiqueta: "Tu opinión nos importa", titulo: "Cuestionario",
     intro: "Acabas de salir del retiro. Antes de que se desvanezca el recuerdo, cuéntanos cómo lo has vivido. Es anónimo y no lleva más de un minuto.",
     preguntas: {
+      dia: "¿Qué día viniste?",
       turno: "¿En qué turno has estado?",
       origen: "¿Cómo te enteraste de Lilium?",
       general: "¿Cuánto te ha gustado la experiencia en general?",
@@ -45,6 +46,7 @@ const TEXTOS = {
     etiqueta: "Your opinion matters", titulo: "Questionnaire",
     intro: "You've just left the retreat. Before the memory fades, tell us what it was like for you. It's anonymous and takes less than a minute.",
     preguntas: {
+      dia: "Which day did you come?",
       turno: "Which session were you in?",
       origen: "How did you hear about Lilium?",
       general: "How much did you enjoy the experience overall?",
@@ -71,6 +73,7 @@ const TEXTOS = {
 
 // Orden de las preguntas y su tipo: «turno» y «opciones» (botones), «estrellas» de 1 a 5 o «escala» de 1 a 5
 const PREGUNTAS = [
+  { clave: "dia", tipo: "dia" }, // solo sale si ya han pasado varios días y no se sabe cuál fue el suyo
   { clave: "turno", tipo: "turno" },
   { clave: "general", tipo: "estrellas" },
   { clave: "ambientacion", tipo: "estrellas" },
@@ -138,14 +141,16 @@ function PreguntaOpciones({ clave, valor, alElegir, opciones }) {
   );
 }
 
-export default function Cuestionario({ turnos = [], turnoInicial = null }) {
+export default function Cuestionario({ turnos = [], turnoInicial = null, dias = [], diaInicial = null }) {
   const router = useRouter();
   const { idioma } = useIdioma();
   const t = TEXTOS[idioma] || TEXTOS.es;
   // Con el enlace personal del correo, su turno ya viene marcado (lo puede cambiar)
-  const [respuestas, setRespuestas] = useState(turnoInicial ? { turno: turnoInicial } : {});
-  // Si no se han podido leer los turnos, esa pregunta no sale
-  const preguntas = turnos.length > 0 ? PREGUNTAS : PREGUNTAS.filter((p) => p.tipo !== "turno");
+  // El día: con el enlace del correo ya se sabe; si solo ha pasado un día, es ese
+  const diaFijo = diaInicial || (dias.length === 1 ? dias[0].valor : null);
+  const [respuestas, setRespuestas] = useState({ ...(turnoInicial ? { turno: turnoInicial } : {}), ...(diaFijo ? { dia: diaFijo } : {}) });
+  // Si no se han podido leer los turnos, esa pregunta no sale; la del día, solo si hay que elegirlo
+  const preguntas = PREGUNTAS.filter((p) => (p.tipo !== "turno" || turnos.length > 0) && (p.tipo !== "dia" || (!diaFijo && dias.length > 1)));
   const [enviando, setEnviando] = useState(false);
   const [mensaje, setMensaje] = useState("");
   const [marcadas, setMarcadas] = useState(false); // tras intentar enviar, se señalan las que faltan
@@ -241,7 +246,10 @@ export default function Cuestionario({ turnos = [], turnoInicial = null }) {
                 <span className="visually-hidden">{i + 1}. </span>
                 {t.preguntas[p.clave]}
               </h2>
-              {p.tipo === "turno" ? (
+              {p.tipo === "dia" ? (
+                <PreguntaOpciones clave={p.clave} valor={respuestas[p.clave]} alElegir={(n) => elegir(i, n)}
+                  opciones={dias.map((d) => ({ valor: d.valor, texto: idioma === "en" ? d.textoEn : d.texto }))} />
+              ) : p.tipo === "turno" ? (
                 <>
                   <PreguntaOpciones clave={p.clave} valor={respuestas[p.clave]} alElegir={(n) => elegir(i, n)}
                     opciones={turnos.map((tu) => ({ valor: tu.etiqueta, texto: tu.etiqueta, nota: tu.erasmus ? t.erasmus : null }))} />
