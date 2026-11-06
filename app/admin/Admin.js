@@ -72,6 +72,9 @@ const TEXTOS = {
     corPerdPista: "correos de quienes perdieron su plaza antes de hoy (opcional)",
     corPerdBoton: (n) => (n === 1 ? "Enviar a 1 persona (+ las pegadas)" : `Enviar a ${n} personas (+ las pegadas)`),
     corNadie: "Ahora mismo no hay nadie.",
+    corOlvTitulo: "4 · «Uy uy uy ¿se te ha olvidado algo?»",
+    corOlvTexto: "Lo manda la web sola el lunes 9 a las 10:00 a quien vino el viernes 6 (plaza confirmada y no marcada «No vino») y aún no ha valorado. Aquí solo se ve la lista: la lista cambia sola si alguien valora antes.",
+    corOlvCuenta: (n) => (n === 1 ? "Le llegará a 1 persona:" : n ? `Le llegará a ${n} personas:` : "Ahora mismo no le llegaría a nadie."),
     corSeguro: (n, cual) => `¿Seguro? Se enviará «${cual}» a ${n === 1 ? "1 persona" : `${n} personas`}. No se puede deshacer.`,
     corSeguroPerd: "¿Seguro? Se enviará «¿Perdiste tu plaza?» a quien la perdió y a los correos pegados. No se puede deshacer.",
     corEnviando: "Enviando…", corHecho: (n, f) => `✓ Enviados: ${n}.${f ? ` No se pudieron enviar: ${f} (vuelve a pulsar para reintentarlo).` : ""}`,
@@ -152,6 +155,9 @@ const TEXTOS = {
     corPerdPista: "emails of people who lost their place before today (optional)",
     corPerdBoton: (n) => (n === 1 ? "Send to 1 person (+ pasted ones)" : `Send to ${n} people (+ pasted ones)`),
     corNadie: "Nobody right now.",
+    corOlvTitulo: "4 · “Uy uy uy, forgot something?”",
+    corOlvTexto: "The website sends it by itself on Monday 9 at 10:00 to people who came on Friday 6 (confirmed place, not marked “Didn't come”) and haven't rated yet. This only shows the list: it updates by itself if someone rates first.",
+    corOlvCuenta: (n) => (n === 1 ? "It will reach 1 person:" : n ? `It will reach ${n} people:` : "Right now it wouldn't reach anyone."),
     corSeguro: (n, cual) => `Are you sure? “${cual}” will be sent to ${n === 1 ? "1 person" : `${n} people`}. It can't be undone.`,
     corSeguroPerd: "Are you sure? “Lost your place?” will be sent to those who lost it and to the pasted emails. It can't be undone.",
     corEnviando: "Sending…", corHecho: (n, f) => `✓ Sent: ${n}.${f ? ` Couldn't send: ${f} (press again to retry).` : ""}`,
@@ -936,7 +942,7 @@ function CorreosAlumnado({ t }) {
 
   const contar = useCallback(async () => {
     const r = await api("/api/admin/correos");
-    if (r.ok) setCuentas({ sinConfirmar: r.sinConfirmar, perdidas: r.perdidas });
+    if (r.ok) setCuentas({ sinConfirmar: r.sinConfirmar, perdidas: r.perdidas, olvido: r.olvido || [] });
   }, []);
   useEffect(() => {
     contar();
@@ -997,6 +1003,18 @@ function CorreosAlumnado({ t }) {
             {ocupado === "perdidas" ? t.corEnviando : nPerd || lista.length ? t.corPerdBoton(nPerd) : t.corNadie}
           </button>
           {avisos.perdidas && <p className="panel-correos__aviso" role="status">{avisos.perdidas}</p>}
+        </div>
+
+        {/* 4 · «Uy uy uy…»: solo para ver a quién le llegará (no hay botón: lo manda la web sola el lunes) */}
+        <div className="panel-correos__bloque">
+          <h3>{t.corOlvTitulo}</h3>
+          <p>{t.corOlvTexto}</p>
+          <p className="panel-correos__cuenta"><strong>{t.corOlvCuenta(cuentas?.olvido?.length ?? 0)}</strong></p>
+          {cuentas?.olvido?.length > 0 && (
+            <ul className="panel-correos__lista">
+              {cuentas.olvido.map((c) => <li key={c}>{c}</li>)}
+            </ul>
+          )}
         </div>
       </div>
     </section>

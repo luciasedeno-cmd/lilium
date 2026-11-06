@@ -1176,3 +1176,11 @@ main.panel {
 .panel-dias__aviso {
   margin-bottom: var(--space-4);
 }
+
+/* 4 · «Uy uy uy…»: lista de quién recibirá el correo (solo para ver) */
+.panel-correos__bloque .panel-correos__cuenta { margin: 6px 0 4px; }
+.panel-correos__lista {
+  margin: 0; padding: 10px 14px; list-style: none; max-height: 220px; overflow-y: auto;
+  border-radius: 12px; background: rgba(41, 47, 32, 0.06); font-size: 14px; line-height: 1.7;
+  overflow-wrap: anywhere;
+}
