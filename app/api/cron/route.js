@@ -60,9 +60,9 @@ export const GET = manejar(async (req) => {
     valoracionArchivo = await mandarYApuntar(gente, "aviso_valoracion_en", (p) =>
       correoValoracion({ para: p.email, enlace: `${base}/cuestionario?t=${p.token}` }), marcarArchivo);
   }
-  // «Uy uy uy ¿se te ha olvidado algo?»: EN PAUSA hasta que el equipo dé el visto bueno al texto.
-  // Para activarlo, cambiar a true.
-  const OLVIDO_APROBADO = false;
+  // «Uy uy uy ¿se te ha olvidado algo?»: el equipo dio el visto bueno al texto (6-11). false = en pausa.
+  // Se manda el lunes 9 desde las 10:00.
+  const OLVIDO_APROBADO = true;
   let olvido = 0;
   if (OLVIDO_APROBADO && tocaOlvido()) {
     const gente = await pendientesArchivo("aviso_olvido_en");
