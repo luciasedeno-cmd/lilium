@@ -8,7 +8,8 @@ name: Recordatorios de confirmación
 
 on:
   schedule:
-    - cron: "7 * * * *"
+    # Cada 15 minutos (GitHub a veces se retrasa): así el «Uy uy uy» del lunes 9 sale ~1 h después de cada turno
+    - cron: "*/15 * * * *"
   workflow_dispatch:
 
 jobs:

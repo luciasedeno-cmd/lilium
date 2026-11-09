@@ -8,6 +8,7 @@ import { tocaRecordatorioDia, tocaValoracion, pendientesRecordatorioDia, pendien
   tocaValoracionArchivo, tocaOlvido, pendientesArchivo, marcarArchivo } from "@/lib/retiro";
 import { ok, error, manejar } from "@/lib/respuestas";
 import { avisarListaEspera } from "@/lib/avisos";
+import { mandarOlvidosHoy } from "@/lib/olvidoHoy";
 
 export const dynamic = "force-dynamic";
 // Puede tardar un poco si hay muchos correos (Vercel deja hasta 60 s)
@@ -70,8 +71,11 @@ export const GET = manejar(async (req) => {
       correoOlvido({ para: p.email, enlace: `${base}/cuestionario?t=${p.token}` }), marcarArchivo);
   }
 
+  // Lunes 9: «Uy uy uy» a quien terminó su turno hace 1 hora o más y aún no ha valorado (lib/olvidoHoy.js)
+  const olvidoHoy = OLVIDO_APROBADO ? await mandarOlvidosHoy() : 0;
+
   return ok({
-    listaEspera, recordatorioDia, valoracion, valoracionArchivo, olvido,
+    listaEspera, recordatorioDia, valoracion, valoracionArchivo, olvido, olvidoHoy,
     enviados: resultados.filter((r) => r.status === "fulfilled").length,
     fallidos: resultados.filter((r) => r.status === "rejected").length,
   });
